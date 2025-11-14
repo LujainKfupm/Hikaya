@@ -1,10 +1,319 @@
-body { font-family: system-ui, Tahoma, Arial; margin:0; line-height:1.6; }
-.container { max-width: 1100px; margin: 0 auto; padding: 16px; }
-.nav { display:flex; gap:12px; padding:12px 16px; border-bottom:1px solid #eee; align-items:center; }
-.spacer { flex:1; }
-.btn { padding:8px 12px; border:1px solid #ddd; background:#fff; cursor:pointer; }
-.card { border:1px solid #eee; padding:12px; border-radius:8px; margin:8px 0; }
-.grid { display:grid; gap:12px; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); }
-input, select, textarea { padding:8px; border:1px solid #ddd; border-radius:6px; }
-label { display:block; margin:8px 0 4px; }
-h1,h2,h3 { margin: 8px 0; }
+.header {
+    width: 100%;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    position: relative;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-direction: row;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+}
+
+.logo-text strong {
+    font-size: 20px;
+    color: #000;
+}
+
+.logo-text small {
+    font-size: 14px;
+    color: #777;
+}
+
+.nav-links {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 24px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #4a148c;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: #000;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* ✅ original balanced layout */
+}
+.features-grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    justify-items: center;
+    margin-top: 16px;
+}
+
+.feature-card {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 20px;
+    background: #fff;
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.feature-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-3px);
+}
+
+.feature-card h3 {
+    margin-top: 12px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.feature-card p {
+    font-size: 14px;
+    color: #666;
+    margin-top: 6px;
+    line-height: 1.6;
+}
+.how-it-works {
+    text-align: center;
+    margin-top: 48px;
+    padding: 40px 16px;
+    background-color: #fafafa;
+    border-radius: 12px;
+}
+
+.how-it-works h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.how-it-works .subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 32px;
+}
+
+.steps-grid {
+    display: grid;
+    gap: 32px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    justify-items: center;
+}
+
+.step-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    width: 100%;
+    max-width: 300px;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.step-number {
+    background-color: #0b0b1a; /* dark navy circle */
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0 auto 12px;
+}
+
+.step-card h3 {
+    margin-top: 8px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.step-card p {
+    font-size: 14px;
+    color: #666;
+    margin-top: 6px;
+    line-height: 1.6;
+}
+/* --- Call to Action Section --- */
+.cta-section {
+    text-align: center;
+    margin-top: 48px;
+    background: linear-gradient(to bottom, #f9f9f9, #f3f3f3);
+    padding: 40px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.cta-section h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: #111;
+}
+
+.cta-section p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.cta-button {
+    display: inline-block;
+    background-color: #0b0b1a; /* dark navy */
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    max-width: 400px;
+}
+
+.cta-button:hover {
+    background-color: #1c1c33;
+    transform: translateY(-2px);
+}
+.footer {
+    background-color: #f5f5f5; /* light gray background */
+    border-top: 1px solid #ddd;
+    padding: 32px 16px;
+    direction: rtl;
+    text-align: center;
+    font-family: "Tajawal", sans-serif;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.footer-column {
+    text-align: center;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.footer-column h3 {
+    font-size: 18px;
+    margin: 0;
+    color: #000;
+}
+
+.footer-column p {
+    color: #555;
+    font-size: 14px;
+    max-width: 240px;
+    margin: 8px auto 0;
+}
+
+.footer-column h4 {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-column li {
+    margin: 6px 0;
+}
+
+.footer-column a {
+    text-decoration: none;
+    color: #444;
+    transition: color 0.3s ease;
+}
+
+.footer-column a:hover {
+    color: #f5c518;
+}
+
+.footer-bottom {
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+    font-size: 14px;
+    color: #777;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+/* Auth Dialog Overlay */
+.auth-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.auth-dialog {
+    width: 350px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
