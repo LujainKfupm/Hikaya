@@ -17,7 +17,7 @@ export default function StoryView() {
         <>
             {/* ===== العودة ===== */}
             <div style={backRow}>
-                <Link to="/storylibrary" style={backLink}>← العودة إلى المكتبة</Link>
+                <Link to="/library" style={backLink}>← العودة إلى المكتبة</Link>
             </div>
 
             {/* ===== الغلاف ===== */}
