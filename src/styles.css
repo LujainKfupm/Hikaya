@@ -317,7 +317,6 @@
         transform: translateY(0);
     }
 }
-
 /*Contact Page Styling*/
 .contact-container {
     max-width: 600px;
@@ -526,4 +525,5 @@
 .faq-contact a:hover {
     text-decoration: underline;
 }
+
 
