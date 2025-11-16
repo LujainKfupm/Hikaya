@@ -1,4 +1,3 @@
-import { useAuth } from "../context/AuthContext";
 import { STORIES } from "../mocks/mockApi";
 import StoryCard from "../components/StoryCard";
 
