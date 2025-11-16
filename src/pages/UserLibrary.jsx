@@ -81,18 +81,3 @@ export default function UserLibrary() {
     );
 }
 
-/* ---------------------------------------------
-   Shared Styles
----------------------------------------------- */
-const statCardStyle = {
-    background: "#fff",
-    borderRadius: "12px",
-    padding: "20px",
-    textAlign: "center",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-};
-
-const statLabel = {
-    margin: "6px 0",
-    color: "#555",
-};
