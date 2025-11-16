@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-
 import HomePage from "./pages/HomePage";
 import StoryCreation from "./pages/StoryCreation";
 import StoryLibrary from "./pages/StoryLibrary";
@@ -10,6 +9,7 @@ import StoryView from "./pages/StoryView";
 import UserLibrary from "./pages/UserLibrary";
 import ContactPage from "./pages/ContactPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import FAQ  from "./pages/FAQ";
 
 function RequireAuth({ children, role }) {
     const { user } = useAuth();
@@ -37,6 +37,8 @@ export default function App() {
                         }
                     />
                     <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/faq" element={<FAQ />} />
+
                     <Route
                         path="/admin"
                         element={
