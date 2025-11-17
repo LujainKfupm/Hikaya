@@ -105,25 +105,59 @@ export default function StoryCreation() {
     function buildGeneratedStory(payload) {
         const { heroName, age, topics, morals, details, gender } = payload;
 
-        const heShe = gender === "boy" ? "هو" : "هي";
-        const childWord = gender === "boy" ? "طفل" : "طفلة";
-        const pronounSuffix = gender === "boy" ? "ه" : "ها";
+        const topicMain = topics[0];
+        const topicList =
+            topics.length > 1 ? topics.join("، ") : topicMain || "المغامرات";
+        const moralsList =
+            morals.length > 1 ? morals.join("، ") : morals[0] || "القيم الجميلة";
 
-        const mainTopic = topics[0];
-        const mainMoral = morals[0];
+        const extraDetails = details.trim()
+            ? `\n\nفي أحد الأيام، حدث موقف مميز: ${details.trim()}، وكان هذا الموقف نقطة تحوّل في حياة ${heroName}.`
+            : "";
 
-        let text =
-            `في يومٍ من الأيام، كان هناك ${childWord} باسم ${heroName} يبلغ من العمر ${age} سنة. ` +
-            `${heShe} كان يحب عالم ${mainTopic} كثيراً، ويجد فيه متعة واكتشافاً جديداً كل يوم. ` +
-            `وخلال هذه المغامرة، تعلّم ${heroName} قيمة ${mainMoral}، وفهم أن القيم الجميلة تجعل العالم مكاناً أفضل. `;
+        if (gender === "boy") {
+            return (
+                `في صباحٍ لطيف في مدينة صغيرة هادئة، كان هناك طفلٌ اسمه ${heroName}، ` +
+                `يبلغ من العمر ${age} سنة. كان ${heroName} يحب عالم ${topicList}، ` +
+                `ويتخيّل دائمًا أن حياته مليئة بالمفاجآت والاكتشافات.\n\n` +
 
-        if (details.trim()) {
-            text += `وخلال القصة، حدث موقف مميز: ${details.trim()}، وكان لهذا الموقف أثر كبير في قلب ${heroName}. `;
+                `في ذلك اليوم، استيقظ ${heroName} وهو يشعر بحماسٍ غريب. نظر من النافذة ورأى أن الشمس تشرق ` +
+                `بلطف، وكأنها تدعوه إلى مغامرة جديدة. قرر ${heroName} أن يتبع قلبه ويخرج ليستكشف العالم من حوله.\n\n` +
+
+                `وأثناء رحلته، واجه مواقف مختلفة جعلته يتعلّم معاني ${moralsList}. ` +
+                `ففي موقفٍ ما، احتاج صديقٌ له إلى المساعدة، فتقدّم ${heroName} بشجاعة ومدّ يد العون. ` +
+                `وفي موقفٍ آخر، كان عليه أن يختار بين قول الحقيقة أو إخفائها، فتذكّر أن ${morals[0] || "الصدق"} ` +
+                `هو الذي يجعل الناس يثقون به ويحبّونه.\n` +
+
+                extraDetails +
+
+                `\n\nمع نهاية اليوم، كان ${heroName} قد تعلّم أن القيم الجميلة ليست مجرد كلمات، ` +
+                `بل أفعال صغيرة يقوم بها كل يوم. عاد إلى البيت وقلبه ممتلئ بالفخر، ` +
+                `وهو يهمس لنفسه: "سأحافظ دائمًا على ${moralsList}، لأنها تجعلني بطلاً حقيقياً في قصّتي وفي حياة من حولي."`
+            );
+        } else {
+            return (
+                `في مدينةٍ هادئة مليئة بالأشجار والزهور، كانت تعيش طفلة لطيفة اسمها ${heroName}، ` +
+                `تبلغ من العمر ${age} سنة. كانت ${heroName} تحب عالم ${topicList}، ` +
+                `وتقضي وقتها في التخيّل والرسم وطرح الأسئلة عن كل شيء من حولها.\n\n` +
+
+                `في صباحٍ مشمس، استيقظت ${heroName} وهي تشعر بأن هذا اليوم سيكون مختلفًا. ` +
+                `ارتدت ملابسها المفضّلة، وحملت حقيبتها الصغيرة، وقررت أن تنطلق في مغامرة جديدة ` +
+                `تبحث فيها عن معنى ${moralsList}.\n\n` +
+
+                `خلال رحلتها، قابلت ${heroName} أشخاصًا وحيوانات وأصدقاء جدداً. ` +
+                `في أحد المواقف، رأت طفلاً حزيناً يجلس وحده، فاقتربت منه بابتسامة وشاركت معه لعبتها، ` +
+                `وتعلّمت معنى ${morals[0] || "اللطف"} وأن كلمة طيبة يمكن أن تغيّر يوم شخصٍ كامل. ` +
+                `وفي موقفٍ آخر، احتاجت أن تتحلّى بـ${morals[1] || "الصبر"} كي تصل إلى هدفها، ` +
+                `فتعلّمت أن الاستعجال لا يقود دائماً إلى أفضل النتائج.\n` +
+
+                extraDetails +
+
+                `\n\nمع غروب الشمس، عادت ${heroName} إلى بيتها وهي تشعر بالامتنان. ` +
+                `جلست بجانب نافذتها، ونظرت إلى السماء، وقالت بهدوء: "اليوم تعلّمت أن ${moralsList} ` +
+                `تجعل قلبي أكثر نوراً، وتساعدني أن أكون بطلة قصّتي الخاصة."`
+            );
         }
-
-        text += `وفي نهاية اليوم، عاد ${heroName} إلى البيت وهو يشعر بالفخر لأنه تعلّم شيئاً جديداً عن نفس${pronounSuffix} وعن العالم من حول${pronounSuffix}.`;
-
-        return text;
     }
 
     function handleSubmit(e) {
@@ -140,7 +174,7 @@ export default function StoryCreation() {
             createdAt: new Date().toISOString(),
         };
 
-        //api backend added later
+        // api backend added later
         setTimeout(() => {
             setIsSubmitting(false);
 
@@ -333,9 +367,9 @@ export default function StoryCreation() {
                                 disabled={!isLoggedIn}
                             />
                             <span>
-                جعل القصة <strong>عامة</strong> في المكتبة
+                                جعل القصة <strong>عامة</strong> في المكتبة
                                 {!isLoggedIn && " (يتطلب تسجيل الدخول)"}
-              </span>
+                            </span>
                         </label>
                     </div>
                 </div>
