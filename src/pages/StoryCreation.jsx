@@ -116,7 +116,6 @@ export default function StoryCreation() {
             : "";
 
         if (gender === "boy") {
-            // قصة نموذجية لولد
             return (
                 `في صباحٍ لطيف في مدينة صغيرة هادئة، كان هناك طفلٌ اسمه ${heroName}، ` +
                 `يبلغ من العمر ${age} سنة. كان ${heroName} يحب عالم ${topicList}، ` +
@@ -137,7 +136,6 @@ export default function StoryCreation() {
                 `وهو يهمس لنفسه: "سأحافظ دائمًا على ${moralsList}، لأنها تجعلني بطلاً حقيقياً في قصّتي وفي حياة من حولي."`
             );
         } else {
-            // قصة نموذجية لبنت
             return (
                 `في مدينةٍ هادئة مليئة بالأشجار والزهور، كانت تعيش طفلة لطيفة اسمها ${heroName}، ` +
                 `تبلغ من العمر ${age} سنة. كانت ${heroName} تحب عالم ${topicList}، ` +
