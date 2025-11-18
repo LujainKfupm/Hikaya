@@ -671,5 +671,13 @@ body {
     direction: rtl;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
+.auth-close-btn {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
 
 

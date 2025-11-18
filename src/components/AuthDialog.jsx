@@ -24,19 +24,7 @@ export default function AuthDialog({ open, onClose }) {
         <div className="auth-overlay">
             <div className="auth-dialog-box">
 
-
-                {/* ❌ زر الإغلاق */}
-                <button
-                    onClick={onClose}
-                    style={{
-                        position: "absolute",
-                        left: "16px",
-                        top: "16px",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                    }}
-                >
+                <button className="auth-close-btn" onClick={onClose}>
                     <X size={22} />
                 </button>
 
