@@ -10,6 +10,8 @@ export default function AuthDialog({ open, onClose }) {
     const [name, setName] = useState("");
     const [confirmPass, setConfirmPass] = useState("");
     const [error, setError] = useState("");
+    const [showWelcome, setShowWelcome] = useState(false);
+
 
     if (!open) return null;
 
@@ -19,7 +21,12 @@ export default function AuthDialog({ open, onClose }) {
             setError(res.msg);
             return;
         }
-        onClose();
+        setShowWelcome(true);
+        setTimeout(() => {
+            setShowWelcome(false);
+            onClose();
+        }, 2000);
+
     }
     function handleSignup() {
 
@@ -49,6 +56,11 @@ export default function AuthDialog({ open, onClose }) {
 
     return (
         <div className="auth-overlay">
+            {showWelcome && (
+                <div className="welcome-toast">
+                    أهلاً بك 👋
+                </div>
+            )}
             <div className="auth-dialog-box">
 
                 <button className="auth-close-btn" onClick={onClose}>
