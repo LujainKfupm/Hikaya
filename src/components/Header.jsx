@@ -15,13 +15,11 @@ export default function Header() {
             <div className="nav">
                 {/* Logo (Right side) */}
                 <div className="logo">
-                    <div className="logo-icon">
-                        <BookOpen color="#f5c518" size={28} />
-                    </div>
-                    <div className="logo-text">
-                        <strong>حكاية</strong>
-                        <small>قصص ذكية للأطفال</small>
-                    </div>
+                    <img
+                        src="/src/assets/Hikaya logo horizontal.png"
+                        alt="Hikaya Logo"
+                        className="logo-img"
+                    />
                 </div>
 
                 {/* Navigation links (Centered) */}
