@@ -219,7 +219,7 @@ export let USERS = [
 ];
 
 export let COMMENTS = [
-    { id: "cm1", storyId: "101", text: "تعليق إداري", user: "Admin" }
+    { id: "cm1", storyId: "101", text: "قصة رائعة!", user: "أحمد" }
 ];
 
 export let CATEGORIES = ["مغامرات", "تعليم", "خيال"];

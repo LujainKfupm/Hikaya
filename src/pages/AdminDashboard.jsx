@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import {
-    getStories,
-    deleteStoryById,
     getUsers,
     deleteUserById,
     getComments,
@@ -14,13 +11,10 @@ import {
     addAgeGroup,
     deleteAgeGroup,
     getContactMessages,
-    sendReply,
+    sendReply
 } from "../mocks/mockApi";
-import { Star, Calendar, Baby, User, Mail } from "lucide-react";
 
 export default function AdminDashboard() {
-    // ---------- States ----------
-    const [stories, setStories] = useState([]);
     const [users, setUsers] = useState([]);
     const [comments, setComments] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -29,9 +23,7 @@ export default function AdminDashboard() {
     const [newCategory, setNewCategory] = useState("");
     const [newAgeGroup, setNewAgeGroup] = useState("");
 
-    // ---------- Fetch Data ----------
     useEffect(() => {
-        getStories({ publicOnly: false }).then(setStories);
         getUsers().then(setUsers);
         getComments().then(setComments);
         getCategories().then(setCategories);
@@ -39,198 +31,166 @@ export default function AdminDashboard() {
         getContactMessages().then(setMessages);
     }, []);
 
-    // ---------- Handlers ----------
-    function handleDeleteStory(id) {
-        if (!window.confirm("هل أنت متأكد من حذف هذه القصة؟")) return;
-        deleteStoryById(id).then(() => setStories((prev) => prev.filter((s) => s.id !== id)));
-    }
-
-    function handleDeleteUser(id) {
-        if (!window.confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
-        deleteUserById(id).then(() => setUsers((prev) => prev.filter((u) => u.id !== id)));
-    }
-
-    function handleDeleteComment(id) {
-        if (!window.confirm("هل أنت متأكد من حذف هذا التعليق؟")) return;
-        deleteCommentById(id).then(() => setComments((prev) => prev.filter((c) => c.id !== id)));
-    }
-
-    function handleAddCategory() {
-        if (!newCategory.trim()) return;
+    const handleDeleteUser = (id) => deleteUserById(id).then(() => setUsers(users.filter(u => u.id !== id)));
+    const handleDeleteComment = (id) => deleteCommentById(id).then(() => setComments(comments.filter(c => c.id !== id)));
+    const handleAddCategory = () => {
+        if (!newCategory) return;
         addCategory(newCategory).then(() => {
-            setCategories((prev) => [...prev, newCategory]);
+            setCategories([...categories, newCategory]);
             setNewCategory("");
         });
-    }
-
-    function handleDeleteCategory(category) {
-        deleteCategory(category).then(() => setCategories((prev) => prev.filter((c) => c !== category)));
-    }
-
-    function handleAddAgeGroup() {
-        if (!newAgeGroup.trim()) return;
+    };
+    const handleDeleteCategory = (cat) => deleteCategory(cat).then(() => setCategories(categories.filter(c => c !== cat)));
+    const handleAddAgeGroup = () => {
+        if (!newAgeGroup) return;
         addAgeGroup(newAgeGroup).then(() => {
-            setAgeGroups((prev) => [...prev, newAgeGroup]);
+            setAgeGroups([...ageGroups, newAgeGroup]);
             setNewAgeGroup("");
         });
-    }
-
-    function handleDeleteAgeGroup(age) {
-        deleteAgeGroup(age).then(() => setAgeGroups((prev) => prev.filter((a) => a !== age)));
-    }
-
-    function handleReply(messageId) {
-        const replyText = prompt("اكتب الرد هنا:");
-        if (!replyText) return;
-        sendReply(messageId, replyText).then(() => {
-            setMessages((prev) =>
-                prev.map((m) => (m.id === messageId ? { ...m, responded: true, reply: replyText } : m))
-            );
+    };
+    const handleDeleteAgeGroup = (age) => deleteAgeGroup(age).then(() => setAgeGroups(ageGroups.filter(a => a !== age)));
+    const handleReplyMessage = (id) => {
+        const reply = prompt("اكتب الرد:");
+        if (!reply) return;
+        sendReply(id, reply).then(() => {
+            setMessages(messages.map(m => m.id === id ? { ...m, responded: true, reply } : m));
         });
-    }
+    };
 
-    // ---------- Statistics ----------
-    const totalUsers = users.length;
-    const totalStories = stories.length;
-    const totalComments = comments.length;
-    const mostPopularTopics = [...new Set(stories.map((s) => s.topic))].slice(0, 5); // top 5
-
-    // ---------- Render ----------
     return (
-        <div className="admin-dashboard">
-            <h1>لوحة تحكم المسؤول</h1>
+        <div style={container}>
+            <h1 style={title}>لوحة التحكم</h1>
 
-            {/* ===== Stories ===== */}
-            <section className="dashboard-section">
-                <h2>القصص</h2>
-                <div className="grid">
-                    {stories.map((s) => (
-                        <div className="card" key={s.id}>
-                            <div className="cover-wrap">
-                                <img src={s.cover} alt={s.title} className="story-cover" />
-                                <div className="rating-badge">
-                                    <Star size={14} color="#f5c518" /> {Number(s.rating ?? 0).toFixed(1)}
-                                </div>
-                            </div>
-                            <div className="card-body">
-                                <h3>{s.title}</h3>
-                                <p>المؤلف: {s.author ?? "—"}</p>
-                                <div className="info-row">
-                  <span>
-                    <Calendar size={14} /> {formatDate(s.date)}
-                  </span>
-                                    <span>
-                    <Baby size={14} /> {s.ageRange ?? "—"}
-                  </span>
-                                </div>
-                                <p className="topic">{s.topic} • {s.moral}</p>
-                                <div className="admin-buttons">
-                                    <Link to={`/story/${s.id}`} className="btn view-btn">عرض</Link>
-                                    <button onClick={() => handleDeleteStory(s.id)} className="btn delete-btn">حذف</button>
-                                </div>
-                            </div>
+            {/* Users */}
+            <section style={section}>
+                <h2 style={sectionTitle}>المستخدمون</h2>
+                <div style={cardGrid}>
+                    {users.map(u => (
+                        <div key={u.id} style={card}>
+                            <p>{u.name}</p>
+                            <p style={email}>{u.email}</p>
+                            <button style={btnDelete} onClick={() => handleDeleteUser(u.id)}>حذف</button>
                         </div>
                     ))}
                 </div>
             </section>
 
-            {/* ===== Users ===== */}
-            <section className="dashboard-section">
-                <h2>المستخدمون</h2>
-                <table className="users-table">
-                    <thead>
-                    <tr>
-                        <th>الاسم</th>
-                        <th>البريد الإلكتروني</th>
-                        <th>الدور</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {users.map((u) => (
-                        <tr key={u.id}>
-                            <td>{u.name || "—"}</td>
-                            <td>{u.email}</td>
-                            <td>{u.role}</td>
-                            <td>
-                                <button onClick={() => handleDeleteUser(u.id)} className="btn delete-btn">حذف</button>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </section>
-
-            {/* ===== Comments ===== */}
-            <section className="dashboard-section">
-                <h2>التعليقات</h2>
-                {comments.map((c) => (
-                    <div key={c.id} className="comment-item">
-                        <p><strong>{c.name}</strong> — {formatDate(c.date)}</p>
-                        <p>{c.text}</p>
-                        <button onClick={() => handleDeleteComment(c.id)} className="btn delete-btn">حذف</button>
-                    </div>
-                ))}
-            </section>
-
-            {/* ===== Categories & Age Groups ===== */}
-            <section className="dashboard-section">
-                <h2>الفئات</h2>
-                <div className="category-list">
-                    {categories.map((c) => (
-                        <div key={c} className="category-item">
-                            {c} <button onClick={() => handleDeleteCategory(c)} className="btn delete-btn">حذف</button>
+            {/* Comments */}
+            <section style={section}>
+                <h2 style={sectionTitle}>التعليقات</h2>
+                <div style={cardGrid}>
+                    {comments.map(c => (
+                        <div key={c.id} style={card}>
+                            <p>{c.text}</p>
+                            <p style={meta}>— {c.user}</p>
+                            <button style={btnDelete} onClick={() => handleDeleteComment(c.id)}>حذف</button>
                         </div>
                     ))}
                 </div>
-                <input value={newCategory} onChange={(e) => setNewCategory(e.target.value)} placeholder="أدخل فئة جديدة" />
-                <button onClick={handleAddCategory} className="btn add-btn">إضافة</button>
+            </section>
 
-                <h2>الفئات العمرية</h2>
-                <div className="agegroup-list">
-                    {ageGroups.map((a) => (
-                        <div key={a} className="category-item">
-                            {a} <button onClick={() => handleDeleteAgeGroup(a)} className="btn delete-btn">حذف</button>
+            {/* Categories */}
+            <section style={section}>
+                <h2 style={sectionTitle}>الفئات</h2>
+                <div style={inputRow}>
+                    <input
+                        value={newCategory}
+                        onChange={e => setNewCategory(e.target.value)}
+                        placeholder="فئة جديدة"
+                        style={input}
+                    />
+                    <button style={btnAdd} onClick={handleAddCategory}>إضافة</button>
+                </div>
+                <div style={cardGrid}>
+                    {categories.map(c => (
+                        <div key={c} style={card}>
+                            <p>{c}</p>
+                            <button style={btnDelete} onClick={() => handleDeleteCategory(c)}>حذف</button>
                         </div>
                     ))}
                 </div>
-                <input value={newAgeGroup} onChange={(e) => setNewAgeGroup(e.target.value)} placeholder="أدخل الفئة العمرية" />
-                <button onClick={handleAddAgeGroup} className="btn add-btn">إضافة</button>
             </section>
 
-            {/* ===== Contact Messages ===== */}
-            <section className="dashboard-section">
-                <h2>رسائل التواصل</h2>
-                {messages.map((m) => (
-                    <div key={m.id} className="comment-item">
-                        <p><strong>{m.name}</strong> — {m.email}</p>
-                        <p>{m.text}</p>
-                        {m.responded ? <span>تم الرد: {m.reply}</span> : (
-                            <button onClick={() => handleReply(m.id)} className="btn view-btn">رد</button>
-                        )}
-                    </div>
-                ))}
+            {/* Age Groups */}
+            <section style={section}>
+                <h2 style={sectionTitle}>الفئات العمرية</h2>
+                <div style={inputRow}>
+                    <input
+                        value={newAgeGroup}
+                        onChange={e => setNewAgeGroup(e.target.value)}
+                        placeholder="فئة عمرية جديدة"
+                        style={input}
+                    />
+                    <button style={btnAdd} onClick={handleAddAgeGroup}>إضافة</button>
+                </div>
+                <div style={cardGrid}>
+                    {ageGroups.map(a => (
+                        <div key={a} style={card}>
+                            <p>{a}</p>
+                            <button style={btnDelete} onClick={() => handleDeleteAgeGroup(a)}>حذف</button>
+                        </div>
+                    ))}
+                </div>
             </section>
 
-            {/* ===== Statistics ===== */}
-            <section className="dashboard-section">
-                <h2>الإحصائيات</h2>
-                <p>إجمالي المستخدمين: {totalUsers}</p>
-                <p>إجمالي القصص: {totalStories}</p>
-                <p>إجمالي التعليقات: {totalComments}</p>
-                <p>أكثر الموضوعات شيوعاً: {mostPopularTopics.join(", ")}</p>
+            {/* Contact Messages */}
+            <section style={section}>
+                <h2 style={sectionTitle}>رسائل التواصل</h2>
+                <div style={cardGrid}>
+                    {messages.map(m => (
+                        <div key={m.id} style={card}>
+                            <p><strong>{m.name}</strong> ({m.email})</p>
+                            <p>{m.message}</p>
+                            {m.responded ? (
+                                <p style={reply}>تم الرد: {m.reply}</p>
+                            ) : (
+                                <button style={btnAdd} onClick={() => handleReplyMessage(m.id)}>رد</button>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </section>
         </div>
     );
 }
 
-// ---------- Helpers ----------
-function formatDate(iso) {
-    if (!iso) return "—";
-    try {
-        const d = new Date(iso);
-        return d.toLocaleDateString("ar-SA");
-    } catch {
-        return iso;
-    }
-}
+/* ===================== STYLES ===================== */
+const container = { padding: "20px" };
+const title = { fontSize: "2rem", marginBottom: "20px", textAlign: "center" };
+const section = { marginBottom: "30px" };
+const sectionTitle = { fontSize: "1.5rem", marginBottom: "10px" };
+const cardGrid = {
+    display: "grid",
+    gap: "16px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))"
+};
+const card = {
+    background: "#fff",
+    padding: "12px",
+    borderRadius: "12px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px"
+};
+const btnDelete = {
+    padding: "6px 10px",
+    background: "#E74C3C",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer"
+};
+const btnAdd = {
+    padding: "6px 12px",
+    background: "#4A90E2",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer"
+};
+const inputRow = { display: "flex", gap: "8px", marginBottom: "12px" };
+const input = { flex: 1, padding: "6px 10px", borderRadius: "8px", border: "1px solid #ccc" };
+const email = { color: "#007BFF", fontSize: "0.85rem" };
+const meta = { fontSize: "0.8rem", color: "#555" };
+const reply = { color: "green", fontWeight: "bold" };
