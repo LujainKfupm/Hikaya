@@ -662,5 +662,14 @@ body {
     justify-content: center;
     z-index: 9999;
 }
+.auth-dialog-box {
+    width: 380px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    direction: rtl;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
 
 
