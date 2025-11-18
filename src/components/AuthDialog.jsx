@@ -28,11 +28,11 @@ export default function AuthDialog({ open, onClose }) {
                     <X size={22} />
                 </button>
 
-                {/* العنوان */}
-                <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "bold" }}>
+
+                <h2 className="auth-title">
                     مرحباً بك في حكاية
                 </h2>
-                <p style={{ color: "#777", marginTop: 4, marginBottom: 20 }}>
+                <p className="auth-subtitle">
                     سجل الدخول لحفظ القصص والتقييم والتعليق
                 </p>
 

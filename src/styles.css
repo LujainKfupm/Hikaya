@@ -679,5 +679,10 @@ body {
     border: none;
     cursor: pointer;
 }
+.auth-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: bold;
+}
 
 
