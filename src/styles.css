@@ -741,6 +741,17 @@ body {
     margin-bottom: 10px;
     font-size: 13px;
 }
+.auth-login-btn {
+    width: 100%;
+    background: #000;
+    color: #fff;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+}
 
 
 

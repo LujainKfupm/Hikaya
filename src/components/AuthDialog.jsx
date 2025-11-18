@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { X } from "lucide-react";
 
 export default function AuthDialog({ open, onClose }) {
-    const { login } = useAuth();
+    const {login} = useAuth();
     const [tab, setTab] = useState("login");
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
@@ -25,7 +25,7 @@ export default function AuthDialog({ open, onClose }) {
             <div className="auth-dialog-box">
 
                 <button className="auth-close-btn" onClick={onClose}>
-                    <X size={22} />
+                    <X size={22}/>
                 </button>
 
 
@@ -38,8 +38,8 @@ export default function AuthDialog({ open, onClose }) {
 
                 <div className="auth-demo-box">
 
-                    <strong>حسابات تجريبية:</strong><br />
-                    <span>👨‍💼 مشرف: admin@hikaya.com — admin123</span><br />
+                    <strong>حسابات تجريبية:</strong><br/>
+                    <span>👨‍💼 مشرف: admin@hikaya.com — admin123</span><br/>
                     <span>👤 مستخدم: demo@example.com — demo123</span>
                 </div>
 
@@ -81,20 +81,8 @@ export default function AuthDialog({ open, onClose }) {
                     </div>
                 }
 
-                {/* زر الدخول */}
-                <button
-                    onClick={handleLogin}
-                    style={{
-                        width: "100%",
-                        background: "#000",
-                        color: "#fff",
-                        padding: "12px",
-                        borderRadius: "10px",
-                        marginBottom: "12px",
-                        fontSize: "15px",
-                        cursor: "pointer",
-                        border: "none",
-                    }}
+                <button className="auth-login-btn"
+                        onClick={handleLogin}
                 >
                     تسجيل الدخول →
                 </button>
