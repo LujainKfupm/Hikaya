@@ -1,4 +1,3 @@
-// ================== بياناتكم الأصلية ==================
 export const TOPICS = ["الصداقة", "الفضاء", "المدرسة", "المغامرة", "العائلة"];
 export const VALUES = ["الصدق", "الشجاعة", "الاحترام", "التعاون", "المثابرة"];
 export const AGE_RANGES = ["3-5", "6-8", "9-12"];
@@ -133,16 +132,13 @@ export function addComment(id, name, text) {
                     },
                     ...s.comments
                 ]
-            }
-            : s
+            } : s
     );
 }
 
-// ================== إضافات واجهة المكتبة ==================
 export const PLACEHOLDER_COVER = "/assets/placeholder.png";
 const DELAY = 300;
 
-// تطبيع الحقول لتناسب الواجهة
 function normalize(story) {
     return {
         ...story,
@@ -157,7 +153,6 @@ function normalize(story) {
     };
 }
 
-/** ✅ جلب القصص (الآن تعرض الكل دائمًا) */
 export function getStories(options = {}) {
     // جعل الافتراضي publicOnly = false
     const { publicOnly = false, q = "", sortBy = "date_desc" } = options;
@@ -166,7 +161,6 @@ export function getStories(options = {}) {
         setTimeout(() => {
             let data = STORIES.map(normalize);
 
-            // ما عاد نفلتر القصص الخاصة (الكل يظهر)
             if (publicOnly) data = data.filter((s) => s.isPublic);
 
             if (q) {
