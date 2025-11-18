@@ -700,6 +700,27 @@ body {
     line-height: 1.8;
     border: 1px solid #eee;
 }
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #F2F2F2;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    padding: 4px;
+}
 
+.auth-tab {
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    padding: 10px 0;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.auth-tab.active {
+    background: #fff;
+    font-weight: bold;
+}
 
 

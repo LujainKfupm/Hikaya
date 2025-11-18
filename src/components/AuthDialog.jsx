@@ -43,43 +43,17 @@ export default function AuthDialog({ open, onClose }) {
                     <span>👤 مستخدم: demo@example.com — demo123</span>
                 </div>
 
-                {/* التبويبات */}
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        background: "#F2F2F2",
-                        borderRadius: "12px",
-                        marginBottom: "20px",
-                        padding: "4px",
-                    }}
-                >
+                <div className="auth-tabs">
                     <button
+                        className={tab === "login" ? "auth-tab active" : "auth-tab"}
                         onClick={() => setTab("login")}
-                        style={{
-                            border: "none",
-                            background: tab === "login" ? "#fff" : "transparent",
-                            borderRadius: "10px",
-                            padding: "10px 0",
-                            fontSize: "14px",
-                            cursor: "pointer",
-                            fontWeight: tab === "login" ? "bold" : "normal",
-                        }}
                     >
                         تسجيل الدخول
                     </button>
 
                     <button
+                        className={tab === "signup" ? "auth-tab active" : "auth-tab"}
                         onClick={() => setTab("signup")}
-                        style={{
-                            border: "none",
-                            background: tab === "signup" ? "#fff" : "transparent",
-                            borderRadius: "10px",
-                            padding: "10px 0",
-                            fontSize: "14px",
-                            cursor: "pointer",
-                            fontWeight: tab === "signup" ? "bold" : "normal",
-                        }}
                     >
                         إنشاء حساب
                     </button>
