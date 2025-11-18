@@ -684,5 +684,22 @@ body {
     font-size: 22px;
     font-weight: bold;
 }
+.auth-subtitle {
+    color: #777;
+    margin-top: 4px;
+    margin-bottom: 20px;
+}
+
+.auth-demo-box {
+    background: #f8f8f8;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.8;
+    border: 1px solid #eee;
+}
+
 
 

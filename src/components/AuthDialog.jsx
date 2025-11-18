@@ -36,19 +36,8 @@ export default function AuthDialog({ open, onClose }) {
                     سجل الدخول لحفظ القصص والتقييم والتعليق
                 </p>
 
-                {/* 🌟 الحسابات التجريبية */}
-                <div
-                    style={{
-                        background: "#f8f8f8",
-                        padding: "12px",
-                        borderRadius: "10px",
-                        marginBottom: "20px",
-                        fontSize: "14px",
-                        color: "#444",
-                        lineHeight: "1.8",
-                        border: "1px solid #eee",
-                    }}
-                >
+                <div className="auth-demo-box">
+
                     <strong>حسابات تجريبية:</strong><br />
                     <span>👨‍💼 مشرف: admin@hikaya.com — admin123</span><br />
                     <span>👤 مستخدم: demo@example.com — demo123</span>
