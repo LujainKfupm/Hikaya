@@ -59,23 +59,12 @@ export default function AuthDialog({ open, onClose }) {
                     </button>
                 </div>
 
-                {/* البريد */}
-                <label style={{ fontSize: "14px" }}>البريد الإلكتروني</label>
+                <label className="auth-label">البريد الإلكتروني</label>
                 <input
                     type="email"
                     placeholder="example@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    style={{
-                        width: "100%",
-                        marginTop: "6px",
-                        marginBottom: "14px",
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderRadius: "10px",
-                        border: "1px solid #ddd",
-                        background: "#F8F8F8",
-                    }}
                 />
 
                 {/* كلمة المرور */}
