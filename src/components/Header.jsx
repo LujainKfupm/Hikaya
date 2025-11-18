@@ -47,7 +47,8 @@ export default function Header() {
                                 className="btn"
                                 onClick={() => {
                                     logout();
-                                    toast("تم تسجيل الخروج");
+                                    toast("تم تسجيل الخروج", {
+                                        duration: 1000});
                                     nav("/");
                                 }}
                             >

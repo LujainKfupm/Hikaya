@@ -25,7 +25,7 @@ export default function AuthDialog({ open, onClose }) {
         setTimeout(() => {
             setShowWelcome(false);
             onClose();
-        }, 2000);
+        }, 1000);
 
     }
     function handleSignup() {
