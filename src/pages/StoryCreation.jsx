@@ -203,7 +203,7 @@ export default function StoryCreation() {
             <header className="page-header">
                 <h1 className="page-title">إنشاء قصة جديدة</h1>
                 <p className="page-subtitle">
-                    املئي الحقول التالية وسيقوم النظام بإنشاء قصة مخصّصة لطفلك ❤️
+                    املأ الحقول التالية وسيقوم النظام بإنشاء قصة مخصّصة لطفلك ❤️
                 </p>
 
                 {!isLoggedIn && (
@@ -216,7 +216,6 @@ export default function StoryCreation() {
 
             <form className="form-card" onSubmit={handleSubmit}>
                 <div className="form-grid">
-                    {/* اسم البطل */}
                     <div className="form-field">
                         <label className="form-label">
                             <span className="required">اسم البطل</span>
@@ -247,13 +246,6 @@ export default function StoryCreation() {
                                 value={form.age}
                                 onChange={handleChange}
                             />
-                        </div>
-
-                        <div className="form-field">
-                            <label className="form-label">ملاءمة عمرية</label>
-                            <p className="form-hint">
-                                سيتم توليد القصة بما يناسب هذا العمر من حيث اللغة وطول القصة.
-                            </p>
                         </div>
                     </div>
 
@@ -324,7 +316,7 @@ export default function StoryCreation() {
                             <span className="required">الدروس الأخلاقية</span>
                         </label>
                         <p className="form-hint">
-                            اختاري القيم التي ترغبين أن يتعلمها الطفل من هذه القصة.
+                            اختر القيم التي ترغبين أن يتعلمها الطفل من هذه القصة.
                         </p>
                         <div className="chip-group">
                             {MORALS.map((moral) => {
@@ -351,7 +343,7 @@ export default function StoryCreation() {
                             name="details"
                             className="form-input form-textarea"
                             rows={4}
-                            placeholder="اكتبي أي تفاصيل تحبين إضافتها للقصة (مكان، شخصية، موقف...)"
+                            placeholder="اكتب أي تفاصيل تحبين إضافتها للقصة (مكان، شخصية، موقف...)"
                             value={form.details}
                             onChange={handleChange}
                         />
