@@ -25,6 +25,13 @@ export function AuthProvider({ children }) {
         localStorage.setItem('hikaya_user', JSON.stringify(found));
         return { ok:true };
     }
+    function signup(newUser) {
+        localStorage.setItem("hikaya_user", JSON.stringify(newUser));
+        setUser(newUser);
+
+        return { ok: true };
+    }
+
 
     function logout() {
         setUser(null);
@@ -32,7 +39,7 @@ export function AuthProvider({ children }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, login, logout, signup }}>
             {children}
         </AuthContext.Provider>
     );
