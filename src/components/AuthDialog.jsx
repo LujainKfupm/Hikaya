@@ -9,8 +9,6 @@ export default function AuthDialog({ open, onClose }) {
     const [pass, setPass] = useState("");
     const [name, setName] = useState("");
     const [confirmPass, setConfirmPass] = useState("");
-    const [childAge, setChildAge] = useState("");
-    const [heardFrom, setHeardFrom] = useState("");
     const [error, setError] = useState("");
 
     if (!open) return null;
@@ -25,7 +23,7 @@ export default function AuthDialog({ open, onClose }) {
     }
     function handleSignup() {
 
-        if (!name || !email || !pass || !confirmPass || !childAge || !heardFrom) {
+        if (!name || !email || !pass || !confirmPass) {
             setError("يرجى تعبئة جميع الحقول");
             return;
         }
@@ -39,8 +37,6 @@ export default function AuthDialog({ open, onClose }) {
             name,
             email,
             password: pass,
-            childAge,
-            heardFrom
         });
 
         if (!res.ok) {
@@ -166,23 +162,6 @@ export default function AuthDialog({ open, onClose }) {
                             placeholder="•••••••"
                         />
 
-                        <label className="auth-label">عمر الطفل</label>
-                        <input
-                            className="auth-input"
-                            type="number"
-                            value={childAge}
-                            onChange={(e) => setChildAge(e.target.value)}
-                            placeholder="مثال: 7"
-                        />
-
-                        <label className="auth-label">كيف سمعت عنا؟</label>
-                        <input
-                            className="auth-input"
-                            type="text"
-                            value={heardFrom}
-                            onChange={(e) => setHeardFrom(e.target.value)}
-                            placeholder="انستغرام، صديق، ويب سايت..."
-                        />
                         {error && <div className="auth-error">{error}</div>}
 
                         <button className="auth-login-btn" onClick={handleSignup}>
