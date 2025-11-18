@@ -55,26 +55,15 @@ body {
 .logo {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-direction: row;
+    gap: 10px;
 }
 
-.logo-text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    line-height: 1.2;
+.logo-img {
+    max-height: 30px;
+    width: auto;
+    object-fit: contain;
 }
 
-.logo-text strong {
-    font-size: 20px;
-    color: #111827;
-}
-
-.logo-text small {
-    font-size: 13px;
-    color: #6b7280;
-}
 
 /* nav links */
 

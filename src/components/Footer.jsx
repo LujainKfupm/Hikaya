@@ -7,7 +7,6 @@ export default function Footer() {
             <div className="footer-top">
                 <div className="footer-column">
                     <div className="footer-logo">
-                        <BookOpen color="#f5c518" size={22} /> {/* Book icon */}
                         <h3>حكاية</h3>
                     </div>
                     <p>إنشاء قصص سحرية مخصصة للأطفال من خلال الذكاء الاصطناعي.</p>
