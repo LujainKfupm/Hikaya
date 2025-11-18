@@ -139,17 +139,17 @@ export default function AdminDashboard() {
                 <div style={cardGrid}>
                     {messages.map(m => (
                         <div key={m.id} style={card}>
-                            <p><strong>{m.name}</strong> ({m.email})</p>
+                            <p><strong>{m.name}</strong></p>
+                            <p>
+                                <a href={`mailto:${m.email}`} style={email}>{m.email}</a>
+                            </p>
                             <p>{m.message}</p>
-                            {m.responded ? (
-                                <p style={reply}>تم الرد: {m.reply}</p>
-                            ) : (
-                                <button style={btnAdd} onClick={() => handleReplyMessage(m.id)}>رد</button>
-                            )}
+                            {m.responded && <p style={reply}>تم الرد: {m.reply}</p>}
                         </div>
                     ))}
                 </div>
             </section>
+
         </div>
     );
 }
