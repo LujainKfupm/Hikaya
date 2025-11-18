@@ -12,6 +12,8 @@ export default function StoryLibrary() {
     const { user } = useAuth();
     const isAdmin = user?.role === "admin";
 
+    const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
     useEffect(() => {
         mounted.current = true;
         getStories({ publicOnly: false, sortBy: "date_desc" }).then((data) => {
@@ -38,11 +40,11 @@ export default function StoryLibrary() {
     }, []);
 
     function handleDelete(id) {
-        if (!window.confirm("هل أنت متأكد من حذف هذه القصة؟")) return;
         deleteStoryById(id).then(() => {
             const index = MOCK.findIndex((s) => s.id === id);
             if (index !== -1) MOCK.splice(index, 1);
             force((x) => x + 1);
+            setConfirmDeleteId(null);
         });
     }
 
@@ -77,17 +79,30 @@ export default function StoryLibrary() {
                                 {s.topic} • {s.moral}
                             </p>
                             <p style={commentsStyle}>💬 {s.commentsCount} تعليقات</p>
+
                             <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
                                 <Link to={"/story/" + s.id} className="btn" style={btnStyle}>
                                     قراءة
                                 </Link>
+
                                 {isAdmin && (
-                                    <button
-                                        onClick={() => handleDelete(s.id)}
-                                        className="btn delete-btn"
-                                    >
-                                        حذف
-                                    </button>
+                                    confirmDeleteId === s.id ? (
+                                        <div style={confirmBox}>
+                                            <span>هل أنت متأكد من الحذف؟</span>
+                                            <div style={{ display: "flex", gap: "4px", marginTop: "4px" }}>
+                                                <button style={btnConfirm} onClick={() => handleDelete(s.id)}>نعم</button>
+                                                <button style={btnCancel} onClick={() => setConfirmDeleteId(null)}>لا</button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => setConfirmDeleteId(s.id)}
+                                            className="btn delete-btn"
+                                            style={btnDeleteSmall}
+                                        >
+                                            حذف
+                                        </button>
+                                    )
                                 )}
                             </div>
                         </div>
@@ -125,17 +140,8 @@ const cardStyle = {
     justifyContent: "space-between",
 };
 
-const coverWrap = {
-    position: "relative",
-};
-
-const coverImg = {
-    width: "100%",
-    height: "170px",
-    objectFit: "cover",
-    display: "block",
-};
-
+const coverWrap = { position: "relative" };
+const coverImg = { width: "100%", height: "170px", objectFit: "cover", display: "block" };
 const ratingBadge = {
     position: "absolute",
     top: "10px",
@@ -148,14 +154,7 @@ const ratingBadge = {
     alignItems: "center",
     gap: "4px",
 };
-
-const bodyStyle = {
-    padding: "12px 14px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-};
-
+const bodyStyle = { padding: "12px 14px", display: "flex", flexDirection: "column", gap: "4px" };
 const titleStyle = { margin: "0 0 4px 0", fontSize: "1.05rem" };
 const metaStyle = { margin: "0", color: "#555", fontSize: ".9rem" };
 const infoRow = { display: "flex", justifyContent: "space-between", color: "#777", fontSize: ".85rem" };
@@ -170,6 +169,49 @@ const btnStyle = {
     borderRadius: "10px",
     textDecoration: "none",
     fontSize: ".9rem",
+};
+
+/* ==================== Delete Confirmation Styles ==================== */
+const confirmBox = {
+    background: "#fff3f3",
+    border: "1px solid #f5c2c2",
+    padding: "6px 8px",
+    borderRadius: "8px",
+    fontSize: ".85rem",
+    color: "#C00",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start"
+};
+
+const btnConfirm = {
+    padding: "4px 8px",
+    background: "#E74C3C",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: ".8rem"
+};
+
+const btnCancel = {
+    padding: "4px 8px",
+    background: "#ccc",
+    color: "#000",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: ".8rem"
+};
+
+const btnDeleteSmall = {
+    padding: "4px 8px",
+    background: "#E74C3C",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: ".8rem"
 };
 
 /* ==================== Helpers ==================== */
