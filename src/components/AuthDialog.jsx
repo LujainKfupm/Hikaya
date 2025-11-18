@@ -67,23 +67,12 @@ export default function AuthDialog({ open, onClose }) {
                     onChange={(e) => setEmail(e.target.value)}
                 />
 
-                {/* كلمة المرور */}
-                <label style={{ fontSize: "14px" }}>كلمة المرور</label>
+                <label className="auth-label">كلمة المرور</label>
                 <input
                     type="password"
                     placeholder="•••••••"
                     value={pass}
                     onChange={(e) => setPass(e.target.value)}
-                    style={{
-                        width: "100%",
-                        marginTop: "6px",
-                        marginBottom: "18px",
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderRadius: "10px",
-                        border: "1px solid #ddd",
-                        background: "#F8F8F8",
-                    }}
                 />
 
                 {error && (
