@@ -75,11 +75,11 @@ export default function AuthDialog({ open, onClose }) {
                     onChange={(e) => setPass(e.target.value)}
                 />
 
-                {error && (
-                    <div style={{ color: "red", marginBottom: "10px", fontSize: "13px" }}>
+                {error &&
+                    <div className="auth-error">
                         {error}
                     </div>
-                )}
+                }
 
                 {/* زر الدخول */}
                 <button
