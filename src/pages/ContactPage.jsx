@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { Check } from "lucide-react";
 
 export default function ContactPage() {
     const formRef = useRef();
@@ -41,7 +42,8 @@ export default function ContactPage() {
             return;
         }
 
-        setSuccessMsg("تم إرسال الرسالة بنجاح✓");
+        // Show confirmation message
+        setSuccessMsg("تم إرسال الرسالة بنجاح");
         setTimeout(() => setSuccessMsg(""), 3000);
 
         form.reset();
