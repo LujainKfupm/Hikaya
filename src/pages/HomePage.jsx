@@ -5,62 +5,33 @@ import heroImage from "../assets/img.png";
 export default function HomePage() {
     return (
         <>
-            {/* ⭐ New Modern Hero Section (Replaces Old One) */}
             <section
-                className="hero card"
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: "24px",
-                    padding: "32px",
-                    borderRadius: "12px",
-                    marginBottom: "24px",
-                }}
+                className="hero card hero-section"
             >
                 {/* Right side: text */}
-                <div style={{ flex: 1 }}>
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                            marginBottom: "8px",
-                        }}
+                <div className="hero-text" >
+                    <div className="hero-title-row"
                     >
                         <Sparkles color="#f5c518" size={22} />
-                        <h3 style={{ margin: 0 }}>قصص سحرية لطفلك</h3>
+                        <h3 className="hero-heading" >قصص سحرية لطفلك</h3>
                     </div>
 
-                    <p style={{ color: "#444", lineHeight: 1.8 }}>
+                    <p className="hero-description">
                         أنشئ قصصًا مخصصة مدعومة بالذكاء الاصطناعي تُشعل الخيال،
                         وتُعلِّم دروسًا قيّمة، وتحتفي بتفرّد طفلك.
                     </p>
 
-                    <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+                    <div className="hero-buttons">
                         <Link
                             to="/create"
-                            className="btn"
-                            style={{
-                                backgroundColor: "#111",
-                                color: "#fff",
-                                border: "none",
-                                padding: "10px 20px",
-                                borderRadius: "8px",
-                                cursor: "pointer",
-                            }}
+                            className="btn hero-primary-btn"
                         >
                             ✨ إنشاء قصتك
                         </Link>
 
                         <Link
                             to="/library"
-                            className="btn"
-                            style={{
-                                border: "1px solid #ccc",
-                                padding: "10px 20px",
-                                borderRadius: "8px",
-                            }}
+                            className="btn hero-secondary-btn"
                         >
                             تصفح المكتبة
                         </Link>
@@ -71,18 +42,14 @@ export default function HomePage() {
                 <img
                     src={heroImage}
                     alt="حكاية"
-                    style={{
-                        width: "280px",
-                        borderRadius: "12px",
-                        flexShrink: 0,
-                    }}
+                    className="hero-image"
                 />
             </section>
 
             {/* Features Section */}
-            <section style={{ marginTop: 18, textAlign: "center" }}>
+            <section className="features-wrapper">
                 <h2>لماذا تختار حكاية؟</h2>
-                <p style={{ color: "#666", marginBottom: 24 }}>
+                <p className="features-subtitle">
                     تجمع بين تقنية الذكاء الاصطناعي المتطورة وفن رواية القصص الخالدة لخلق
                     تجارب لا تُنسى لأطفالك.
                 </p>
