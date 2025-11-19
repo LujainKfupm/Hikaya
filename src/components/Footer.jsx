@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { BookOpen } from "lucide-react"; // ✅ Import the same icon
 
 export default function Footer() {
     return (
@@ -23,7 +22,9 @@ export default function Footer() {
 
             <div className="footer-bottom">
                 <p>© 2025 حكاية — جميع الحقوق محفوظة</p>
-                <p>صُنِعَ <span style={{ color: "red" }}>❤️</span> للأطفال في كل مكان</p>
+                <p>
+                    صُنِعَ بـ <span style={{ color: "red", margin: "0 4px" }}>❤️</span> للأطفال في كل مكان
+                </p>
             </div>
         </footer>
     );

@@ -1,4 +1,3 @@
-import { useAuth } from "../context/AuthContext";
 import { STORIES } from "../mocks/mockApi";
 import StoryCard from "../components/StoryCard";
 
@@ -42,27 +41,28 @@ export default function UserLibrary() {
                     marginBottom: "24px",
                 }}
             >
-                <div style={statCardStyle}>
+                <div className="stat-card">
                     <BookOpen size={24} color="#4A90E2" />
-                    <p style={statLabel}>القصص الخاصة</p>
+                    <p className="stat-label">القصص الخاصة</p>
                     <h2>{stats.private}</h2>
                 </div>
 
-                <div style={statCardStyle}>
-                    <Share2 size={24} color="#27AE60" />
-                    <p style={statLabel}>القصص العامة</p>
+
+                <div className="stat-card">
+                    <BookOpen size={24} color="#27AE60" />
+                    <p className="stat-label">القصص العامة</p>
                     <h2>{stats.public}</h2>
                 </div>
 
-                <div style={statCardStyle}>
-                    <BookCopy size={24} color="#333" />
-                    <p style={statLabel}>إجمالي القصص</p>
+                <div className="stat-card">
+                    <BookOpen size={24} color="#333" />
+                    <p className="stat-label">إجمالي القصص</p>
                     <h2>{stats.total}</h2>
                 </div>
 
-                <div style={statCardStyle}>
+                <div className="stat-card">
                     <Star size={24} color="#f5c518" />
-                    <p style={statLabel}>متوسط التقييم</p>
+                    <p className="stat-label">متوسط التقييم</p>
                     <h2>{stats.avg} ★</h2>
                 </div>
             </div>
@@ -81,18 +81,3 @@ export default function UserLibrary() {
     );
 }
 
-/* ---------------------------------------------
-   Shared Styles
----------------------------------------------- */
-const statCardStyle = {
-    background: "#fff",
-    borderRadius: "12px",
-    padding: "20px",
-    textAlign: "center",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-};
-
-const statLabel = {
-    margin: "6px 0",
-    color: "#555",
-};

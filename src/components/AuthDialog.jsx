@@ -3,11 +3,15 @@ import { useAuth } from "../context/AuthContext";
 import { X } from "lucide-react";
 
 export default function AuthDialog({ open, onClose }) {
-    const { login } = useAuth();
+    const {login,signup} = useAuth();
     const [tab, setTab] = useState("login");
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
+    const [name, setName] = useState("");
+    const [confirmPass, setConfirmPass] = useState("");
     const [error, setError] = useState("");
+    const [showWelcome, setShowWelcome] = useState(false);
+
 
     if (!open) return null;
 
@@ -17,176 +21,166 @@ export default function AuthDialog({ open, onClose }) {
             setError(res.msg);
             return;
         }
+        setShowWelcome(true);
+        setTimeout(() => {
+            setShowWelcome(false);
+            onClose();
+        }, 1000);
+
+    }
+    function handleSignup() {
+
+        if (!name || !email || !pass || !confirmPass) {
+            setError("يرجى تعبئة جميع الحقول");
+            return;
+        }
+
+        if (pass !== confirmPass) {
+            setError("كلمات المرور غير متطابقة");
+            return;
+        }
+
+        const res = signup({
+            name,
+            email,
+            password: pass,
+        });
+
+        if (!res.ok) {
+            setError(res.msg);
+            return;
+        }
+
         onClose();
     }
 
     return (
-        <div
-            style={{
-                position: "fixed",
-                inset: 0,
-                background: "rgba(0,0,0,0.4)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 9999,
-            }}
-        >
-            <div
-                style={{
-                    width: "380px",
-                    background: "#fff",
-                    borderRadius: "16px",
-                    padding: "24px",
-                    position: "relative",
-                    boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-                    direction: "rtl",
-                }}
-            >
-                {/* ❌ زر الإغلاق */}
-                <button
-                    onClick={onClose}
-                    style={{
-                        position: "absolute",
-                        left: "16px",
-                        top: "16px",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                    }}
-                >
-                    <X size={22} />
+        <div className="auth-overlay">
+            {showWelcome && (
+                <div className="welcome-toast">
+                    أهلاً بك 👋
+                </div>
+            )}
+            <div className="auth-dialog-box">
+
+                <button className="auth-close-btn" onClick={onClose}>
+                    <X size={22}/>
                 </button>
 
-                {/* العنوان */}
-                <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "bold" }}>
+
+                <h2 className="auth-title">
                     مرحباً بك في حكاية
                 </h2>
-                <p style={{ color: "#777", marginTop: 4, marginBottom: 20 }}>
-                    سجل الدخول لحفظ القصص والتقييم والتعليق
+                <p className="auth-subtitle">
+                    {tab === "login"
+                        ? "سجل الدخول لحفظ القصص والتقييم والتعليق"
+                        : "أنشئ حسابك للبدء في إنشاء قصص شخصية لطفلك"}
                 </p>
 
-                {/* 🌟 الحسابات التجريبية */}
-                <div
-                    style={{
-                        background: "#f8f8f8",
-                        padding: "12px",
-                        borderRadius: "10px",
-                        marginBottom: "20px",
-                        fontSize: "14px",
-                        color: "#444",
-                        lineHeight: "1.8",
-                        border: "1px solid #eee",
-                    }}
-                >
-                    <strong>حسابات تجريبية:</strong><br />
-                    <span>👨‍💼 مشرف: admin@hikaya.com — admin123</span><br />
+                <div className="auth-demo-box">
+                    <strong>حسابات تجريبية:</strong><br/>
+                    <span>👨‍💼 مشرف: admin@hikaya.com — admin123</span><br/>
                     <span>👤 مستخدم: demo@example.com — demo123</span>
                 </div>
 
-                {/* التبويبات */}
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        background: "#F2F2F2",
-                        borderRadius: "12px",
-                        marginBottom: "20px",
-                        padding: "4px",
-                    }}
-                >
+                <div className="auth-tabs">
                     <button
-                        onClick={() => setTab("login")}
-                        style={{
-                            border: "none",
-                            background: tab === "login" ? "#fff" : "transparent",
-                            borderRadius: "10px",
-                            padding: "10px 0",
-                            fontSize: "14px",
-                            cursor: "pointer",
-                            fontWeight: tab === "login" ? "bold" : "normal",
-                        }}
+                        className={tab === "login" ? "auth-tab active" : "auth-tab"}
+                        onClick={() =>{ setTab("login");
+                            setError("");}}
                     >
                         تسجيل الدخول
                     </button>
 
                     <button
-                        onClick={() => setTab("signup")}
-                        style={{
-                            border: "none",
-                            background: tab === "signup" ? "#fff" : "transparent",
-                            borderRadius: "10px",
-                            padding: "10px 0",
-                            fontSize: "14px",
-                            cursor: "pointer",
-                            fontWeight: tab === "signup" ? "bold" : "normal",
+                        className={tab === "signup" ? "auth-tab active" : "auth-tab"}
+                        onClick={() => {setTab("signup"); setError("");
                         }}
                     >
                         إنشاء حساب
                     </button>
                 </div>
-
-                {/* البريد */}
-                <label style={{ fontSize: "14px" }}>البريد الإلكتروني</label>
+                {/* login */}
+                {tab === "login" && (
+                    <>
+                <label className="auth-label">البريد الإلكتروني</label>
                 <input
+                    className="auth-input"
                     type="email"
-                    placeholder="example@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    style={{
-                        width: "100%",
-                        marginTop: "6px",
-                        marginBottom: "14px",
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderRadius: "10px",
-                        border: "1px solid #ddd",
-                        background: "#F8F8F8",
-                    }}
+                    placeholder="example@email.com"
                 />
 
-                {/* كلمة المرور */}
-                <label style={{ fontSize: "14px" }}>كلمة المرور</label>
+                <label className="auth-label">كلمة المرور</label>
                 <input
+                    className="auth-input"
                     type="password"
-                    placeholder="•••••••"
                     value={pass}
                     onChange={(e) => setPass(e.target.value)}
-                    style={{
-                        width: "100%",
-                        marginTop: "6px",
-                        marginBottom: "18px",
-                        padding: "12px",
-                        fontSize: "14px",
-                        borderRadius: "10px",
-                        border: "1px solid #ddd",
-                        background: "#F8F8F8",
-                    }}
+                    placeholder="•••••••"
                 />
 
-                {error && (
-                    <div style={{ color: "red", marginBottom: "10px", fontSize: "13px" }}>
+                {error &&
+                    <div className="auth-error">
                         {error}
                     </div>
-                )}
+                }
 
-                {/* زر الدخول */}
-                <button
-                    onClick={handleLogin}
-                    style={{
-                        width: "100%",
-                        background: "#000",
-                        color: "#fff",
-                        padding: "12px",
-                        borderRadius: "10px",
-                        marginBottom: "12px",
-                        fontSize: "15px",
-                        cursor: "pointer",
-                        border: "none",
-                    }}
+                <button className="auth-login-btn"
+                        onClick={handleLogin}
                 >
                     تسجيل الدخول →
                 </button>
+           </>
+
+                )}
+                {/* sign up */}
+                {tab === "signup" && (
+                    <>
+                        <label className="auth-label">الاسم الكامل</label>
+                        <input
+                            className="auth-input"
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="أدخل اسمك"
+                        />
+
+                        <label className="auth-label">البريد الإلكتروني</label>
+                        <input
+                            className="auth-input"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="example@email.com"
+                        />
+
+                        <label className="auth-label">كلمة المرور</label>
+                        <input
+                            className="auth-input"
+                            type="password"
+                            value={pass}
+                            onChange={(e) => setPass(e.target.value)}
+                            placeholder="•••••••"
+                        />
+
+                        <label className="auth-label">تأكيد كلمة المرور</label>
+                        <input
+                            className="auth-input"
+                            type="password"
+                            value={confirmPass}
+                            onChange={(e) => setConfirmPass(e.target.value)}
+                            placeholder="•••••••"
+                        />
+
+                        {error && <div className="auth-error">{error}</div>}
+
+                        <button className="auth-login-btn" onClick={handleSignup}>
+                            إنشاء الحساب →
+                        </button>
+                    </>
+                )}
             </div>
         </div>
     );
