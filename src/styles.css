@@ -284,22 +284,19 @@ body {
 }
 
 .footer-top {
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 60px;
-    flex-wrap: wrap;
-    margin-bottom: 24px;
+    justify-items: center;
+    align-items: center;
+    width: fit-content;
+    margin: 0 auto;
+    text-align: center;
 }
 
 .footer-column {
     text-align: center;
-}
-
-.footer-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    flex: 1;
 }
 
 .footer-column h3 {
