@@ -44,6 +44,7 @@ export default function AuthDialog({ open, onClose }) {
             name,
             email,
             password: pass,
+            role: 'user',
         });
 
         if (!res.ok) {
