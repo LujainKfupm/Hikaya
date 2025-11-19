@@ -1,16 +1,99 @@
-# React + Vite
+# Hikaya – Personalized Stories for Kids
+**SWE363 - Web Engineering and Development** project.  
+This phase focuses on building a fully interactive front-end.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## Description
+Hikaya is a website that generates personalized children’s stories using AI.  
+The user selects the hero’s name, age, gender, topics, moral lessons, and optional details.  
+The story is generated and displayed in the interface.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+##  Features
+- Create personalized stories (name, age, gender, topics, morals, details)
+- Display generated story  on the page
+- Public Library with search, filters, and sorting
+- "My Library" page for users
+- Login and Signup using localStorage
+- Admin Dashboard (users, categories, stories, messages)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+##  Demo Accounts
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Admin
+- **Email:** `admin@hikaya.com`
+- **Password:** `admin123`
+
+### User
+- **Email:** `demo@example.com`
+- **Password:** `demo123`
+
+---
+
+##  Project Structure
+```
+src/
+  components/
+    Header.jsx
+    Footer.jsx
+    AuthDialog.jsx
+    StoryCard.jsx
+  pages/
+    HomePage.jsx
+    StoryCreation.jsx
+    StoryLibrary.jsx
+    StoryView.jsx
+    UserLibrary.jsx
+    ContactPage.jsx
+    AdminDashboard.jsx
+  context/
+    AuthContext.jsx
+  mocks/
+    mockApi.js
+  styles/
+    styles.css
+  App.jsx
+  main.jsx
+```
+
+---
+
+##  Installation & Running
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/LujainKfupm/Hikaya.git
+cd Hikaya
+```
+
+### 2. Install dependencies
+```bash
+npm install
+```
+
+### 3. Start the  server
+```bash
+npm run dev
+```
+
+---
+
+## Team Members & Contributions
+*Each task includes its related styling and mockApi integration*
+- **Lujain** — Story Creation / Authentication 
+- **Amira** — Story Library / Story View
+- **Meznah** — Admin Dashboard / Contact & FAQs
+- **Fajer** — Homepage / User Library
+
+
+
+---
+
+##  Notes
+- The project uses  `mockApi.js` instead of a backend.
+- All stories, categories, and users are stored in `mockApi.js`.
+
+---
