@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Sparkles, Heart, Star } from "lucide-react";
-import heroImage from "../assets/img.png";
+import heroImage from "../assets/Hikaya logo.jpg";
 
 export default function HomePage() {
     return (
