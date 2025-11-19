@@ -1,4 +1,3 @@
-// ================== بياناتكم الأصلية ==================
 export const TOPICS = ["الصداقة", "الفضاء", "المدرسة", "المغامرة", "العائلة"];
 export const VALUES = ["الصدق", "الشجاعة", "الاحترام", "التعاون", "المثابرة"];
 export const AGE_RANGES = ["3-5", "6-8", "9-12"];
@@ -133,16 +132,13 @@ export function addComment(id, name, text) {
                     },
                     ...s.comments
                 ]
-            }
-            : s
+            } : s
     );
 }
 
-// ================== إضافات واجهة المكتبة ==================
 export const PLACEHOLDER_COVER = "/assets/placeholder.png";
 const DELAY = 300;
 
-// تطبيع الحقول لتناسب الواجهة
 function normalize(story) {
     return {
         ...story,
@@ -157,7 +153,6 @@ function normalize(story) {
     };
 }
 
-/** ✅ جلب القصص (الآن تعرض الكل دائمًا) */
 export function getStories(options = {}) {
     // جعل الافتراضي publicOnly = false
     const { publicOnly = false, q = "", sortBy = "date_desc" } = options;
@@ -166,7 +161,6 @@ export function getStories(options = {}) {
         setTimeout(() => {
             let data = STORIES.map(normalize);
 
-            // ما عاد نفلتر القصص الخاصة (الكل يظهر)
             if (publicOnly) data = data.filter((s) => s.isPublic);
 
             if (q) {
@@ -212,4 +206,80 @@ export function getStoryById(id) {
             resolve(s ? normalize(s) : null);
         }, DELAY);
     });
+}
+export let USERS = [
+    { id: "u1", name: "أحمد", email: "ahmed@example.com" },
+    { id: "u2", name: "سارة", email: "sara@example.com" }
+];
+
+export let COMMENTS = [
+    { id: "cm1", storyId: "101", text: "قصة رائعة!", user: "أحمد" }
+];
+
+export let CATEGORIES = ["مغامرات", "تعليم", "خيال"];
+export let AGE_GROUPS = ["3-5 سنوات", "6-8 سنوات", "9-12 سنة"];
+
+export let CONTACT_MESSAGES = [
+    {
+        id: "m1",
+        name: "ليان",
+        email: "lian@example.com",
+        message: "كيف أضيف قصة؟",
+        responded: false
+    }
+];
+
+// ===================== ADMIN FUNCTIONS =====================
+
+// Users
+export function getUsers() { return Promise.resolve([...USERS]); }
+export function deleteUserById(id) {
+    USERS = USERS.filter((u) => u.id !== id);
+    return Promise.resolve();
+}
+
+// Comments
+export function getComments() { return Promise.resolve([...COMMENTS]); }
+export function deleteCommentById(id) {
+    COMMENTS = COMMENTS.filter((c) => c.id !== id);
+    return Promise.resolve();
+}
+
+// Categories
+export function getCategories() { return Promise.resolve([...CATEGORIES]); }
+export function addCategory(cat) {
+    CATEGORIES.push(cat);
+    return Promise.resolve();
+}
+export function deleteCategory(cat) {
+    CATEGORIES = CATEGORIES.filter((c) => c !== cat);
+    return Promise.resolve();
+}
+
+// Age Groups
+export function getAgeGroups() { return Promise.resolve([...AGE_GROUPS]); }
+export function addAgeGroup(age) {
+    AGE_GROUPS.push(age);
+    return Promise.resolve();
+}
+export function deleteAgeGroup(age) {
+    AGE_GROUPS = AGE_GROUPS.filter((a) => a !== age);
+    return Promise.resolve();
+}
+
+// Contact messages
+export function getContactMessages() {
+    return Promise.resolve([...CONTACT_MESSAGES]);
+}
+export function sendReply(id, reply) {
+    CONTACT_MESSAGES = CONTACT_MESSAGES.map((m) =>
+        m.id === id ? { ...m, responded: true, reply } : m
+    );
+    return Promise.resolve();
+}
+
+// Story deletion (needed for admin)
+export function deleteStoryById(id) {
+    STORIES = STORIES.filter((s) => s.id !== id);
+    return Promise.resolve();
 }

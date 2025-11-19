@@ -1,17 +1,21 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { getStories } from "../mocks/mockApi";
+import { getStories, deleteStoryById } from "../mocks/mockApi";
 import { Star, Calendar, Baby } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 const MOCK = [];
 
 export default function StoryLibrary() {
     const [, force] = useState(0);
     const mounted = useRef(false);
+    const { user } = useAuth();
+    const isAdmin = user?.role === "admin";
+
+    const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
     useEffect(() => {
         mounted.current = true;
-        // ✅ يعرض كل القصص بدون استثناء
         getStories({ publicOnly: false, sortBy: "date_desc" }).then((data) => {
             if (!mounted.current) return;
             const normalized = data.map((s) => ({
@@ -29,19 +33,27 @@ export default function StoryLibrary() {
             MOCK.splice(0, MOCK.length, ...normalized);
             force((x) => x + 1);
         });
+
         return () => {
             mounted.current = false;
         };
     }, []);
 
+    function handleDelete(id) {
+        deleteStoryById(id).then(() => {
+            const index = MOCK.findIndex((s) => s.id === id);
+            if (index !== -1) MOCK.splice(index, 1);
+            force((x) => x + 1);
+            setConfirmDeleteId(null);
+        });
+    }
+
     return (
         <>
             <h1>المكتبة العامة</h1>
-
             <div style={noticeStyle}>
                 <strong>📚 تصفح كل القصص:</strong> يمكنك اكتشاف جميع القصص المتاحة في الموقع.
             </div>
-
             <div className="grid" style={gridStyle}>
                 {MOCK.map((s) => (
                     <div className="card" key={s.id} style={cardStyle}>
@@ -52,28 +64,47 @@ export default function StoryLibrary() {
                                 <span>{safeRating(s.rating)}</span>
                             </div>
                         </div>
-
                         <div style={bodyStyle}>
                             <h3 style={titleStyle}>{s.title}</h3>
                             <p style={metaStyle}>المؤلف: {s.author}</p>
-
                             <div style={infoRow}>
-                <span style={infoItem}>
-                  <Calendar size={14} /> {formatDate(s.date)}
-                </span>
                                 <span style={infoItem}>
-                  <Baby size={14} /> {s.ageRange}
-                </span>
+                                    <Calendar size={14} /> {formatDate(s.date)}
+                                </span>
+                                <span style={infoItem}>
+                                    <Baby size={14} /> {s.ageRange}
+                                </span>
                             </div>
-
                             <p style={topicStyle}>
                                 {s.topic} • {s.moral}
                             </p>
                             <p style={commentsStyle}>💬 {s.commentsCount} تعليقات</p>
 
-                            <Link to={"/story/" + s.id} className="btn" style={btnStyle}>
-                                قراءة
-                            </Link>
+                            <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                                <Link to={"/story/" + s.id} className="btn" style={btnStyle}>
+                                    قراءة
+                                </Link>
+
+                                {isAdmin && (
+                                    confirmDeleteId === s.id ? (
+                                        <div style={confirmBox}>
+                                            <span>هل أنت متأكد من الحذف؟</span>
+                                            <div style={{ display: "flex", gap: "4px", marginTop: "4px" }}>
+                                                <button style={btnConfirm} onClick={() => handleDelete(s.id)}>نعم</button>
+                                                <button style={btnCancel} onClick={() => setConfirmDeleteId(null)}>لا</button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => setConfirmDeleteId(s.id)}
+                                            className="btn delete-btn"
+                                            style={btnDeleteSmall}
+                                        >
+                                            حذف
+                                        </button>
+                                    )
+                                )}
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -91,11 +122,13 @@ const noticeStyle = {
     borderRadius: "12px",
     margin: "10px 0 20px",
 };
+
 const gridStyle = {
     display: "grid",
     gap: "16px",
     gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
 };
+
 const cardStyle = {
     background: "#fff",
     border: "1px solid #eee",
@@ -106,6 +139,7 @@ const cardStyle = {
     flexDirection: "column",
     justifyContent: "space-between",
 };
+
 const coverWrap = { position: "relative" };
 const coverImg = { width: "100%", height: "170px", objectFit: "cover", display: "block" };
 const ratingBadge = {
@@ -134,8 +168,50 @@ const btnStyle = {
     padding: "8px 12px",
     borderRadius: "10px",
     textDecoration: "none",
-    marginTop: "8px",
     fontSize: ".9rem",
+};
+
+/* ==================== Delete Confirmation Styles ==================== */
+const confirmBox = {
+    background: "#fff3f3",
+    border: "1px solid #f5c2c2",
+    padding: "6px 8px",
+    borderRadius: "8px",
+    fontSize: ".85rem",
+    color: "#C00",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start"
+};
+
+const btnConfirm = {
+    padding: "4px 8px",
+    background: "#E74C3C",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: ".8rem"
+};
+
+const btnCancel = {
+    padding: "4px 8px",
+    background: "#ccc",
+    color: "#000",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: ".8rem"
+};
+
+const btnDeleteSmall = {
+    padding: "4px 8px",
+    background: "#E74C3C",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: ".8rem"
 };
 
 /* ==================== Helpers ==================== */
@@ -148,6 +224,7 @@ function formatDate(iso) {
         return iso;
     }
 }
+
 function safeRating(v) {
     const n = Number(v);
     return Number.isFinite(n) ? n.toFixed(1) : "0.0";
