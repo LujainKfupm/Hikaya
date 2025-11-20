@@ -27,7 +27,7 @@ export default function Header() {
                     <Link to="/">الرئيسية</Link>
                     <Link to="/create">إنشاء قصة</Link>
                     <Link to="/library">المكتبة</Link>
-                    <Link to="/contact">التواصل</Link>
+                    {user?.role !== "admin"&& <Link to="/contact">التواصل</Link>}
                     {user?.role === "user" && <Link to="/my-library">مكتبتي</Link>}
                     {user?.role === "admin" && <Link to="/admin">لوحة التحكم</Link>}
                 </div>
