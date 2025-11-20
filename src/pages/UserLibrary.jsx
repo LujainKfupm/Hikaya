@@ -1,9 +1,7 @@
 import { STORIES } from "../mocks/mockApi";
 import StoryCard from "../components/StoryCard";
 
-import heroImage from "../assets/user_library.png";
-import spaceImage from "../assets/space_journey.png";
-import drawingImage from "../assets/drawing_contest.png";
+import coverImage from "../assets/ai story cover.jpg";
 
 import { BookOpen, Share2, BookCopy, Star } from "lucide-react";
 
@@ -22,10 +20,10 @@ export default function UserLibrary() {
 
     // Helper function for story image
     const getStoryImage = (title) => {
-        if (title === "سارة ورفاقها في رحلة البحث عن الكنز") return heroImage;
-        if (title === "رحلة يوسف وريلان إلى الفضاء") return spaceImage;
-        if (title === "عبدالله ومسابقة الرسم") return drawingImage;
-        return heroImage;
+        if (title === "سارة ورفاقها في رحلة البحث عن الكنز") return coverImage;
+        if (title === "رحلة يوسف وريلان إلى الفضاء") return coverImage;
+        if (title === "عبدالله ومسابقة الرسم") return coverImage;
+        return coverImage;
     };
 
     return (
