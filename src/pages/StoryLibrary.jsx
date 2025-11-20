@@ -21,5 +21,12 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
         </div>
     );
 }
+// base setup for story library component (state, refs, auth, modal)
+export default function StoryLibrary() {
+    const [, force] = useState(0);
+    const mounted = useRef(false);
+    const { user } = useAuth();
+    const isAdmin = user?.role === "admin";
+    const [modal, setModal] = useState({ show: false, storyId: null });
 
 
