@@ -1420,6 +1420,17 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     color: #000;
 }
 
+.results-meta {
+    font-size: 0.9rem;
+    color: #777;
+    margin: 0 0 10px;
+}
+
+
+@media (max-width: 720px) {
+    .tools-bar { grid-template-columns: 1fr; gap: 10px; }
+    .btn-toggle-filters { width: 100%; text-align: center; }
+}
 
 /* story view style */
 .back-row { margin-bottom: 12px; }
