@@ -1,9 +1,31 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getStoryById, deleteCommentById } from "../mocks/mockApi";
-import { Star, Calendar, Baby, User } from "lucide-react";
+import { Star, Calendar, Baby, User, Lock } from "lucide-react";
 
+
+import drawingContest from "../assets/drawing_contest.png";
+import spaceJourney from "../assets/space_journey.png";
+import userLibrary from "../assets/user_library.png";
+
+
+function resolveCover(story) {
+    const idKey = String(story?.id || "");
+    const title = String(story?.title || "").toLowerCase();
+    const topic = String(story?.topic || "").toLowerCase();
+
+
+    if (idKey === "102") return spaceJourney;
+    if (idKey === "103") return drawingContest;
+
+
+    if (title.includes("فضاء") || topic.includes("فضاء")) return spaceJourney;
+    if (title.includes("رسم") || title.includes("عبدالله") || title.includes("عبد الله")) return drawingContest;
+    if (title.includes("كنز") || title.includes("سارة")) return userLibrary;
+
+    return userLibrary;
+}
 function ConfirmModal({ message, onConfirm, onCancel }) {
     return (
         <div className="modal-overlay">
@@ -20,32 +42,42 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
 
 export default function StoryView() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { user } = useAuth();
+
     const [story, setStory] = useState(null);
     const [modal, setModal] = useState({ show: false, commentId: null });
 
+    const [hoverRating, setHoverRating] = useState(0);
+    const [selectedRating, setSelectedRating] = useState(0);
     useEffect(() => {
-        getStoryById(id).then(data => setStory(data));
+        let alive = true;
+        getStoryById(id)
+            .then((data) => {
+                if (!alive) return;
+                setStory(data || { notFound: true });
+            })
+            .catch(() => {
+                if (alive) setStory({ notFound: true });
+            });
+        return () => { alive = false; };
     }, [id]);
 
-    if (!story) return <p>جاري تحميل القصة...</p>;
-
-    const showConfirm = (commentId) => {
-        setModal({ show: true, commentId });
-    };
+    const showConfirm = (commentId) => setModal({ show: true, commentId });
 
     const handleConfirm = () => {
         if (!modal.commentId) return;
         deleteCommentById(modal.commentId).then(() => {
-            setStory(prev => ({
+            setStory((prev) => ({
                 ...prev,
-                comments: prev.comments.filter(c => c.id !== modal.commentId),
+                comments: (prev.comments || []).filter((c) => c.id !== modal.commentId),
             }));
             setModal({ show: false, commentId: null });
         });
     };
 
     const handleCancel = () => setModal({ show: false, commentId: null });
+
     function formatDate(iso) {
         if (!iso) return "—";
         try {
@@ -55,14 +87,39 @@ export default function StoryView() {
             return iso;
         }
     }
+
+    const canRate = !!user;
+
+    const handleRate = (value) => {
+        if (!canRate) return;
+        setSelectedRating(value);
+        setStory((prev) => {
+            if (!prev) return prev;
+            const currentAvg = Number(prev.rating ?? prev.ratingAvg ?? 0);
+            const currentCount = Number(prev.ratingsCount ?? prev.ratingCount ?? 0);
+            const nextCount = currentCount + 1;
+            const nextAvg = (currentAvg * currentCount + value) / (nextCount || 1);
+            return {
+                ...prev,
+                rating: nextAvg,
+                ratingAvg: nextAvg,
+                ratingsCount: nextCount,
+                ratingCount: nextCount,
+            };
+        });
+    };
+
+    if (!story) return <p>جاري تحميل القصة...</p>;
+    if (story.notFound) return <p>لم يتم العثور على القصة.</p>;
+
     return (
         <>
             <div className="back-row">
-                <Link to="/library" className="back-link">← العودة إلى المكتبة</Link>
+                <Link to="/library" className="back-link">العودة إلى المكتبة →</Link>
             </div>
 
             <div className="cover-wrap">
-                <img src={story.cover} alt={story.title} className="cover-img" />
+                <img src={resolveCover(story)} alt={story.title} className="cover-img" />
             </div>
 
             <h1 className="story-title">{story.title}</h1>
@@ -85,10 +142,56 @@ export default function StoryView() {
 
             <div className="body-text">{story.body ?? story.content}</div>
 
+            <div className="rate-strip" style={{ margin: "14px 0 18px", display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ fontWeight: 700, color: "#111" }}>قيّم هذه القصة:</span>
+                {[1, 2, 3, 4, 5].map((n) => {
+                    const active = canRate ? (hoverRating ? n <= hoverRating : n <= selectedRating) : false;
+                    return (
+                        <button
+                            key={n}
+                            type="button"
+                            aria-label={"rate-" + n}
+                            onMouseEnter={() => canRate && setHoverRating(n)}
+                            onMouseLeave={() => canRate && setHoverRating(0)}
+                            onClick={() => handleRate(n)}
+                            disabled={!canRate}
+                            style={{
+                                background: "transparent",
+                                border: "none",
+                                padding: 0,
+                                cursor: canRate ? "pointer" : "not-allowed",
+                                opacity: canRate ? 1 : 0.5,
+                                lineHeight: 0
+                            }}
+                        >
+                            <Star
+                                size={22}
+                                color={active ? "#A7D3F6" : "#999"}
+                                fill={active ? "#A7D3F6" : "transparent"}
+                            />
+                        </button>
+                    );
+                })}
+                {!canRate && (
+                    <button
+                        type="button"
+                        className="btn"
+                        onClick={() => navigate("/login")}
+                        style={{ marginInlineStart: 8, display: "inline-flex", alignItems: "center", gap: 6 }}
+                    >
+                        <Lock size={16} /> سجّل دخولك للتقييم
+                    </button>
+                )}
+                {canRate && selectedRating > 0 && (
+                    <span style={{ color: "#555", fontSize: ".9rem" }}>
+            شكراً! ({selectedRating} / 5)
+          </span>
+                )}
+            </div>
             <div className="comment-box">
                 <h3>التعليقات</h3>
                 {story.comments && story.comments.length > 0 ? (
-                    story.comments.map(c => (
+                    story.comments.map((c) => (
                         <div key={c.id} className="comment-item">
                             <p><strong>{c.name}</strong> — {formatDate(c.date)}</p>
                             <p>{c.text}</p>
@@ -117,5 +220,13 @@ export default function StoryView() {
         </>
     );
 }
+
+
+
+
+
+
+
+
 
 
