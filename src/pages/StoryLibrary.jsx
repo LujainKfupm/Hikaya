@@ -34,7 +34,16 @@ export default function StoryLibrary() {
     const [selectedTopics, setSelectedTopics] = useState([]); // multi-select: topics
     const [selectedAge, setSelectedAge] = useState("all"); // single-select: age range
     const [sortBy, setSortBy] = useState("latest"); // single-select: latest | top_rated
-
+    // static filter options (CSS styling is external, only classNames here)
+    const TOPICS = useMemo(
+        () => [
+            "Adventure", "Nature", "Magic", "Animals", "Ocean", "Space",
+            "Family", "Friendship", "Culture", "Music", "Sports",
+            "Fantasy", "Science Fiction", "Perseverance", "Teamwork", "Environment",
+        ],
+        []
+    );
+    const AGE_RANGES = ["all", "3-5", "6-8", "9-12"];
     // fetch stories on mount and normalize data into MOCK
     useEffect(() => {
         mounted.current = true;
