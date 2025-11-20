@@ -140,6 +140,33 @@ export default function StoryLibrary() {
                 />
             </div>
 
+            {/* filters panel: topics (multi), age (single), sort (single) */}
+            {showFilters && (
+                <div className="filter-panel">
+                    {/* topics multi-select */}
+                    <div className="filter-section">
+                        <div className="filter-title">تصفية حسب الموضوع</div>
+                        <div className="chips">
+                            {TOPICS.map((t) => {
+                                const active = selectedTopics.includes(t);
+                                return (
+                                    <button
+                                        key={t}
+                                        type="button"
+                                        className={chip ${active ? "chip-active" : ""}}
+                                        onClick={() => {
+                                            setSelectedTopics((prev) =>
+                                                prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
+                                            );
+                                        }}
+                                    >
+                                        {t}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
             <div className="story-grid">
                 {MOCK.map((s) => (
                     <div className="story-card" key={s.id}>
