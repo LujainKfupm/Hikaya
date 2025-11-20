@@ -30,7 +30,7 @@ export default function StoryLibrary() {
     const [modal, setModal] = useState({ show: false, storyId: null });
 
 
-// fetch stories on mount and normalize data into MOCK
+    // fetch stories on mount and normalize data into MOCK
     useEffect(() => {
         mounted.current = true;
         getStories({ publicOnly: false, sortBy: "date_desc" }).then((data) => {
@@ -52,3 +52,16 @@ export default function StoryLibrary() {
         });
         return () => { mounted.current = false; };
     }, []);
+
+    // handlers for showing, confirming, and cancelling story deletion
+    const showDeleteModal = (id) => setModal({ show: true, storyId: id });
+    const handleConfirmDelete = () => {
+        if (!modal.storyId) return;
+        deleteStoryById(modal.storyId).then(() => {
+            const index = MOCK.findIndex((s) => s.id === modal.storyId);
+            if (index !== -1) MOCK.splice(index, 1);
+            force((x) => x + 1);
+            setModal({ show: false, storyId: null });
+        });
+    };
+    const handleCancelDelete = () => setModal({ show: false, storyId: null });
