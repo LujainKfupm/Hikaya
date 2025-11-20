@@ -1,121 +1,30 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getStoryById, deleteCommentById } from "../mocks/mockApi";
-import { Star, Calendar, Baby, User } from "lucide-react";
+import { Star, Calendar, Baby, User, Lock } from "lucide-react";
 
-function ConfirmModal({ message, onConfirm, onCancel }) {
-    return (
-        <div className="modal-overlay">
-            <div className="modal-box">
-                <p>{message}</p>
-                <div className="modal-actions">
-                    <button className="btn-cancel" onClick={onCancel}>إلغاء</button>
-                    <button className="btn-confirm" onClick={onConfirm}>حذف</button>
-                </div>
-            </div>
-        </div>
-    );
+/* ===== local covers from assets ===== */
+import drawingContest from "../assets/drawing_contest.png";
+import spaceJourney from "../assets/space_journey.png";
+import userLibrary from "../assets/user_library.png";
+
+/* choose cover by id/title/topic (local first, then fallback) */
+function resolveCover(story) {
+    const idKey = String(story?.id || "");
+    const title = String(story?.title || "").toLowerCase();
+    const topic = String(story?.topic || "").toLowerCase();
+
+    // by ID (لو حبيتي تربطين IDs معينة)
+    if (idKey === "102") return spaceJourney;
+    if (idKey === "103") return drawingContest;
+
+    // by title/topic keywords
+    if (title.includes("فضاء") || topic.includes("فضاء")) return spaceJourney;
+    if (title.includes("رسم") || title.includes("عبدالله") || title.includes("عبد الله")) return drawingContest;
+    if (title.includes("كنز") || title.includes("سارة")) return userLibrary;
+
+    // fallback: local default for library
+    return userLibrary;
 }
-
-export default function StoryView() {
-    const { id } = useParams();
-    const { user } = useAuth();
-    const [story, setStory] = useState(null);
-    const [modal, setModal] = useState({ show: false, commentId: null });
-
-    useEffect(() => {
-        getStoryById(id).then(data => setStory(data));
-    }, [id]);
-
-    if (!story) return <p>جاري تحميل القصة...</p>;
-
-    const showConfirm = (commentId) => {
-        setModal({ show: true, commentId });
-    };
-
-    const handleConfirm = () => {
-        if (!modal.commentId) return;
-        deleteCommentById(modal.commentId).then(() => {
-            setStory(prev => ({
-                ...prev,
-                comments: prev.comments.filter(c => c.id !== modal.commentId),
-            }));
-            setModal({ show: false, commentId: null });
-        });
-    };
-
-    const handleCancel = () => setModal({ show: false, commentId: null });
-    function formatDate(iso) {
-        if (!iso) return "—";
-        try {
-            const d = new Date(iso);
-            return d.toLocaleDateString("ar-SA");
-        } catch {
-            return iso;
-        }
-    }
-    return (
-        <>
-            <div className="back-row">
-                <Link to="/library" className="back-link">← العودة إلى المكتبة</Link>
-            </div>
-
-            <div className="cover-wrap">
-                <img src={story.cover} alt={story.title} className="cover-img" />
-            </div>
-
-            <h1 className="story-title">{story.title}</h1>
-
-            <div className="info-row">
-                <span className="info-item"><User size={16} /> {story.author ?? "—"}</span>
-                <span className="info-item"><Calendar size={16} /> {formatDate(story.date)}</span>
-                <span className="info-item"><Baby size={16} /> {story.ageRange ?? "—"} سنوات</span>
-            </div>
-
-            <div className="rating-box">
-                <Star size={18} color="#000" />
-                <span className="rating-value">{Number(story.rating ?? story.ratingAvg ?? 0).toFixed(1)}</span>
-                <span className="rating-count">({story.ratingsCount ?? story.ratingCount ?? 0} تقييم)</span>
-            </div>
-
-            <div className="moral-box">
-                <strong>العِبرة:</strong> {story.moral ?? story.values?.[0] ?? "—"}
-            </div>
-
-            <div className="body-text">{story.body ?? story.content}</div>
-
-            <div className="comment-box">
-                <h3>التعليقات</h3>
-                {story.comments && story.comments.length > 0 ? (
-                    story.comments.map(c => (
-                        <div key={c.id} className="comment-item">
-                            <p><strong>{c.name}</strong> — {formatDate(c.date)}</p>
-                            <p>{c.text}</p>
-                            {user?.role === "admin" && (
-                                <button
-                                    className="btn-delete"
-                                    onClick={() => showConfirm(c.id)}
-                                >
-                                    حذف
-                                </button>
-                            )}
-                        </div>
-                    ))
-                ) : (
-                    <p className="no-comments">لا توجد تعليقات بعد.</p>
-                )}
-            </div>
-
-            {modal.show && (
-                <ConfirmModal
-                    message="هل أنت متأكد من حذف هذا التعليق؟"
-                    onConfirm={handleConfirm}
-                    onCancel={handleCancel}
-                />
-            )}
-        </>
-    );
-}
-
 
