@@ -772,6 +772,20 @@ body {
     .form-card {
         padding-inline: 12px;
     }
+
+    @media (max-width: 640px) {
+        .hero-buttons {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+
+        .hero-primary-btn,
+        .hero-secondary-btn {
+            width: 100%;
+        }
+    }
+
 }
 
 .chip-group {
@@ -1108,6 +1122,10 @@ body {
     margin-top: 16px;
 }
 
+.hero-buttons a {
+    text-decoration: none !important;
+}
+
 .hero-primary-btn {
     background-color: #A7D3F6;
     color: #fff;
@@ -1121,6 +1139,16 @@ body {
     border: 1px solid #A7D3F6;
     padding: 10px 20px;
     border-radius: 8px;
+}
+
+.hero-primary-btn,
+.hero-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-align: center;
 }
 
 .hero-image {
