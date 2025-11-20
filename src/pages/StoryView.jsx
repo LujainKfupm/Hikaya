@@ -136,6 +136,12 @@ export default function StoryView() {
                 <span className="rating-count">({story.ratingsCount ?? story.ratingCount ?? 0} تقييم)</span>
             </div>
 
+            <div className="moral-box">
+                <strong>العِبرة:</strong> {story.moral ?? story.values?.[0] ?? "—"}
+            </div>
+
+            <div className="body-text">{story.body ?? story.content}</div>
+
 
 
 
