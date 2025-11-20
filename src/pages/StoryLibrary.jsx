@@ -214,11 +214,8 @@ export default function StoryLibrary() {
 
             <div className="story-grid">
                 {visibleStories.map((s) => (
-                    // ... نفس بطاقة القصة الحالية
                 ))}
             </div>
-
-
 
             <div className="story-grid">
                 {MOCK.map((s) => (
