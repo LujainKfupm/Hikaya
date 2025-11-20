@@ -1373,6 +1373,30 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
 }
 
 
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.chip {
+    appearance: none;
+    border: 1px solid var(--lib-border);
+    background: #ffffff;
+    color: var(--lib-text);
+    padding: 6px 10px;
+    border-radius: var(--lib-radius-pill);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color .16s ease, border-color .16s ease, transform .1s ease, color .16s ease;
+}
+.chip:hover { background-color: #f0f4ff; transform: translateY(-1px); }
+.chip-active {
+    background-color: var(--lib-blue);
+    border-color: var(--lib-blue-dark);
+    color: #ffffff;
+}
+
+
 /* story view style */
 .back-row { margin-bottom: 12px; }
 .back-link { color: #4A90E2; text-decoration: none; }
