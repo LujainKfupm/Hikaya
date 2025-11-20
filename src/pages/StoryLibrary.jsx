@@ -30,3 +30,25 @@ export default function StoryLibrary() {
     const [modal, setModal] = useState({ show: false, storyId: null });
 
 
+// fetch stories on mount and normalize data into MOCK
+    useEffect(() => {
+        mounted.current = true;
+        getStories({ publicOnly: false, sortBy: "date_desc" }).then((data) => {
+            if (!mounted.current) return;
+            const normalized = data.map((s) => ({
+                id: s.id,
+                title: s.title,
+                author: s.author ?? "—",
+                rating: Number(s.rating ?? s.ratingAvg ?? 0),
+                moral: s.moral ?? s.values?.[0] ?? "—",
+                topic: s.topic ?? s.topics?.[0] ?? "—",
+                cover: s.cover,
+                ageRange: s.ageRange ?? "—",
+                date: s.createdAt ?? s.date,
+                commentsCount: s.commentsCount ?? s.comments?.length ?? 0,
+            }));
+            MOCK.splice(0, MOCK.length, ...normalized);
+            force((x) => x + 1);
+        });
+        return () => { mounted.current = false; };
+    }, []);
