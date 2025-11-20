@@ -4,12 +4,12 @@ import { useAuth } from "../context/AuthContext";
 import { getStoryById, deleteCommentById } from "../mocks/mockApi";
 import { Star, Calendar, Baby, User, Lock } from "lucide-react";
 
-/* ===== local covers from assets ===== */
+
 import drawingContest from "../assets/drawing_contest.png";
 import spaceJourney from "../assets/space_journey.png";
 import userLibrary from "../assets/user_library.png";
 
-/* choose cover by id/title/topic (local first, then fallback) */
+
 function resolveCover(story) {
     const idKey = String(story?.id || "");
     const title = String(story?.title || "").toLowerCase();
@@ -27,4 +27,5 @@ function resolveCover(story) {
     // fallback: local default for library
     return userLibrary;
 }
+
 
