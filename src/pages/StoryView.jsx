@@ -63,3 +63,23 @@ export default function StoryView() {
         return () => { alive = false; };
     }, [id]);
 
+    const showConfirm = (commentId) => setModal({ show: true, commentId });
+
+    const handleConfirm = () => {
+        if (!modal.commentId) return;
+        deleteCommentById(modal.commentId).then(() => {
+            setStory((prev) => ({
+                ...prev,
+                comments: (prev.comments || []).filter((c) => c.id !== modal.commentId),
+            }));
+            setModal({ show: false, commentId: null });
+        });
+    };
+
+    const handleCancel = () => setModal({ show: false, commentId: null });
+
+
+
+
+
+
