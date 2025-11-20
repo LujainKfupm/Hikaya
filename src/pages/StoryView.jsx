@@ -15,16 +15,15 @@ function resolveCover(story) {
     const title = String(story?.title || "").toLowerCase();
     const topic = String(story?.topic || "").toLowerCase();
 
-    // by ID (لو حبيتي تربطين IDs معينة)
+
     if (idKey === "102") return spaceJourney;
     if (idKey === "103") return drawingContest;
 
-    // by title/topic keywords
+
     if (title.includes("فضاء") || topic.includes("فضاء")) return spaceJourney;
     if (title.includes("رسم") || title.includes("عبدالله") || title.includes("عبد الله")) return drawingContest;
     if (title.includes("كنز") || title.includes("سارة")) return userLibrary;
-
-    // fallback: local default for library
+    
     return userLibrary;
 }
 
