@@ -142,6 +142,53 @@ export default function StoryView() {
 
             <div className="body-text">{story.body ?? story.content}</div>
 
+            <div className="rate-strip" style={{ margin: "14px 0 18px", display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ fontWeight: 700, color: "#111" }}>قيّم هذه القصة:</span>
+                {[1, 2, 3, 4, 5].map((n) => {
+                    const active = canRate ? (hoverRating ? n <= hoverRating : n <= selectedRating) : false;
+                    return (
+                        <button
+                            key={n}
+                            type="button"
+                            aria-label={"rate-" + n}
+                            onMouseEnter={() => canRate && setHoverRating(n)}
+                            onMouseLeave={() => canRate && setHoverRating(0)}
+                            onClick={() => handleRate(n)}
+                            disabled={!canRate}
+                            style={{
+                                background: "transparent",
+                                border: "none",
+                                padding: 0,
+                                cursor: canRate ? "pointer" : "not-allowed",
+                                opacity: canRate ? 1 : 0.5,
+                                lineHeight: 0
+                            }}
+                        >
+                            <Star
+                                size={22}
+                                color={active ? "#A7D3F6" : "#999"}
+                                fill={active ? "#A7D3F6" : "transparent"}
+                            />
+                        </button>
+                    );
+                })}
+                {!canRate && (
+                    <button
+                        type="button"
+                        className="btn"
+                        onClick={() => navigate("/login")}
+                        style={{ marginInlineStart: 8, display: "inline-flex", alignItems: "center", gap: 6 }}
+                    >
+                        <Lock size={16} /> سجّل دخولك للتقييم
+                    </button>
+                )}
+                {canRate && selectedRating > 0 && (
+                    <span style={{ color: "#555", fontSize: ".9rem" }}>
+            شكراً! ({selectedRating} / 5)
+          </span>
+                )}
+            </div>
+
 
 
 
