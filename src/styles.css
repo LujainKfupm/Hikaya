@@ -600,13 +600,13 @@ body {
 }
 
 .btn-primary {
-    background-color: #4a90e2; /* pastel blue primary */
-    border-color: #4a90e2;
+    background-color: var(--lib-blue);
+    border-color: var(--lib-blue);
     color: #ffffff;
 }
 
 .btn-primary:hover:not(:disabled) {
-    background-color: #3a78c2; /* darker pastel blue hover */
+    background-color: var(--lib-blue-dark);
 }
 
 .page-header {
