@@ -122,6 +122,21 @@ export default function StoryView() {
                 <img src={resolveCover(story)} alt={story.title} className="cover-img" />
             </div>
 
+            <h1 className="story-title">{story.title}</h1>
+
+            <div className="info-row">
+                <span className="info-item"><User size={16} /> {story.author ?? "—"}</span>
+                <span className="info-item"><Calendar size={16} /> {formatDate(story.date)}</span>
+                <span className="info-item"><Baby size={16} /> {story.ageRange ?? "—"} سنوات</span>
+            </div>
+
+            <div className="rating-box">
+                <Star size={18} color="#000" />
+                <span className="rating-value">{Number(story.rating ?? story.ratingAvg ?? 0).toFixed(1)}</span>
+                <span className="rating-count">({story.ratingsCount ?? story.ratingCount ?? 0} تقييم)</span>
+            </div>
+
+
 
 
 
