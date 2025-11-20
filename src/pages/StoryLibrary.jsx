@@ -6,13 +6,27 @@ import { useAuth } from "../context/AuthContext";
 
 const MOCK = [];
 
+function ConfirmModal({ message, onConfirm, onCancel }) {
+    return (
+        <div className="modal-overlay">
+            <div className="modal-box">
+                <p>{message}</p>
+                <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", marginTop: "16px" }}>
+                    <button className="story-card-btn-cancel" onClick={onCancel}>لا</button>
+                    <button className="story-card-btn-confirm" onClick={onConfirm}>نعم</button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function StoryLibrary() {
     const [, force] = useState(0);
     const mounted = useRef(false);
     const { user } = useAuth();
     const isAdmin = user?.role === "admin";
 
-    const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+    const [modal, setModal] = useState({ show: false, storyId: null });
 
     useEffect(() => {
         mounted.current = true;
@@ -34,187 +48,84 @@ export default function StoryLibrary() {
             force((x) => x + 1);
         });
 
-        return () => {
-            mounted.current = false;
-        };
+        return () => { mounted.current = false; };
     }, []);
 
-    function handleDelete(id) {
-        deleteStoryById(id).then(() => {
-            const index = MOCK.findIndex((s) => s.id === id);
+    const showDeleteModal = (id) => setModal({ show: true, storyId: id });
+    const handleConfirmDelete = () => {
+        if (!modal.storyId) return;
+        deleteStoryById(modal.storyId).then(() => {
+            const index = MOCK.findIndex((s) => s.id === modal.storyId);
             if (index !== -1) MOCK.splice(index, 1);
             force((x) => x + 1);
-            setConfirmDeleteId(null);
+            setModal({ show: false, storyId: null });
         });
-    }
+    };
+    const handleCancelDelete = () => setModal({ show: false, storyId: null });
 
     return (
         <>
             <h1>المكتبة العامة</h1>
-            <div style={noticeStyle}>
+
+            <div className="story-notice">
                 <strong>📚 تصفح كل القصص:</strong> يمكنك اكتشاف جميع القصص المتاحة في الموقع.
             </div>
-            <div className="grid" style={gridStyle}>
+
+            <div className="story-grid">
                 {MOCK.map((s) => (
-                    <div className="card" key={s.id} style={cardStyle}>
-                        <div style={coverWrap}>
-                            <img src={s.cover} alt={s.title} style={coverImg} />
-                            <div style={ratingBadge}>
-                                <Star size={14} color="#f5c518" />
-                                <span>{safeRating(s.rating)}</span>
+                    <div className="story-card" key={s.id}>
+                        {/* IMAGE + RATING */}
+                        <div className="story-card-image-wrapper">
+                            <img src={s.cover} alt={s.title} className="story-card-image" />
+                            <div className="story-card-rating">
+                                <Star size={14} color="#f5c518" /> {safeRating(s.rating)}
                             </div>
                         </div>
-                        <div style={bodyStyle}>
-                            <h3 style={titleStyle}>{s.title}</h3>
-                            <p style={metaStyle}>المؤلف: {s.author}</p>
-                            <div style={infoRow}>
-                                <span style={infoItem}>
-                                    <Calendar size={14} /> {formatDate(s.date)}
-                                </span>
-                                <span style={infoItem}>
-                                    <Baby size={14} /> {s.ageRange}
-                                </span>
+
+                        <div className="story-card-body">
+                            <h3 className="story-card-title">{s.title}</h3>
+                            <p className="story-card-meta">المؤلف: {s.author}</p>
+
+                            <div className="story-card-info-row">
+                <span className="story-card-info-item">
+                  <Calendar size={14} /> {formatDate(s.date)}
+                </span>
+                                <span className="story-card-info-item">
+                  <Baby size={14} /> {s.ageRange}
+                </span>
                             </div>
-                            <p style={topicStyle}>
-                                {s.topic} • {s.moral}
-                            </p>
-                            <p style={commentsStyle}>💬 {s.commentsCount} تعليقات</p>
+
+                            <p className="story-card-topic">{s.topic} • {s.moral}</p>
+                            <p className="story-card-comments">💬 {s.commentsCount} تعليقات</p>
 
                             <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
-                                <Link to={"/story/" + s.id} className="btn" style={btnStyle}>
-                                    قراءة
-                                </Link>
+                                <Link to={"/story/" + s.id} className="story-card-btn">قراءة</Link>
 
                                 {isAdmin && (
-                                    confirmDeleteId === s.id ? (
-                                        <div style={confirmBox}>
-                                            <span>هل أنت متأكد من الحذف؟</span>
-                                            <div style={{ display: "flex", gap: "4px", marginTop: "4px" }}>
-                                                <button style={btnConfirm} onClick={() => handleDelete(s.id)}>نعم</button>
-                                                <button style={btnCancel} onClick={() => setConfirmDeleteId(null)}>لا</button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            onClick={() => setConfirmDeleteId(s.id)}
-                                            className="btn delete-btn"
-                                            style={btnDeleteSmall}
-                                        >
-                                            حذف
-                                        </button>
-                                    )
+                                    <button
+                                        onClick={() => showDeleteModal(s.id)}
+                                        className="story-card-btn-delete"
+                                    >
+                                        حذف
+                                    </button>
                                 )}
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
+
+            {modal.show && (
+                <ConfirmModal
+                    message="هل أنت متأكد من حذف هذه القصة؟"
+                    onConfirm={handleConfirmDelete}
+                    onCancel={handleCancelDelete}
+                />
+            )}
         </>
     );
 }
 
-/* ==================== STYLES ==================== */
-const noticeStyle = {
-    background: "#eef5ff",
-    color: "#0f2f66",
-    border: "1px solid #dbe7ff",
-    padding: "10px 14px",
-    borderRadius: "12px",
-    margin: "10px 0 20px",
-};
-
-const gridStyle = {
-    display: "grid",
-    gap: "16px",
-    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-};
-
-const cardStyle = {
-    background: "#fff",
-    border: "1px solid #eee",
-    borderRadius: "16px",
-    overflow: "hidden",
-    boxShadow: "0 2px 6px rgba(0,0,0,.05)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-};
-
-const coverWrap = { position: "relative" };
-const coverImg = { width: "100%", height: "170px", objectFit: "cover", display: "block" };
-const ratingBadge = {
-    position: "absolute",
-    top: "10px",
-    left: "10px",
-    background: "rgba(255,255,255,0.9)",
-    borderRadius: "12px",
-    padding: "2px 8px",
-    fontSize: ".9rem",
-    display: "flex",
-    alignItems: "center",
-    gap: "4px",
-};
-const bodyStyle = { padding: "12px 14px", display: "flex", flexDirection: "column", gap: "4px" };
-const titleStyle = { margin: "0 0 4px 0", fontSize: "1.05rem" };
-const metaStyle = { margin: "0", color: "#555", fontSize: ".9rem" };
-const infoRow = { display: "flex", justifyContent: "space-between", color: "#777", fontSize: ".85rem" };
-const infoItem = { display: "flex", alignItems: "center", gap: "4px" };
-const topicStyle = { margin: "4px 0", color: "#333", fontSize: ".9rem" };
-const commentsStyle = { color: "#888", fontSize: ".85rem" };
-const btnStyle = {
-    alignSelf: "start",
-    background: "#4A90E2",
-    color: "#fff",
-    padding: "8px 12px",
-    borderRadius: "10px",
-    textDecoration: "none",
-    fontSize: ".9rem",
-};
-
-/* ==================== Delete Confirmation Styles ==================== */
-const confirmBox = {
-    background: "#fff3f3",
-    border: "1px solid #f5c2c2",
-    padding: "6px 8px",
-    borderRadius: "8px",
-    fontSize: ".85rem",
-    color: "#C00",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start"
-};
-
-const btnConfirm = {
-    padding: "4px 8px",
-    background: "#E74C3C",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: ".8rem"
-};
-
-const btnCancel = {
-    padding: "4px 8px",
-    background: "#ccc",
-    color: "#000",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: ".8rem"
-};
-
-const btnDeleteSmall = {
-    padding: "4px 8px",
-    background: "#E74C3C",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontSize: ".8rem"
-};
-
-/* ==================== Helpers ==================== */
 function formatDate(iso) {
     if (!iso) return "—";
     try {
@@ -229,3 +140,7 @@ function safeRating(v) {
     const n = Number(v);
     return Number.isFinite(n) ? n.toFixed(1) : "0.0";
 }
+
+
+
+

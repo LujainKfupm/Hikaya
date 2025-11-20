@@ -1,4 +1,3 @@
-/* ========== Global Reset & Base ========== */
 
 *,
 *::before,
@@ -1153,7 +1152,171 @@ body {
     color: #666;
     margin-bottom: 24px;
 }
+/* story library style */
+.story-notice {
+    background: #F6E6A7;
+    color: #6A5436;
+    border: 1px solid #F6E6A7;
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin: 10px 0 20px;
+}
 
+.story-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.story-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.story-card-image-wrapper {
+    position: relative;
+}
+
+.story-card-image {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    display: block;
+}
+
+.story-card-rating {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255,255,255,0.85);
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #000;
+}
+
+.story-card-body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.story-card-title {
+    margin: 0 0 4px 0;
+    font-size: 1.05rem;
+}
+
+.story-card-meta {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.story-card-info-row {
+    display: flex;
+    justify-content: space-between;
+    color: #777;
+    font-size: 0.85rem;
+}
+
+.story-card-info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.story-card-topic {
+    margin: 4px 0;
+    color: #444;
+    font-size: 0.9rem;
+}
+
+.story-card-comments {
+    color: #777;
+    font-size: 0.85rem;
+}
+
+.story-card-btn {
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    color: #fff;
+    background: #A7D3F6; /* pastel blue */
+    align-self: flex-start;
+    text-decoration: none;
+}
+
+.story-card-btn:hover {
+    opacity: 0.9;
+}
+
+.story-card-btn-delete {
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    color: #fff;
+    background: #F7C4C4; /* pastel red */
+}
+
+.story-card-btn-confirm {
+    background: #F7C4C4;
+}
+
+.story-card-btn-cancel {
+    background: #AEE1D4; /* pastel green */
+    color: #fff;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+.modal-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 300px;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.story-card-btn-confirm,
+.story-card-btn-cancel {
+    border: none;
+    outline: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.story-card-btn-confirm {
+    background: #F7C4C4; /* pastel red */
+    color: #fff;
+}
+
+.story-card-btn-cancel {
+    background: #AEE1D4; /* pastel green */
+    color: #fff;
+}
 
 
 
