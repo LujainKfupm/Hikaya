@@ -28,7 +28,12 @@ export default function StoryLibrary() {
     const { user } = useAuth();
     const isAdmin = user?.role === "admin";
     const [modal, setModal] = useState({ show: false, storyId: null });
-
+    // filters/search base state (topics multi, age single, sort single)
+    const [showFilters, setShowFilters] = useState(false); // toggle filter panel
+    const [searchTerm, setSearchTerm] = useState(""); // free text search
+    const [selectedTopics, setSelectedTopics] = useState([]); // multi-select: topics
+    const [selectedAge, setSelectedAge] = useState("all"); // single-select: age range
+    const [sortBy, setSortBy] = useState("latest"); // single-select: latest | top_rated
 
     // fetch stories on mount and normalize data into MOCK
     useEffect(() => {
