@@ -12,16 +12,14 @@ import {
     deleteAgeGroup,
     getContactMessages
 } from "../mocks/mockApi";
-
-/* ===================== MODAL COMPONENT ===================== */
 function ConfirmModal({ message, onConfirm, onCancel }) {
     return (
-        <div style={modalOverlay}>
-            <div style={modalBox}>
+        <div className="admin-modal-overlay">
+            <div className="admin-modal-box">
                 <p>{message}</p>
                 <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", marginTop: "16px" }}>
-                    <button style={btnCancel} onClick={onCancel}>إلغاء</button>
-                    <button style={btnConfirm} onClick={onConfirm}>حذف</button>
+                    <button className="admin-btn-cancel" onClick={onCancel}>إلغاء</button>
+                    <button className="admin-btn-confirm" onClick={onConfirm}>حذف</button>
                 </div>
             </div>
         </div>
@@ -36,7 +34,6 @@ export default function AdminDashboard() {
     const [messages, setMessages] = useState([]);
     const [newCategory, setNewCategory] = useState("");
     const [newAgeGroup, setNewAgeGroup] = useState("");
-
     const [modal, setModal] = useState({ show: false, action: null, message: "" });
 
     useEffect(() => {
@@ -50,17 +47,9 @@ export default function AdminDashboard() {
     const showConfirm = (message, action) => {
         setModal({ show: true, message, action });
     };
+    const handleConfirm = () => { if (modal.action) modal.action(); setModal({ show: false, action: null, message: "" }); };
+    const handleCancel = () => setModal({ show: false, action: null, message: "" });
 
-    const handleConfirm = () => {
-        if (modal.action) modal.action();
-        setModal({ show: false, action: null, message: "" });
-    };
-
-    const handleCancel = () => {
-        setModal({ show: false, action: null, message: "" });
-    };
-
-    /* ===================== DELETION HANDLERS ===================== */
     const handleDeleteUser = (id) =>
         showConfirm("هل أنت متأكد من حذف هذا المستخدم؟", () =>
             deleteUserById(id).then(() => setUsers(users.filter(u => u.id !== id)))
@@ -81,7 +70,6 @@ export default function AdminDashboard() {
             deleteAgeGroup(age).then(() => setAgeGroups(ageGroups.filter(a => a !== age)))
         );
 
-    /* ===================== ADD HANDLERS ===================== */
     const handleAddCategory = () => {
         if (!newCategory) return;
         addCategory(newCategory).then(() => {
@@ -99,81 +87,83 @@ export default function AdminDashboard() {
     };
 
     return (
-        <div style={container}>
-            <h1 style={title}>لوحة التحكم</h1>
+        <div className="admin-container">
+            <h1 className="admin-title">لوحة التحكم</h1>
 
             {/* Users */}
-            <section style={section}>
-                <h2 style={sectionTitle}>المستخدمون</h2>
-                <div style={cardGrid}>
+            <section className="admin-section">
+                <h2 className="admin-section-title">المستخدمون</h2>
+                <div className="admin-card-grid">
                     {users.map(u => (
-                        <div key={u.id} style={card}>
+                        <div key={u.id} className="admin-card">
                             <p>{u.name}</p>
-                            <p style={email}>{u.email}</p>
-                            <button style={btnDelete} onClick={() => handleDeleteUser(u.id)}>حذف</button>
+                            <p className="admin-email">{u.email}</p>
+                            <button className="admin-btn-delete" onClick={() => handleDeleteUser(u.id)}>حذف</button>
                         </div>
                     ))}
                 </div>
             </section>
 
             {/* Comments */}
-            <section style={section}>
-                <h2 style={sectionTitle}>التعليقات</h2>
-                <div style={cardGrid}>
+            <section className="admin-section">
+                <h2 className="admin-section-title">التعليقات</h2>
+                <div className="admin-card-grid">
                     {comments.map(c => (
-                        <div key={c.id} style={card}>
+                        <div key={c.id} className="admin-card">
                             <p>{c.text}</p>
-                            <p style={meta}>— {c.user}</p>
-                            <button style={btnDelete} onClick={() => handleDeleteComment(c.id)}>حذف</button>
+                            <p className="admin-meta">— {c.user}</p>
+                            <button className="admin-btn-delete" onClick={() => handleDeleteComment(c.id)}>حذف</button>
                         </div>
                     ))}
                 </div>
             </section>
 
             {/* Categories */}
-            <section style={section}>
-                <h2 style={sectionTitle}>الفئات</h2>
-                <div style={inputRow}>
-                    <input value={newCategory} onChange={e => setNewCategory(e.target.value)} placeholder="فئة جديدة" style={input} />
-                    <button style={btnAdd} onClick={handleAddCategory}>إضافة</button>
+            <section className="admin-section">
+                <h2 className="admin-section-title">الفئات</h2>
+                <div className="admin-input-row">
+                    <input value={newCategory} onChange={e => setNewCategory(e.target.value)} placeholder="فئة جديدة" className="admin-input" />
+                    <button className="admin-btn-add" onClick={handleAddCategory}>إضافة</button>
                 </div>
-                <div style={cardGrid}>
+                <div className="admin-card-grid">
                     {categories.map(c => (
-                        <div key={c} style={card}>
+                        <div key={c} className="admin-card">
                             <p>{c}</p>
-                            <button style={btnDelete} onClick={() => handleDeleteCategory(c)}>حذف</button>
+                            <button className="admin-btn-delete" onClick={() => handleDeleteCategory(c)}>حذف</button>
                         </div>
                     ))}
                 </div>
             </section>
 
             {/* Age Groups */}
-            <section style={section}>
-                <h2 style={sectionTitle}>الفئات العمرية</h2>
-                <div style={inputRow}>
-                    <input value={newAgeGroup} onChange={e => setNewAgeGroup(e.target.value)} placeholder="فئة عمرية جديدة" style={input} />
-                    <button style={btnAdd} onClick={handleAddAgeGroup}>إضافة</button>
+            <section className="admin-section">
+                <h2 className="admin-section-title">الفئات العمرية</h2>
+                <div className="admin-input-row">
+                    <input value={newAgeGroup} onChange={e => setNewAgeGroup(e.target.value)} placeholder="فئة عمرية جديدة" className="admin-input" />
+                    <button className="admin-btn-add" onClick={handleAddAgeGroup}>إضافة</button>
                 </div>
-                <div style={cardGrid}>
+                <div className="admin-card-grid">
                     {ageGroups.map(a => (
-                        <div key={a} style={card}>
+                        <div key={a} className="admin-card">
                             <p>{a}</p>
-                            <button style={btnDelete} onClick={() => handleDeleteAgeGroup(a)}>حذف</button>
+                            <button className="admin-btn-delete" onClick={() => handleDeleteAgeGroup(a)}>حذف</button>
                         </div>
                     ))}
                 </div>
             </section>
 
             {/* Contact Messages */}
-            <section style={section}>
-                <h2 style={sectionTitle}>رسائل التواصل</h2>
-                <div style={cardGrid}>
-                    {messages.map(m => (
-                        <div key={m.id} style={card}>
+            <section className="admin-section">
+                <h2 className="admin-section-title">رسائل التواصل</h2>
+                <div className="admin-card-grid">
+                    {messages.map((m) => (
+                        <div key={m.id} className="admin-card">
                             <p><strong>{m.name}</strong></p>
-                            <p><a href={`mailto:${m.email}`} style={email}>{m.email}</a></p>
+                            <p>
+                                <a href={`mailto:${m.email}`} className="admin-email">{m.email}</a>
+                            </p>
                             <p>{m.message}</p>
-                            {m.responded && <p style={reply}>تم الرد: {m.reply}</p>}
+                            {m.responded && <p className="admin-reply">تم الرد: {m.reply}</p>}
                         </div>
                     ))}
                 </div>
@@ -183,26 +173,4 @@ export default function AdminDashboard() {
         </div>
     );
 }
-
-/* ===================== STYLES ===================== */
-const container = { padding: "20px" };
-const title = { fontSize: "2rem", marginBottom: "20px", textAlign: "center" };
-const section = { marginBottom: "30px" };
-const sectionTitle = { fontSize: "1.5rem", marginBottom: "10px" };
-const cardGrid = { display: "grid", gap: "16px", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" };
-const card = { background: "#fff", padding: "12px", borderRadius: "12px", boxShadow: "0 2px 6px rgba(0,0,0,0.1)", display: "flex", flexDirection: "column", gap: "6px" };
-const btnDelete = { padding: "6px 10px", background: "#E74C3C", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" };
-const btnAdd = { padding: "6px 12px", background: "#4A90E2", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" };
-const inputRow = { display: "flex", gap: "8px", marginBottom: "12px" };
-const input = { flex: 1, padding: "6px 10px", borderRadius: "8px", border: "1px solid #ccc" };
-const email = { color: "#007BFF", fontSize: "0.85rem" };
-const meta = { fontSize: "0.8rem", color: "#555" };
-const reply = { color: "green", fontWeight: "bold" };
-
-/* ===================== MODAL STYLES ===================== */
-const modalOverlay = { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 999 };
-const modalBox = { background: "#fff", padding: "20px", borderRadius: "12px", maxWidth: "300px", width: "100%", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" };
-const btnConfirm = { padding: "6px 12px", background: "#E74C3C", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer" };
-const btnCancel = { padding: "6px 12px", background: "#ccc", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer" };
-
 
