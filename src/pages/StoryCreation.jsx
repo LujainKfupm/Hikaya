@@ -257,7 +257,7 @@ export default function StoryCreation() {
                             <button
                                 type="button"
                                 className={`chip ${
-                                    form.gender === "boy" ? "chip--selected" : ""
+                                    form.gender === "boy" ? "chip-active" : ""
                                 }`}
                                 onClick={() =>
                                     setForm((prev) => ({
@@ -271,7 +271,7 @@ export default function StoryCreation() {
                             <button
                                 type="button"
                                 className={`chip ${
-                                    form.gender === "girl" ? "chip--selected" : ""
+                                    form.gender === "girl" ? "chip-active" : ""
                                 }`}
                                 onClick={() =>
                                     setForm((prev) => ({
@@ -300,7 +300,7 @@ export default function StoryCreation() {
                                         key={topic}
                                         type="button"
                                         className={`chip ${
-                                            selected ? "chip--selected" : ""
+                                            selected ? "chip-active" : ""
                                         }`}
                                         onClick={() => toggleTopic(topic)}
                                     >
@@ -326,7 +326,7 @@ export default function StoryCreation() {
                                         key={moral}
                                         type="button"
                                         className={`chip ${
-                                            selected ? "chip--selected" : ""
+                                            selected ? "chip-active" : ""
                                         }`}
                                         onClick={() => toggleMoral(moral)}
                                     >
