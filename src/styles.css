@@ -684,6 +684,7 @@ body {
 }
 
 .form-input {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     width: 100%;
     padding: 8px 10px;
     border-radius: 8px;
@@ -1390,6 +1391,7 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
 .btn-toggle-filters:active { transform: translateY(1px); }
 
 .search-input {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     width: 100%;
     border: 1px solid var(--lib-border);
     background: #fff;
@@ -1400,7 +1402,9 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     box-shadow: var(--lib-shadow-sm);
     transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
 }
-.search-input::placeholder { color: #999; }
+.search-input::placeholder {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
+    color: #999; }
 .search-input:focus {
     outline: none;
     border-color: var(--lib-blue);
@@ -1432,6 +1436,7 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     gap: 8px;
 }
 .chip {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     appearance: none;
     border: 1px solid var(--lib-border);
     background: #ffffff;
