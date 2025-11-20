@@ -207,6 +207,17 @@ export default function StoryLibrary() {
                 </div>
             )}
 
+            {/* results meta (count) */}
+            <div className="results-meta">
+                {visibleStories.length} قصة
+            </div>
+
+            <div className="story-grid">
+                {visibleStories.map((s) => (
+                    // ... نفس بطاقة القصة الحالية
+                ))}
+            </div>
+
 
 
             <div className="story-grid">
