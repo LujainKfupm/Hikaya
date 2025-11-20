@@ -188,6 +188,39 @@ export default function StoryView() {
           </span>
                 )}
             </div>
+            <div className="comment-box">
+                <h3>التعليقات</h3>
+                {story.comments && story.comments.length > 0 ? (
+                    story.comments.map((c) => (
+                        <div key={c.id} className="comment-item">
+                            <p><strong>{c.name}</strong> — {formatDate(c.date)}</p>
+                            <p>{c.text}</p>
+                            {user?.role === "admin" && (
+                                <button
+                                    className="btn-delete"
+                                    onClick={() => showConfirm(c.id)}
+                                >
+                                    حذف
+                                </button>
+                            )}
+                        </div>
+                    ))
+                ) : (
+                    <p className="no-comments">لا توجد تعليقات بعد.</p>
+                )}
+            </div>
+
+            {modal.show && (
+                <ConfirmModal
+                    message="هل أنت متأكد من حذف هذا التعليق؟"
+                    onConfirm={handleConfirm}
+                    onCancel={handleCancel}
+                />
+            )}
+        </>
+    );
+}
+
 
 
 
