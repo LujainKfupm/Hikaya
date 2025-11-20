@@ -50,6 +50,16 @@ export default function StoryView() {
 
     const [hoverRating, setHoverRating] = useState(0);
     const [selectedRating, setSelectedRating] = useState(0);
-
-
+    useEffect(() => {
+        let alive = true;
+        getStoryById(id)
+            .then((data) => {
+                if (!alive) return;
+                setStory(data || { notFound: true });
+            })
+            .catch(() => {
+                if (alive) setStory({ notFound: true });
+            });
+        return () => { alive = false; };
+    }, [id]);
 
