@@ -1253,7 +1253,7 @@ body {
     cursor: pointer;
     padding: 8px 12px;
     color: #fff;
-    background: #A7D3F6; /* pastel blue */
+    background: #A7D3F6;
     align-self: flex-start;
     text-decoration: none;
 }
@@ -1269,7 +1269,7 @@ body {
     cursor: pointer;
     padding: 4px 8px;
     color: #fff;
-    background: #F7C4C4; /* pastel red */
+    background: #F7C4C4;
 }
 
 .story-card-btn-confirm {
@@ -1277,7 +1277,7 @@ body {
 }
 
 .story-card-btn-cancel {
-    background: #AEE1D4; /* pastel green */
+    background: #AEE1D4;
     color: #fff;
 }
 
@@ -1314,9 +1314,57 @@ body {
 }
 
 .story-card-btn-cancel {
-    background: #AEE1D4; /* pastel green */
+    background: #AEE1D4;
     color: #fff;
 }
+/* story view style */
+.back-row { margin-bottom: 12px; }
+.back-link { color: #4A90E2; text-decoration: none; }
+
+.cover-wrap { border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
+.cover-img { width: 100%; height: auto; border-radius: 14px; }
+
+.story-title { font-size: 1.8rem; margin-bottom: 6px; }
+.info-row { display: flex; gap: 10px; flex-wrap: wrap; color: #555; font-size: .9rem; }
+.info-item { display: flex; align-items: center; gap: 4px; }
+
+.rating-box { display: flex; align-items: center; gap: 6px; margin: 10px 0; }
+.rating-value { color: #000; font-weight: bold; }
+.rating-count { color: #777; font-size: .85rem; }
+
+.moral-box { background: #F6E6A7; padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; }
+.body-text { line-height: 1.7; font-size: 1rem; color: #333; white-space: pre-line; margin-bottom: 20px; }
+
+.comment-box { margin-top: 24px; padding: 16px; border: 1px solid #eee; border-radius: 10px; }
+.comment-item { border-top: 1px solid #eee; padding-top: 8px; margin-top: 8px; }
+.no-comments { color: #777; }
+.btn-delete { background: #F7C4C4; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; margin-top: 6px; }
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 300px;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; }
+.btn-confirm { padding: 6px 12px; background: #F7C4C4; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+.btn-cancel { padding: 6px 12px; background: #AEE1D4; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+
+
+
 
 
 
