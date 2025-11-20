@@ -88,6 +88,27 @@ export default function StoryView() {
         }
     }
 
+    const canRate = !!user;
+
+    const handleRate = (value) => {
+        if (!canRate) return;
+        setSelectedRating(value);
+        setStory((prev) => {
+            if (!prev) return prev;
+            const currentAvg = Number(prev.rating ?? prev.ratingAvg ?? 0);
+            const currentCount = Number(prev.ratingsCount ?? prev.ratingCount ?? 0);
+            const nextCount = currentCount + 1;
+            const nextAvg = (currentAvg * currentCount + value) / (nextCount || 1);
+            return {
+                ...prev,
+                rating: nextAvg,
+                ratingAvg: nextAvg,
+                ratingsCount: nextCount,
+                ratingCount: nextCount,
+            };
+        });
+    };
+
 
 
 
