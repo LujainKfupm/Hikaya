@@ -1294,6 +1294,25 @@ body {
     background: #AEE1D4;
     color: #fff;
 }
+
+:root {
+    --lib-blue: #A7D3F6;
+    --lib-blue-dark: #82B7E0;
+    --lib-yellow: #F6E6A7;
+    --lib-green: #AEE1D4;
+    --lib-text: #222;
+    --lib-muted: #f5f5f8;
+    --lib-border: #e5e7eb;
+    --lib-shadow-sm: 0 2px 6px rgba(0,0,0,0.05);
+    --lib-shadow-md: 0 6px 18px rgba(15,23,42,0.06);
+    --lib-radius: 12px;
+    --lib-radius-pill: 999px;
+}
+
+html[dir="rtl"] .tools-bar,
+html[dir="rtl"] .filter-panel { direction: rtl; }
+
+
 /* story view style */
 .back-row { margin-bottom: 12px; }
 .back-link { color: #4A90E2; text-decoration: none; }
