@@ -167,6 +167,48 @@ export default function StoryLibrary() {
                         </div>
                     </div>
 
+                    {/* age single-select */}
+                    <div className="filter-section">
+                        <div className="filter-title">تصفية حسب العمر</div>
+                        <div className="pills">
+                            {AGE_RANGES.map((a) => (
+                                <button
+                                    key={a}
+                                    type="button"
+                                    className={pill ${selectedAge === a ? "pill-active" : ""}}
+                                    onClick={() => setSelectedAge(a)}
+                                >
+                                    {a === "all" ? "الكل" : ${a} سنوات}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* sort single-select */}
+                    <div className="filter-section">
+                        <div className="filter-title">ترتيب حسب</div>
+                        <div className="pills">
+                            <button
+                                type="button"
+                                className={pill ${sortBy === "latest" ? "pill-active" : ""}}
+                                onClick={() => setSortBy("latest")}
+                            >
+                                الأحدث
+                            </button>
+                            <button
+                                type="button"
+                                className={pill ${sortBy === "top_rated" ? "pill-active" : ""}}
+                                onClick={() => setSortBy("top_rated")}
+                            >
+                                الأعلى تقييماً
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
+
             <div className="story-grid">
                 {MOCK.map((s) => (
                     <div className="story-card" key={s.id}>
