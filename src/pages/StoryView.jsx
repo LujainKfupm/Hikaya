@@ -112,6 +112,16 @@ export default function StoryView() {
     if (!story) return <p>جاري تحميل القصة...</p>;
     if (story.notFound) return <p>لم يتم العثور على القصة.</p>;
 
+    return (
+        <>
+            <div className="back-row">
+                <Link to="/library" className="back-link">العودة إلى المكتبة →</Link>
+            </div>
+
+            <div className="cover-wrap">
+                <img src={resolveCover(story)} alt={story.title} className="cover-img" />
+            </div>
+
 
 
 
