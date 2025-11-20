@@ -1,53 +1,37 @@
 import { Link } from "react-router-dom";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getStories, deleteStoryById } from "../mocks/mockApi";
 import { Star, Calendar, Baby } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
-const MOCK = [];
-
-function ConfirmModal({ message, onConfirm, onCancel }) {
-    return (
-        <div className="modal-overlay">
-            <div className="modal-box">
-                <p>{message}</p>
-                <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", marginTop: "16px" }}>
-                    <button className="story-card-btn-cancel" onClick={onCancel}>لا</button>
-                    <button className="story-card-btn-confirm" onClick={onConfirm}>نعم</button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 export default function StoryLibrary() {
-    const [, force] = useState(0);
-    const mounted = useRef(false);
     const { user } = useAuth();
     const isAdmin = user?.role === "admin";
+
+    const [stories, setStories] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [modal, setModal] = useState({ show: false, storyId: null });
 
-    const [showFilters, setShowFilters] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedTopics, setSelectedTopics] = useState([]);
-    const [selectedAge, setSelectedAge] = useState("all");
-    const [sortBy, setSortBy] = useState("latest");
-
-    const TOPICS = useMemo(
-        () => [
-            "Adventure", "Nature", "Magic", "Animals", "Ocean", "Space",
-            "Family", "Friendship", "Culture", "Music", "Sports",
-            "Fantasy", "Science Fiction", "Perseverance", "Teamwork", "Environment",
-        ],
-        []
-    );
-    const AGE_RANGES = ["all", "3-5", "6-8", "9-12"];
-
     useEffect(() => {
-        mounted.current = true;
-        getStories({ publicOnly: false, sortBy: "date_desc" }).then((data) => {
-            if (!mounted.current) return;
-            const normalized = data.map((s) => ({
+        let alive = true;
+        (async () => {
+            try {
+                setLoading(true);
+                const data = await getStories({ publicOnly: false, sortBy: "date_desc" });
+                if (!alive) return;
+                setStories(data || []);
+            } finally {
+                if (alive) setLoading(false);
+            }
+        })();
+        return () => {
+            alive = false;
+        };
+    }, []);
+
+    const normalized = useMemo(
+        () =>
+            stories.map((s) => ({
                 id: s.id,
                 title: s.title,
                 author: s.author ?? "—",
@@ -58,188 +42,157 @@ export default function StoryLibrary() {
                 ageRange: s.ageRange ?? "—",
                 date: s.createdAt ?? s.date,
                 commentsCount: s.commentsCount ?? s.comments?.length ?? 0,
-            }));
-            MOCK.splice(0, MOCK.length, ...normalized);
-            force((x) => x + 1);
-        });
-        return () => { mounted.current = false; };
-    }, []);
+            })),
+        [stories]
+    );
 
     const showDeleteModal = (id) => setModal({ show: true, storyId: id });
-    const handleConfirmDelete = () => {
-        if (!modal.storyId) return;
-        deleteStoryById(modal.storyId).then(() => {
-            const index = MOCK.findIndex((s) => s.id === modal.storyId);
-            if (index !== -1) MOCK.splice(index, 1);
-            force((x) => x + 1);
-            setModal({ show: false, storyId: null });
-        });
-    };
-    const handleCancelDelete = () => setModal({ show: false, storyId: null });
 
-    const visibleStories = useMemo(() => {
-        const q = searchTerm.trim().toLowerCase();
-        let list = MOCK.filter((s) => {
-            if (!q) return true;
-            const hay = [s.title, s.author, s.topic, s.moral].join(' ').toLowerCase();
-            return hay.includes(q);
-        });
-        if (selectedTopics.length > 0) {
-            const set = new Set(selectedTopics.map((t) => t.toLowerCase()));
-            list = list.filter((s) => set.has(String(s.topic).toLowerCase()));
-        }
-        if (selectedAge !== "all") {
-            list = list.filter((s) => String(s.ageRange).includes(selectedAge));
-        }
-        if (sortBy === "top_rated") {
-            list = [...list].sort((a, b) => Number(b.rating) - Number(a.rating));
-        } else {
-            list = [...list].sort((a, b) => {
-                const ad = new Date(a.date ?? 0).getTime();
-                const bd = new Date(b.date ?? 0).getTime();
-                return bd - ad;
-            });
-        }
-        return list;
-    }, [searchTerm, selectedTopics, selectedAge, sortBy]);
+    const handleConfirmDelete = async () => {
+        const id = modal.storyId;
+        setModal({ show: false, storyId: null });
+        await deleteStoryById(id);
+        setStories((prev) => prev.filter((s) => s.id !== id));
+    };
+
+    const handleCancelDelete = () => setModal({ show: false, storyId: null });
 
     return (
         <>
             <h1>المكتبة العامة</h1>
 
-            <div className="tools-bar">
-                <button
-                    type="button"
-                    className="btn-toggle-filters"
-                    onClick={() => setShowFilters((v) => !v)}
-                >
-                    {showFilters ? "إخفاء الفلاتر" : "إظهار الفلاتر"}
-                </button>
+            <p className="results-meta">
+                {loading ? "جارٍ جلب القصص..." : (normalized.length+"قصة")}
+            </p>
 
-                <input
-                    className="search-input"
-                    type="search"
-                    placeholder="ابحث عن قصص..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
-
-            {showFilters && (
-                <div className="filter-panel">
-                    <div className="filter-section">
-                        <div className="filter-title">تصفية حسب الموضوع</div>
-                        <div className="chips">
-                            {TOPICS.map((t) => {
-                                const active = selectedTopics.includes(t);
-                                return (
-                                    <button
-                                        key={t}
-                                        type="button"
-                                        className={"chip " + (active ? "chip-active" : "")}
-                                        onClick={() => {
-                                            setSelectedTopics((prev) =>
-                                                prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
-                                            );
-                                        }}
-                                    >
-                                        {t}
-                                    </button>
-                                );
-                            })}
+            {loading ? (
+                <div className="story-grid">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="story-card" style={{ padding: 12 }}>
+                            <div
+                                style={{
+                                    width: "100%",
+                                    height: 170,
+                                    borderRadius: 12,
+                                    background: "#eee",
+                                }}
+                            />
+                            <div
+                                style={{
+                                    height: 16,
+                                    marginTop: 12,
+                                    width: "70%",
+                                    background: "#eee",
+                                    borderRadius: 8,
+                                }}
+                            />
+                            <div
+                                style={{
+                                    height: 12,
+                                    marginTop: 8,
+                                    width: "40%",
+                                    background: "#eee",
+                                    borderRadius: 8,
+                                }}
+                            />
                         </div>
-                    </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="story-grid">
+                    {normalized.map((s) => (
+                        <div className="story-card" key={s.id}>
+                            <div className="story-card-image-wrapper">
+                                <img
+                                    src={s.cover}
+                                    alt={s.title}
+                                    className="story-card-image"
+                                    loading="lazy"
+                                    width={640}
+                                    height={430}
+                                />
+                                <div className="story-card-rating">
+                                    <Star size={14} color="#f5c518" /> {safeRating(s.rating)}
+                                </div>
+                            </div>
 
-                    <div className="filter-section">
-                        <div className="filter-title">تصفية حسب العمر</div>
-                        <div className="pills">
-                            {AGE_RANGES.map((a) => (
-                                <button
-                                    key={a}
-                                    type="button"
-                                    className={"pill " + (selectedAge === a ? "pill-active" : "")}
-                                    onClick={() => setSelectedAge(a)}
+                            <div className="story-card-body">
+                                <h3 className="story-card-title">{s.title}</h3>
+                                <p className="story-card-meta">المؤلف: {s.author}</p>
+
+                                <div className="story-card-info-row">
+                  <span className="story-card-info-item">
+                    <Calendar size={14} /> {formatDate(s.date)}
+                  </span>
+                                    <span className="story-card-info-item">
+                    <Baby size={14} /> {s.ageRange}
+                  </span>
+                                </div>
+
+                                <p className="story-card-topic">
+                                    {s.topic} • {s.moral}
+                                </p>
+                                <p className="story-card-comments">
+                                    💬 {s.commentsCount} تعليقات
+                                </p>
+
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        gap: "8px",
+                                        marginTop: "8px",
+                                    }}
                                 >
-                                    {a === "all" ? "الكل" : a + " سنوات"}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                                    <Link
+                                        to={"/story/" + s.id}
+                                        className="story-card-btn"
+                                        target="_self"
+                                    >
+                                        قراءة
+                                    </Link>
 
-                    <div className="filter-section">
-                        <div className="filter-title">ترتيب حسب</div>
-                        <div className="pills">
+                                    {isAdmin && (
+                                        <button
+                                            onClick={() => showDeleteModal(s.id)}
+                                            className="story-card-btn-delete"
+                                        >
+                                            حذف
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {modal.show && (
+                <div className="modal-overlay">
+                    <div className="modal-box">
+                        <p>هل أنت متأكد من حذف هذه القصة؟</p>
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: "12px",
+                                justifyContent: "flex-end",
+                                marginTop: "16px",
+                            }}
+                        >
                             <button
-                                type="button"
-                                className={"pill " + (sortBy === "latest" ? "pill-active" : "")}
-                                onClick={() => setSortBy("latest")}
+                                className="story-card-btn-cancel"
+                                onClick={handleCancelDelete}
                             >
-                                الأحدث
+                                لا
                             </button>
                             <button
-                                type="button"
-                                className={"pill " + (sortBy === "top_rated" ? "pill-active" : "")}
-                                onClick={() => setSortBy("top_rated")}
+                                className="story-card-btn-confirm"
+                                onClick={handleConfirmDelete}
                             >
-                                الأعلى تقييماً
+                                نعم
                             </button>
                         </div>
                     </div>
                 </div>
-            )}
-
-            <div className="results-meta">
-                {visibleStories.length} قصة
-            </div>
-
-            <div className="story-grid">
-                {visibleStories.map((s) => (
-                    <div className="story-card" key={s.id}>
-                        <div className="story-card-image-wrapper">
-                            <img src={s.cover} alt={s.title} className="story-card-image" />
-                            <div className="story-card-rating">
-                                <Star size={14} color="#f5c518" /> {safeRating(s.rating)}
-                            </div>
-                        </div>
-
-                        <div className="story-card-body">
-                            <h3 className="story-card-title">{s.title}</h3>
-                            <p className="story-card-meta">المؤلف: {s.author}</p>
-
-                            <div className="story-card-info-row">
-                <span className="story-card-info-item">
-                  <Calendar size={14} /> {formatDate(s.date)}
-                </span>
-                                <span className="story-card-info-item">
-                  <Baby size={14} /> {s.ageRange}
-                </span>
-                            </div>
-
-                            <p className="story-card-topic">{s.topic} • {s.moral}</p>
-                            <p className="story-card-comments">💬 {s.commentsCount} تعليقات</p>
-
-                            <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
-                                <Link to={"/story/" + s.id} className="story-card-btn">قراءة</Link>
-                                {isAdmin && (
-                                    <button
-                                        onClick={() => showDeleteModal(s.id)}
-                                        className="story-card-btn-delete"
-                                    >
-                                        حذف
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {modal.show && (
-                <ConfirmModal
-                    message="هل أنت متأكد من حذف هذه القصة؟"
-                    onConfirm={handleConfirmDelete}
-                    onCancel={handleCancelDelete}
-                />
             )}
         </>
     );
@@ -248,8 +201,7 @@ export default function StoryLibrary() {
 function formatDate(iso) {
     if (!iso) return "—";
     try {
-        const d = new Date(iso);
-        return d.toLocaleDateString("ar-SA");
+        return new Date(iso).toLocaleDateString("ar-SA");
     } catch {
         return iso;
     }
