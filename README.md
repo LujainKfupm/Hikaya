@@ -92,8 +92,16 @@ npm run dev
 
 ---
 
+##  Tools & Technologies Used
+- **React.js** — Main front-end framework
+- **JavaScript** — All application logic
+- **CSS (styles.css)** — Custom styling for all pages and components
+- **Node.js & npm** — Required runtime for React
+- **Git & GitHub** — Version control and team collaboration
+
+---
 ##  Notes
 - The project uses  `mockApi.js` instead of a backend.
 - All stories, categories, and users are stored in `mockApi.js`.
-
+- npm install react-feather is required.
 ---
