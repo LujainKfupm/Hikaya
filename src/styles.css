@@ -1397,6 +1397,30 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
 }
 
 
+.pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.pill {
+    appearance: none;
+    border: 1px solid var(--lib-border);
+    background: #ffffff;
+    color: var(--lib-text);
+    padding: 8px 12px;
+    border-radius: var(--lib-radius-pill);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color .16s ease, border-color .16s ease, transform .1s ease;
+}
+.pill:hover { background-color: #f0f4ff; transform: translateY(-1px); }
+.pill-active {
+    border-color: var(--lib-blue);
+    background: rgba(167, 211, 246, 0.25);
+    color: #000;
+}
+
+
 /* story view style */
 .back-row { margin-bottom: 12px; }
 .back-link { color: #4A90E2; text-decoration: none; }
