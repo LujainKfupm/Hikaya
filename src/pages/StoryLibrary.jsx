@@ -126,3 +126,18 @@ export default function StoryLibrary() {
         </>
     );
 }
+// helper functions to format date and safely handle rating display
+function formatDate(iso) {
+    if (!iso) return "—";
+    try {
+        const d = new Date(iso);
+        return d.toLocaleDateString("ar-SA");
+    } catch {
+        return iso;
+    }
+}
+
+function safeRating(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toFixed(1) : "0.0";
+}
