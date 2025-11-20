@@ -13,7 +13,7 @@ body {
 
 body {
     margin: 0;
-    font-family: system-ui, "Tajawal", sans-serif;
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     background-color: #f5f5f8;
     color: #222;
     direction: rtl;
@@ -34,6 +34,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 20;
+    padding: 1px 0;
 }
 
 .nav {
@@ -41,10 +42,10 @@ body {
     grid-template-columns: auto 1fr auto;  /* logo | links | actions */
     grid-template-areas: "logo links actions";
     align-items: center;
-    padding: 12px 24px;
+    padding: 20px 32px;
     max-width: 1100px;
     margin: 0 auto;
-    column-gap: 16px;
+    column-gap: 24px;
 }
 
 /* Logo on the right (RTL handles side) */
@@ -56,7 +57,7 @@ body {
 }
 
 .logo-img {
-    max-height: 30px;
+    max-height: 40px;
     width: auto;
     object-fit: contain;
 }
@@ -83,7 +84,7 @@ body {
     text-decoration: none;
     color: #7AB8E3;
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     padding-bottom: 2px;
     border-bottom: 2px solid transparent;
     transition: color 0.18s ease, border-color 0.18s ease;
@@ -98,7 +99,8 @@ body {
     background-color: #A7D3F6;
     color: #fff;
     border: none;
-    padding: 8px 16px;
+    padding: 12px 24px;
+    font-size: 1rem;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 500;
@@ -274,17 +276,16 @@ body {
     padding: 32px 16px;
     direction: rtl;
     text-align: center;
-    font-family: "Tajawal", sans-serif;
 }
 
 .footer-top {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 24px;
-    align-items: flex-start;
-    max-width: 1100px;
+    gap: 20px;
+    align-items: center;
+    max-width: 700px;
+    justify-content: center;
     margin: 0 auto 16px;  /* align with page width */
-    text-align: center;
 }
 
 
@@ -380,7 +381,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     direction: rtl;
-    font-family: "Tajawal", sans-serif;
+    font-family: "Baloo Bhaijaan 2", sans-serif;
 }
 
 .contact-container h2 {
@@ -438,7 +439,7 @@ body {
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 15px;
-    font-family: "Tajawal", sans-serif;
+    font-family: "Baloo Bhaijaan 2", sans-serif;
     line-height: 1.5;
     outline: none;
     transition: border-color 0.2s ease;
@@ -446,7 +447,7 @@ body {
 
 .contact-form input::placeholder,
 .contact-form textarea::placeholder {
-    font-family: "Tajawal", sans-serif;
+    font-family: "Baloo Bhaijaan 2", sans-serif;
     color: #aaa;
 }
 
@@ -497,7 +498,7 @@ body {
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    font-family: "Tajawal", sans-serif;
+    font-family: "Baloo Bhaijaan 2", sans-serif;
     direction: rtl;
 }
 
@@ -739,26 +740,50 @@ body {
     display: flex;
     justify-content: flex-start;
 }
-
+/* ───────── Responsive: Header & Hero ───────── */
 @media (max-width: 768px) {
     .nav {
-        grid-template-columns: auto auto;
+        grid-template-columns: auto 1fr;
         grid-template-areas:
             "logo actions"
             "links links";
-        row-gap: 10px;
+        text-align: center;
+        row-gap: 12px;
         padding: 10px 12px;
+    }
+
+    .logo {
+        justify-content: right;
     }
 
     .nav-links {
         justify-content: center;
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 10px;
         width: 100%;
     }
 
     .nav-actions {
         justify-self: end;
+    }
+    .hero-section {
+        flex-direction: column-reverse;
+        text-align: center;
+        padding: 24px 12px;
+    }
+
+    .hero-image {
+        width: 100%;
+        max-width: 260px;
+        margin: 0 auto;
+    }
+
+    .hero-heading {
+        font-size: 1.6rem;
+    }
+
+    .hero-description {
+        font-size: 0.95rem;
     }
 }
 
@@ -787,6 +812,15 @@ body {
     }
 
 }
+@media (max-width: 480px) {
+    .auth-dialog-box {
+        width: 90% !important;
+        max-height: 90vh;
+        padding: 14px !important;
+        overflow-y: auto;
+    }
+}
+
 
 .chip-group {
     display: flex;
@@ -848,7 +882,9 @@ body {
     padding: 24px;
     position: relative;
     direction: rtl;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
 .auth-close-btn {
