@@ -109,6 +109,9 @@ export default function StoryView() {
         });
     };
 
+    if (!story) return <p>جاري تحميل القصة...</p>;
+    if (story.notFound) return <p>لم يتم العثور على القصة.</p>;
+
 
 
 
