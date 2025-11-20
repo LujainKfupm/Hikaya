@@ -37,16 +37,19 @@ body {
 }
 
 .nav {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;  /* logo | links | actions */
+    grid-template-areas: "logo links actions";
     align-items: center;
-    justify-content: space-between;
     padding: 12px 24px;
     max-width: 1100px;
     margin: 0 auto;
-    gap: 16px;
+    column-gap: 16px;
 }
 
+/* Logo on the right (RTL handles side) */
 .logo {
+    grid-area: logo;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -58,12 +61,22 @@ body {
     object-fit: contain;
 }
 
+/* Center nav links */
 .nav-links {
+    grid-area: links;
     display: flex;
     gap: 20px;
     justify-content: center;
     align-items: center;
-    flex: 1;
+}
+
+/* Buttons block on the left */
+.nav-actions {
+    grid-area: actions;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start; /* stays grouped to the left side */
 }
 
 .nav-links a {
@@ -79,12 +92,6 @@ body {
 .nav-links a:hover {
     color: #000;
     border-color: #F6E6A7;
-}
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: flex-end;
 }
 
 .nav-actions button {
@@ -735,23 +742,26 @@ body {
 
 @media (max-width: 768px) {
     .nav {
-        flex-wrap: wrap;
-        gap: 10px;
+        grid-template-columns: auto auto;
+        grid-template-areas:
+            "logo actions"
+            "links links";
+        row-gap: 10px;
         padding: 10px 12px;
     }
 
     .nav-links {
-        order: 3;
-        width: 100%;
         justify-content: center;
         flex-wrap: wrap;
         gap: 12px;
+        width: 100%;
     }
 
     .nav-actions {
-        order: 2;
+        justify-self: end;
     }
 }
+
 
 @media (max-width: 640px) {
     .page,
