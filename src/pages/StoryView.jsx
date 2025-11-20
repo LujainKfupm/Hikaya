@@ -78,6 +78,18 @@ export default function StoryView() {
 
     const handleCancel = () => setModal({ show: false, commentId: null });
 
+    function formatDate(iso) {
+        if (!iso) return "—";
+        try {
+            const d = new Date(iso);
+            return d.toLocaleDateString("ar-SA");
+        } catch {
+            return iso;
+        }
+    }
+
+
+
 
 
 
