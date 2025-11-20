@@ -65,3 +65,64 @@ export default function StoryLibrary() {
         });
     };
     const handleCancelDelete = () => setModal({ show: false, storyId: null });
+    // render stories list, info cards, and conditional confirm modal
+    return (
+        <>
+            <h1>المكتبة العامة</h1>
+
+            <div className="story-notice">
+                <strong>📚 تصفح كل القصص:</strong> يمكنك اكتشاف جميع القصص المتاحة في الموقع.
+            </div>
+
+            <div className="story-grid">
+                {MOCK.map((s) => (
+                    <div className="story-card" key={s.id}>
+                        <div className="story-card-image-wrapper">
+                            <img src={s.cover} alt={s.title} className="story-card-image" />
+                            <div className="story-card-rating">
+                                <Star size={14} color="#f5c518" /> {safeRating(s.rating)}
+                            </div>
+                        </div>
+
+                        <div className="story-card-body">
+                            <h3 className="story-card-title">{s.title}</h3>
+                            <p className="story-card-meta">المؤلف: {s.author}</p>
+
+                            <div className="story-card-info-row">
+                                <span className="story-card-info-item">
+                                    <Calendar size={14} /> {formatDate(s.date)}
+                                </span>
+                                <span className="story-card-info-item">
+                                    <Baby size={14} /> {s.ageRange}
+                                </span>
+                            </div>
+
+                            <p className="story-card-topic">{s.topic} • {s.moral}</p>
+                            <p className="story-card-comments">💬 {s.commentsCount} تعليقات</p>
+
+                            <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                                <Link to={"/story/" + s.id} className="story-card-btn">قراءة</Link>
+                                {isAdmin && (
+                                    <button
+                                        onClick={() => showDeleteModal(s.id)}
+                                        className="story-card-btn-delete"
+                                    >
+                                        حذف
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {modal.show && (
+                <ConfirmModal
+                    message="هل أنت متأكد من حذف هذه القصة؟"
+                    onConfirm={handleConfirmDelete}
+                    onCancel={handleCancelDelete}
+                />
+            )}
+        </>
+    );
+}
