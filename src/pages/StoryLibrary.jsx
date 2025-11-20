@@ -121,6 +121,24 @@ export default function StoryLibrary() {
             <div className="story-notice">
                 <strong>📚 تصفح كل القصص:</strong> يمكنك اكتشاف جميع القصص المتاحة في الموقع.
             </div>
+            {/* search + filter toggle bar (styles in external CSS) */}
+            <div className="tools-bar">
+                <button
+                    type="button"
+                    className="btn-toggle-filters"
+                    onClick={() => setShowFilters((v) => !v)}
+                >
+                    {showFilters ? "إخفاء الفلاتر" : "إظهار الفلاتر"}
+                </button>
+
+                <input
+                    className="search-input"
+                    type="search"
+                    placeholder="ابحث عن قصص..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
 
             <div className="story-grid">
                 {MOCK.map((s) => (
