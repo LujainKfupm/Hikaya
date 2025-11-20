@@ -79,6 +79,40 @@ export default function StoryLibrary() {
         });
     };
     const handleCancelDelete = () => setModal({ show: false, storyId: null });
+
+    // derive visible stories using search + filters + sort
+    const visibleStories = useMemo(() => {
+        // apply search (title/author/topic/moral)
+        const q = searchTerm.trim().toLowerCase();
+        let list = MOCK.filter((s) => {
+            if (!q) return true;
+            const hay = ${s.title} ${s.author} ${s.topic} ${s.moral}.toLowerCase();
+            return hay.includes(q);
+        });
+
+        // apply topics multi-select: if none selected => keep all
+        if (selectedTopics.length > 0) {
+            const set = new Set(selectedTopics.map((t) => t.toLowerCase()));
+            list = list.filter((s) => set.has(String(s.topic).toLowerCase()));
+        }
+
+        // apply age single-select
+        if (selectedAge !== "all") {
+            list = list.filter((s) => String(s.ageRange).includes(selectedAge));
+        }
+
+        // sorting: latest by date desc OR top_rated by rating desc
+        if (sortBy === "top_rated") {
+            list = [...list].sort((a, b) => Number(b.rating) - Number(a.rating));
+        } else {
+            list = [...list].sort((a, b) => {
+                const ad = new Date(a.date ?? 0).getTime();
+                const bd = new Date(b.date ?? 0).getTime();
+                return bd - ad;
+            });
+        }
+        return list;
+    }, [searchTerm, selectedTopics, selectedAge, sortBy]);
     // render stories list, info cards, and conditional confirm modal
     return (
         <>
