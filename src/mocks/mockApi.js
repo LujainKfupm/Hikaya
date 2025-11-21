@@ -1,6 +1,7 @@
 export const TOPICS = ["صداقة", "فضاء", "مدرسة", "مغامرة", "عائلة"];
 export const VALUES = ["الصدق", "الشجاعة", "الاحترام", "التعاون", "المثابرة"];
 export const AGE_RANGES = ["3-5", "6-8", "9-12"];
+import userLibraryImg from "../assets/ai story cover.jpg";
 
 
 export let STORIES = [
@@ -99,6 +100,46 @@ export let STORIES = [
         visibility: "public"
     }
 ];
+export let USER_STORIES = [{
+    id: "201",
+    title: "رحلة مريم إلى عالم الأحلام",
+    author: "فريق حكايـة",
+    ageRange: "6-8",
+    topics: ["فضاء", "مغامرة"],
+    values: ["الشجاعة"],
+    ratingAvg: 4.8,
+    ratingCount: 10,
+    createdAt: "2025-11-01",
+    cover: userLibraryImg,
+    visibility: "private",
+    body: `
+في ليلةٍ هادئة، حلمت مريم بأنها تطير بين النجوم والكواكب. 
+بدأت رحلتها في سفينة فضائية صغيرة، وكان لديها مصابيح سحرية تساعدها على رؤية المسافات البعيدة. 
+التقت بمخلوقات لطيفة من كواكب بعيدة، وتعلمت منهم كيف يكون الشجاعة والإبداع مفتاحًا لمواجهة أي خوف. 
+خلال مغامرتها، عبرت المذنبات وتعلّمت أن المثابرة تساعدها على الوصول إلى أي هدف تضعه في ذهنها. 
+عندما استيقظت في صباح اليوم التالي، شعرت بمزيد من الثقة والحماس لمواجهة يومها الجديد.`
+},
+    {
+        id: "202",
+        title: "أحمد واكتشاف الغابة السحرية",
+        author: "فريق حكايـة",
+        ageRange: "9-12",
+        topics: ["مغامرة", "صداقة"],
+        values: ["التعاون"],
+        ratingAvg: 4.9,
+        ratingCount: 8,
+        createdAt: "2025-11-05",
+        cover: userLibraryImg,
+        visibility: "private",
+        body: `
+قرر أحمد استكشاف الغابة الغامضة القريبة من منزله في صباح مشمس. 
+في طريقه، وجد أشجارًا تتحدث وحيوانات ودودة تعلمه أهمية الصداقة والتعاون. 
+التقى بأصدقاء جدد من الحيوانات السحرية، وساعدوه في حل الألغاز واكتشاف الأماكن المخفية. 
+تعلم أحمد أن العمل الجماعي والمساعدة المتبادلة تجعل أي مهمة أسهل وأكثر متعة، 
+وأنه عندما نساعد الآخرين، نصنع ذكريات لا تُنسى. 
+عند غروب الشمس، عاد أحمد إلى منزله سعيدًا وفخورًا بما تعلمه خلال رحلته.`
+    }]
+
 
 // helpers (front-end only)
 export function addStory(s) {
@@ -199,7 +240,10 @@ export function getStories(options = {}) {
 export function getStoryById(id) {
     return new Promise((resolve) => {
         setTimeout(() => {
-            const s = STORIES.find((st) => String(st.id) === String(id));
+            let s = STORIES.find((st) => String(st.id) === String(id));
+            if (!s) {
+                s = USER_STORIES.find((st) => String(st.id) === String(id));
+            }
             resolve(s ? normalize(s) : null);
         }, DELAY);
     });
