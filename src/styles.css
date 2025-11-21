@@ -1547,6 +1547,106 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; }
 .btn-confirm { padding: 6px 12px; background: #F7C4C4; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
 .btn-cancel { padding: 6px 12px; background: #AEE1D4; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+/* ===== StoryView: Comments compose & send ===== */
+
+.comment-box {
+    background: #fff;
+    border: 1px solid var(--lib-border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--lib-shadow-sm);
+}
+
+/* حاوية المدخل + الزر */
+.comment-input-wrap {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    margin: 12px 0 16px;
+}
+
+/* خانة كتابة التعليق */
+.comment-input {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
+    width: 100%;
+    min-height: 110px;
+    padding: 12px 14px;
+    border: 1px solid var(--lib-border);
+    border-radius: 10px;
+    background: #f9fafb;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    resize: vertical;
+    outline: none;
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.comment-input:focus {
+    border-color: var(--lib-blue);
+    background-color: #fff;
+    box-shadow: 0 0 0 1px rgba(167,211,246,.35);
+}
+
+/* زر نشر التعليق — نفس روح btn-primary بالموقع */
+.comment-send-btn {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
+    background-color: var(--lib-blue);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: .95rem;
+    cursor: pointer;
+    height: fit-content;
+    align-self: start;
+    box-shadow: var(--lib-shadow-sm);
+    transition: background-color .2s ease, transform .12s ease, box-shadow .2s ease;
+}
+.comment-send-btn:hover:not(:disabled) {
+    background-color: var(--lib-blue-dark);
+    transform: translateY(-1px);
+}
+.comment-send-btn:disabled {
+    opacity: .6;
+    cursor: default;
+    box-shadow: none;
+}
+
+/* ميتا التعليق: الاسم والتاريخ */
+.comment-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+}
+.comment-name { font-weight: 700; color: #111827; }
+.comment-date { color: #777; font-size: .85rem; }
+
+/* بطاقة التعليق (يكمل الموجود عندك) */
+.comment-item {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 10px;
+}
+.comment-item p { margin: 0; }
+.comment-item p + p {
+    margin-top: 6px;
+    color: #333;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+/* موبايل */
+@media (max-width: 640px) {
+    .comment-input-wrap {
+        grid-template-columns: 1fr;
+    }
+    .comment-send-btn {
+        width: 100%;
+    }
+}
 
 /* admin dashboard style */
 .admin-container {
