@@ -8,7 +8,7 @@ import drawingContest from "../assets/drawing_contest.png";
 import spaceJourney from "../assets/space_journey.png";
 import userLibrary from "../assets/user_library.png";
 
-import AuthDialog from "../components/AuthDialog"; // تأكدي من المسار الصحيح
+import AuthDialog from "../components/AuthDialog";
 
 function resolveCover(story) {
     const idKey = String(story?.id || "");
@@ -46,14 +46,14 @@ export default function StoryView() {
     const [story, setStory] = useState(null);
     const [modal, setModal] = useState({ show: false, commentId: null });
 
-    // التقييم
+
     const [hoverRating, setHoverRating] = useState(0);
     const [selectedRating, setSelectedRating] = useState(0);
 
-    // Dialog الدخول
+
     const [authOpen, setAuthOpen] = useState(false);
 
-    // التعليقات
+
     const [newComment, setNewComment] = useState("");
     const canComment = !!user && user.role !== "guest";
 
@@ -126,7 +126,7 @@ export default function StoryView() {
             "مستخدم";
 
         const comment = {
-            id: Date.now(), // مؤقت
+            id: Date.now(),
             name: nameFromUser,
             date: new Date().toISOString(),
             text: txt,
@@ -144,17 +144,17 @@ export default function StoryView() {
 
     return (
         <>
-            {/* رجوع — السهم على اليمين */}
+
             <div className="back-row">
                 <Link to="/library" className="back-link">العودة إلى المكتبة →</Link>
             </div>
 
-            {/* الغلاف */}
+
             <div className="cover-wrap">
                 <img src={resolveCover(story)} alt={story.title} className="cover-img" />
             </div>
 
-            {/* العنوان + معلومات القصة */}
+
             <h1 className="story-title">{story.title}</h1>
 
             <div className="info-row">
@@ -175,7 +175,7 @@ export default function StoryView() {
 
             <div className="body-text">{story.body ?? story.content}</div>
 
-            {/* شريط التقييم */}
+
             <div className="rate-strip" style={{ margin: "14px 0 18px", display: "flex", alignItems: "center", gap: "10px" }}>
                 <span style={{ fontWeight: 700, color: "#111" }}>قيّم هذه القصة:</span>
                 {[1, 2, 3, 4, 5].map((n) => {
@@ -223,11 +223,11 @@ export default function StoryView() {
                 )}
             </div>
 
-            {/* التعليقات */}
+
             <div className="comment-box">
                 <h3>التعليقات</h3>
 
-                {/* إدخال تعليق — يظهر فقط لغير الضيوف */}
+
                 {canComment ? (
                     <div className="comment-input-wrap">
             <textarea
@@ -260,7 +260,7 @@ export default function StoryView() {
                     </p>
                 )}
 
-                {/* قائمة التعليقات */}
+
                 {story.comments && story.comments.length > 0 ? (
                     story.comments.map((c) => (
                         <div key={c.id} className="comment-item">
@@ -292,7 +292,7 @@ export default function StoryView() {
                 />
             )}
 
-            {/* Dialog الدخول */}
+
             <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
         </>
     );
