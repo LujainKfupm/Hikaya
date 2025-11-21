@@ -416,7 +416,7 @@ body {
 }
 
 .faq-hint a:hover {
-    background-color: #A7D3F6;
+    background-color: #82b7e0;
     transform: translateY(-2px);
 }
 
@@ -462,10 +462,11 @@ body {
 }
 
 .contact-button {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     background-color: #A7D3F6;
     color: #fff;
     border: none;
-    padding: 12px;
+    padding: 8px;
     border-radius: 8px;
     font-weight: bold;
     font-size: 16px;
@@ -474,7 +475,7 @@ body {
 }
 
 .contact-button:hover {
-    background-color: #A7D3F6;
+    background-color: #82b7e0;
     transform: translateY(-2px);
 }
 
@@ -575,17 +576,18 @@ body {
 }
 
 .faq-contact a:hover {
-    color: #A7D3F6;
+    color: #82b7e0;
     text-decoration: underline;
 }
 
 .btn {
-    padding: 8px 14px;
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
+    font-size: 14px !important;
+    padding: 9px 14px !important;
     border-radius: 8px;
     border: 1px solid #ddd;
     background-color: #ffffff;
     cursor: pointer;
-    font-size: 0.95rem;
     transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.1s ease;
 }
 
@@ -600,7 +602,12 @@ body {
     cursor: default;
 }
 
+.btn:hover {
+    background-color: #82B7E0 !important;
+}
+
 .btn-primary {
+
     background-color: var(--lib-blue);
     border-color: var(--lib-blue);
     color: #ffffff;
@@ -930,6 +937,7 @@ body {
 }
 
 .auth-tab {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     border: none;
     background: transparent;
     border-radius: 10px;
@@ -939,6 +947,7 @@ body {
 }
 
 .auth-tab.active {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     background: #fff;
     font-weight: bold;
 }
@@ -950,6 +959,7 @@ body {
 .auth-input,
 .auth-input-small,
 .auth-select {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     width: 100%;
     padding: 12px;
     margin-top: 6px;
@@ -968,27 +978,21 @@ body {
 }
 
 .auth-login-btn {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     width: 100%;
     background: #a7d3f6;
     color: #fff;
     padding: 12px;
     border-radius: 10px;
     margin-bottom: 12px;
-    font-size: 15px;
+    font-size: 12px;
     cursor: pointer;
     border: none;
 }
 
-.auth-signup-btn {
-    width: 100%;
-    background: #a7d3f6;
-    color: #fff;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    font-size: 15px;
-    cursor: pointer;
-    border: none;
+.auth-signup-btn:hover, .auth-login-btn:hover {
+    background: #82B7E0FF !important;
+
 }
 
 .auth-section-title {
@@ -1151,6 +1155,14 @@ body {
     cursor: pointer;
 }
 
+.hero-primary-btn:hover {
+    background-color: #82B7E0FF !important;
+}
+
+.hero-secondary-btn:hover {
+    background-color: #F0F4FFFF !important;
+}
+
 .hero-secondary-btn {
     border: 1px solid #A7D3F6;
     padding: 10px 20px;
@@ -1290,7 +1302,7 @@ body {
 }
 
 .story-card-btn:hover {
-    opacity: 0.9;
+    background: #82B7E0FF;
 }
 
 .story-card-btn-delete {
@@ -1567,6 +1579,7 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     gap: 6px;
 }
 .admin-btn-delete {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     padding: 6px 10px;
     background: #F7C4C4; /* pastel red */
     color: #fff;
@@ -1575,6 +1588,7 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     cursor: pointer;
 }
 .admin-btn-add {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     padding: 6px 12px;
     background: #A7D3F6; /* pastel blue */
     color: #fff;
@@ -1588,6 +1602,7 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     margin-bottom: 12px;
 }
 .admin-input {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     flex: 1;
     padding: 6px 10px;
     border-radius: 8px;
@@ -1623,6 +1638,7 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 .admin-btn-confirm {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     padding: 6px 12px;
     background: #F7C4C4; /* pastel red */
     color: #fff;
@@ -1631,6 +1647,7 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     cursor: pointer;
 }
 .admin-btn-cancel {
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
     padding: 6px 12px;
     background: #AEE1D4; /* pastel green */
     color: #fff;
