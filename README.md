@@ -85,7 +85,7 @@ npm run dev
 *Each task includes its related styling and mockApi integration*
 - **Lujain** — Story Creation / Authentication 
 - **Amira** — Story Library / Story View
-- **Meznah** — Admin Dashboard / Contact & FAQs
+- **Meznah** — Admin Dashboard / Contact & FAQs / Prototype update
 - **Fajer** — Homepage / User Library
 
 
