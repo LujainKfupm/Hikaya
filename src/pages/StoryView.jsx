@@ -1,24 +1,22 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getStoryById, deleteCommentById } from "../mocks/mockApi";
 import { Star, Calendar, Baby, User, Lock } from "lucide-react";
 
-
 import drawingContest from "../assets/drawing_contest.png";
 import spaceJourney from "../assets/space_journey.png";
 import userLibrary from "../assets/user_library.png";
 
+import AuthDialog from "../components/AuthDialog"; // تأكدي من المسار الصحيح
 
 function resolveCover(story) {
     const idKey = String(story?.id || "");
     const title = String(story?.title || "").toLowerCase();
     const topic = String(story?.topic || "").toLowerCase();
 
-
     if (idKey === "102") return spaceJourney;
     if (idKey === "103") return drawingContest;
-
 
     if (title.includes("فضاء") || topic.includes("فضاء")) return spaceJourney;
     if (title.includes("رسم") || title.includes("عبدالله") || title.includes("عبد الله")) return drawingContest;
@@ -26,6 +24,7 @@ function resolveCover(story) {
 
     return userLibrary;
 }
+
 function ConfirmModal({ message, onConfirm, onCancel }) {
     return (
         <div className="modal-overlay">
@@ -42,14 +41,22 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
 
 export default function StoryView() {
     const { id } = useParams();
-    const navigate = useNavigate();
     const { user } = useAuth();
 
     const [story, setStory] = useState(null);
     const [modal, setModal] = useState({ show: false, commentId: null });
 
+    // التقييم
     const [hoverRating, setHoverRating] = useState(0);
     const [selectedRating, setSelectedRating] = useState(0);
+
+    // Dialog الدخول
+    const [authOpen, setAuthOpen] = useState(false);
+
+    // التعليقات
+    const [newComment, setNewComment] = useState("");
+    const canComment = !!user && user.role !== "guest";
+
     useEffect(() => {
         let alive = true;
         getStoryById(id)
@@ -89,7 +96,6 @@ export default function StoryView() {
     }
 
     const canRate = !!user;
-
     const handleRate = (value) => {
         if (!canRate) return;
         setSelectedRating(value);
@@ -109,19 +115,46 @@ export default function StoryView() {
         });
     };
 
+    const handlePostComment = () => {
+        const txt = (newComment || "").trim();
+        if (!txt) return;
+
+        const nameFromUser =
+            user?.name ||
+            user?.displayName ||
+            (user?.email ? user.email.split("@")[0] : null) ||
+            "مستخدم";
+
+        const comment = {
+            id: Date.now(), // مؤقت
+            name: nameFromUser,
+            date: new Date().toISOString(),
+            text: txt,
+        };
+
+        setStory((prev) => ({
+            ...prev,
+            comments: [...(prev.comments || []), comment],
+        }));
+        setNewComment("");
+    };
+
     if (!story) return <p>جاري تحميل القصة...</p>;
     if (story.notFound) return <p>لم يتم العثور على القصة.</p>;
 
     return (
         <>
+            {/* رجوع — السهم على اليمين */}
             <div className="back-row">
-                <Link to="/library" className="back-link">→العودة إلى المكتبة </Link>
+                <Link to="/library" className="back-link">العودة إلى المكتبة →</Link>
             </div>
 
+            {/* الغلاف */}
             <div className="cover-wrap">
                 <img src={resolveCover(story)} alt={story.title} className="cover-img" />
             </div>
 
+            {/* العنوان + معلومات القصة */}
             <h1 className="story-title">{story.title}</h1>
 
             <div className="info-row">
@@ -142,6 +175,7 @@ export default function StoryView() {
 
             <div className="body-text">{story.body ?? story.content}</div>
 
+            {/* شريط التقييم */}
             <div className="rate-strip" style={{ margin: "14px 0 18px", display: "flex", alignItems: "center", gap: "10px" }}>
                 <span style={{ fontWeight: 700, color: "#111" }}>قيّم هذه القصة:</span>
                 {[1, 2, 3, 4, 5].map((n) => {
@@ -176,7 +210,7 @@ export default function StoryView() {
                     <button
                         type="button"
                         className="btn"
-                        onClick={() => navigate("/login")}
+                        onClick={() => setAuthOpen(true)}
                         style={{ marginInlineStart: 8, display: "inline-flex", alignItems: "center", gap: 6 }}
                     >
                         <Lock size={16} /> سجّل دخولك للتقييم
@@ -188,12 +222,52 @@ export default function StoryView() {
           </span>
                 )}
             </div>
+
+            {/* التعليقات */}
             <div className="comment-box">
                 <h3>التعليقات</h3>
+
+                {/* إدخال تعليق — يظهر فقط لغير الضيوف */}
+                {canComment ? (
+                    <div className="comment-input-wrap">
+            <textarea
+                className="comment-input"
+                placeholder="اكتب تعليقك هنا..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                rows={3}
+            />
+                        <button
+                            className="comment-send-btn"
+                            onClick={handlePostComment}
+                            disabled={!newComment.trim()}
+                            title="نشر التعليق"
+                        >
+                            نشر التعليق
+                        </button>
+                    </div>
+                ) : (
+                    <p style={{ color: "#777", margin: "10px 0 14px" }}>
+                        يجب تسجيل الدخول لكتابة تعليق.
+                        <button
+                            type="button"
+                            className="btn"
+                            onClick={() => setAuthOpen(true)}
+                            style={{ marginInlineStart: 8 }}
+                        >
+                            تسجيل الدخول
+                        </button>
+                    </p>
+                )}
+
+                {/* قائمة التعليقات */}
                 {story.comments && story.comments.length > 0 ? (
                     story.comments.map((c) => (
                         <div key={c.id} className="comment-item">
-                            <p><strong>{c.name}</strong> — {formatDate(c.date)}</p>
+                            <p className="comment-meta">
+                                <span className="comment-name">{c.name}</span>
+                                <span className="comment-date">{formatDate(c.date)}</span>
+                            </p>
                             <p>{c.text}</p>
                             {user?.role === "admin" && (
                                 <button
@@ -217,11 +291,12 @@ export default function StoryView() {
                     onCancel={handleCancel}
                 />
             )}
+
+            {/* Dialog الدخول */}
+            <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
         </>
     );
 }
-
-
 
 
 
