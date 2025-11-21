@@ -146,7 +146,7 @@ export default function StoryView() {
         <>
 
             <div className="back-row">
-                <Link to="/library" className="back-link">العودة إلى المكتبة →</Link>
+                <Link to="/library" className="back-link">→العودة إلى المكتبة </Link>
             </div>
 
 
