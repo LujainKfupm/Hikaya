@@ -1,16 +1,75 @@
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { getStories, deleteStoryById } from "../mocks/mockApi";
-import { Star, Calendar, Baby } from "lucide-react";
+import {
+    Star,
+    Calendar,
+    Baby,
+    Filter,
+    Search,
+    Tag,
+    Clock,
+    TrendingUp,
+    RefreshCw,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+
+
+const TOPIC_OPTIONS = [
+    { key: "adventure", label: "مغامرة" },
+    { key: "fantasy", label: "خيال" },
+    { key: "science", label: "علمي" },
+    { key: "nature", label: "طبيعة" },
+    { key: "school", label: "مدرسة" },
+    { key: "family", label: "عائلة" },
+    { key: "sports", label: "رياضة" },
+    { key: "space", label: "فضاء" },
+    { key: "animals", label: "حيوانات" },
+    { key: "princesses", label: "أميرات" },
+];
+
+const keyByArabic = Object.fromEntries(TOPIC_OPTIONS.map((o) => [o.label, o.key]));
+const keyByEnglish = {
+    adventure: "adventure",
+    fantasy: "fantasy",
+    science: "science",
+    scientific: "science",
+    nature: "nature",
+    school: "school",
+    family: "family",
+    sports: "sports",
+    sport: "sports",
+    space: "space",
+    animals: "animals",
+    animal: "animals",
+    princesses: "princesses",
+    princess: "princesses",
+};
+
+function normalizeTopicKey(raw) {
+    if (!raw) return null;
+    const s = String(raw).trim();
+    if (keyByArabic[s]) return keyByArabic[s];
+    const e = s.toLowerCase();
+    return keyByEnglish[e] ?? null;
+}
 
 export default function StoryLibrary() {
     const { user } = useAuth();
     const isAdmin = user?.role === "admin";
 
+
     const [stories, setStories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modal, setModal] = useState({ show: false, storyId: null });
+
+
+    const [query, setQuery] = useState("");
+    const [showFilters, setShowFilters] = useState(true);
+    const [age, setAge] = useState("الكل");
+    const [selectedTopics, setSelectedTopics] = useState([]);
+    const [sortBy, setSortBy] = useState("date_desc");
+
 
     useEffect(() => {
         let alive = true;
@@ -29,54 +88,198 @@ export default function StoryLibrary() {
         };
     }, []);
 
+
     const normalized = useMemo(
         () =>
-            stories.map((s) => ({
-                id: s.id,
-                title: s.title,
-                author: s.author ?? "—",
-                rating: Number(s.rating ?? s.ratingAvg ?? 0),
-                moral: s.moral ?? s.values?.[0] ?? "—",
-                topic: s.topic ?? s.topics?.[0] ?? "—",
-                cover: s.cover,
-                ageRange: s.ageRange ?? "—",
-                date: s.createdAt ?? s.date,
-                commentsCount: s.commentsCount ?? s.comments?.length ?? 0,
-            })),
+            stories.map((s) => {
+                const topicRaw = s.topic ?? s.topics?.[0] ?? "—";
+                const topicKey = normalizeTopicKey(topicRaw);
+                return {
+                    id: s.id,
+                    title: s.title,
+                    author: s.author ?? "—",
+                    rating: Number(s.rating ?? s.ratingAvg ?? 0),
+                    moral: s.moral ?? s.values?.[0] ?? "—",
+                    topicRaw,
+                    topicKey,
+                    cover: s.cover,
+                    ageRange: s.ageRange ?? "—",
+                    date: s.createdAt ?? s.date,
+                    commentsCount: s.commentsCount ?? s.comments?.length ?? 0,
+                };
+            }),
         [stories]
     );
 
-    const showDeleteModal = (id) => setModal({ show: true, storyId: id });
 
-    const handleConfirmDelete = async () => {
-        const id = modal.storyId;
-        setModal({ show: false, storyId: null });
-        await deleteStoryById(id);
-        setStories((prev) => prev.filter((s) => s.id !== id));
+    const filtered = useMemo(() => {
+        const q = (query || "").toLowerCase().trim();
+
+        let out = normalized.filter((s) => {
+            const title = String(s.title || "").toLowerCase();
+            const author = String(s.author || "").toLowerCase();
+            const topic = String(s.topicRaw || "").toLowerCase();
+            const moral = String(s.moral || "").toLowerCase();
+
+            const matchesQuery =
+                !q || title.includes(q) || author.includes(q) || topic.includes(q) || moral.includes(q);
+            const matchesAge = age === "الكل" || String(s.ageRange) === age;
+            const matchesTopics =
+                selectedTopics.length === 0 || (s.topicKey && selectedTopics.includes(s.topicKey));
+
+            return matchesQuery && matchesAge && matchesTopics;
+        });
+
+
+        if (sortBy === "rating_desc") {
+            out = out.slice().sort((a, b) => b.rating - a.rating);
+        } else {
+            out = out
+                .slice()
+                .sort((a, b) => (b.date ? new Date(b.date).getTime() : 0) - (a.date ? new Date(a.date).getTime() : 0));
+        }
+
+        return out;
+    }, [normalized, query, age, selectedTopics, sortBy]);
+
+
+    const toggleTopic = (topicKey) => {
+        setSelectedTopics((prev) =>
+            prev.includes(topicKey) ? prev.filter((t) => t !== topicKey) : [...prev, topicKey]
+        );
     };
-
-    const handleCancelDelete = () => setModal({ show: false, storyId: null });
+    const resetFilters = () => {
+        setAge("الكل");
+        setSelectedTopics([]);
+        setSortBy("date_desc");
+    };
 
     return (
         <>
-            <h1>المكتبة العامة</h1>
+            <div className="page-header">
+                <h1 className="page-title">المكتبة العامة</h1>
 
-            <p className="results-meta">
-                {loading ? "جارٍ جلب القصص..." : (normalized.length+"قصة")}
-            </p>
+                <div
+                    className="filters-toolbar"
+                    style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 10 }}
+                >
+                    <button
+                        type="button"
+                        className="btn"
+                        onClick={() => setShowFilters((v) => !v)}
+                        aria-expanded={showFilters}
+                        style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+                    >
+                        <Filter size={16} />
+                        {showFilters ? "إخفاء الفلاتر" : "إظهار الفلاتر"}
+                    </button>
+
+                    <div className="search-wrapper" style={{ flex: 1, maxWidth: 720, position: "relative" }}>
+                        <input
+                            type="text"
+                            className="form-input"
+                            placeholder="ابحث عن قصص..."
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            aria-label="بحث"
+                        />
+                        <Search
+                            size={16}
+                            style={{ position: "absolute", top: 12, left: 12, opacity: 0.55 }}
+                        />
+                    </div>
+                </div>
+
+
+                {showFilters && (
+                    <div className="filter-card" style={{ marginTop: 12 }}>
+
+                        <div className="filter-row">
+                            <div
+                                className="section-title"
+                                style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}
+                            >
+                                <Baby size={16} />
+                                <strong>تصفية حسب العمر</strong>
+                            </div>
+                            <div className="chip-group">
+                                {["الكل", "3-5", "6-8", "9-12"].map((opt) => (
+                                    <button
+                                        key={opt}
+                                        type="button"
+                                        className={"chip" + (age === opt ? " chip--selected" : "")}
+                                        onClick={() => setAge(opt)}
+                                    >
+                                        {opt === "الكل" ? "الكل" : opt + "سنوات"}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+
+                        <div className="filter-row" style={{ marginTop: 16 }}>
+                            <div
+                                className="section-title"
+                                style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}
+                            >
+                                <Tag size={16} />
+                                <strong>تصفية حسب الموضوع</strong>
+                            </div>
+                            <div className="chip-group">
+                                {TOPIC_OPTIONS.map((t) => (
+                                    <button
+                                        key={t.key}
+                                        type="button"
+                                        className={"chip" + (selectedTopics.includes(t.key) ? " chip--selected" : "")}
+                                        onClick={() => toggleTopic(t.key)}
+                                    >
+                                        {t.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="filter-row" style={{ marginTop: 16 }}>
+                            <div
+                                className="section-title"
+                                style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}
+                            >
+                                <Clock size={16} />
+                                <strong>ترتيب حسب</strong>
+                            </div>
+                            <div className="chip-group">
+                                <button
+                                    type="button"
+                                    className={"chip" + (sortBy === "date_desc" ? " chip--selected" : "")}
+                                    onClick={() => setSortBy("date_desc")}
+                                >
+                                    <Clock size={14} /> الأحدث
+                                </button>
+                                <button
+                                    type="button"
+                                    className={"chip" + (sortBy === "rating_desc" ? " chip--selected" : "")}
+                                    onClick={() => setSortBy("rating_desc")}
+                                >
+                                    <TrendingUp size={14} /> الأعلى تقييمًا
+                                </button>
+                                <button type="button" className="chip" onClick={resetFilters}>
+                                    <RefreshCw size={14} /> إعادة ضبط
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <p className="results-meta" style={{ marginTop: 8 }}>
+                    {loading ? "جارٍ تحميل القصص..." : filtered.length + " قصة"}
+                </p>
+            </div>
 
             {loading ? (
                 <div className="story-grid">
-                    {Array.from({ length: 6 }).map((_, i) => (
+                    {Array.from({ length: 3 }).map((_, i) => (
                         <div key={i} className="story-card" style={{ padding: 12 }}>
-                            <div
-                                style={{
-                                    width: "100%",
-                                    height: 170,
-                                    borderRadius: 12,
-                                    background: "#eee",
-                                }}
-                            />
+                            <div style={{ width: "100%", height: 170, borderRadius: 12, background: "#eee" }} />
                             <div
                                 style={{
                                     height: 16,
@@ -100,7 +303,7 @@ export default function StoryLibrary() {
                 </div>
             ) : (
                 <div className="story-grid">
-                    {normalized.map((s) => (
+                    {filtered.map((s) => (
                         <div className="story-card" key={s.id}>
                             <div className="story-card-image-wrapper">
                                 <img
@@ -130,32 +333,17 @@ export default function StoryLibrary() {
                                 </div>
 
                                 <p className="story-card-topic">
-                                    {s.topic} • {s.moral}
+                                    {s.topicRaw} • {s.moral}
                                 </p>
-                                <p className="story-card-comments">
-                                    💬 {s.commentsCount} تعليقات
-                                </p>
+                                <p className="story-card-comments">💬 {s.commentsCount} تعليقات</p>
 
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        gap: "8px",
-                                        marginTop: "8px",
-                                    }}
-                                >
-                                    <Link
-                                        to={"/story/" + s.id}
-                                        className="story-card-btn"
-                                        target="_self"
-                                    >
+                                <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                                    <Link to={"/story/" + s.id} className="story-card-btn" target="_self">
                                         قراءة
                                     </Link>
 
                                     {isAdmin && (
-                                        <button
-                                            onClick={() => showDeleteModal(s.id)}
-                                            className="story-card-btn-delete"
-                                        >
+                                        <button onClick={() => setModal({ show: true, storyId: s.id })} className="story-card-btn-delete">
                                             حذف
                                         </button>
                                     )}
@@ -170,23 +358,17 @@ export default function StoryLibrary() {
                 <div className="modal-overlay">
                     <div className="modal-box">
                         <p>هل أنت متأكد من حذف هذه القصة؟</p>
-                        <div
-                            style={{
-                                display: "flex",
-                                gap: "12px",
-                                justifyContent: "flex-end",
-                                marginTop: "16px",
-                            }}
-                        >
-                            <button
-                                className="story-card-btn-cancel"
-                                onClick={handleCancelDelete}
-                            >
+                        <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", marginTop: 16 }}>
+                            <button className="story-card-btn-cancel" onClick={() => setModal({ show: false, storyId: null })}>
                                 لا
                             </button>
                             <button
                                 className="story-card-btn-confirm"
-                                onClick={handleConfirmDelete}
+                                onClick={async () => {
+                                    await deleteStoryById(modal.storyId);
+                                    setStories((prev) => prev.filter((x) => x.id !== modal.storyId));
+                                    setModal({ show: false, storyId: null });
+                                }}
                             >
                                 نعم
                             </button>
@@ -206,7 +388,6 @@ function formatDate(iso) {
         return iso;
     }
 }
-
 function safeRating(v) {
     const n = Number(v);
     return Number.isFinite(n) ? n.toFixed(1) : "0.0";
