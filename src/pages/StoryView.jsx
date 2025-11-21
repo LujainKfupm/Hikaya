@@ -8,6 +8,7 @@ import { Star, Calendar, Baby, User, Lock } from "lucide-react";
 import drawingContest from "../assets/drawing_contest.png";
 import spaceJourney from "../assets/space_journey.png";
 import userLibrary from "../assets/user_library.png";
+import aiStory from "../assets/ai story cover.jpg";
 
 
 function resolveCover(story) {
@@ -20,9 +21,10 @@ function resolveCover(story) {
     if (idKey === "103") return drawingContest;
 
 
-    if (title.includes("فضاء") || topic.includes("فضاء")) return spaceJourney;
+    if (title.includes("الفضاء") || topic.includes("الشجاعة")) return spaceJourney;
     if (title.includes("رسم") || title.includes("عبدالله") || title.includes("عبد الله")) return drawingContest;
     if (title.includes("كنز") || title.includes("سارة")) return userLibrary;
+    else return aiStory;
 
     return userLibrary;
 }
