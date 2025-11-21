@@ -1,4 +1,4 @@
-export const TOPICS = ["الصداقة", "الفضاء", "المدرسة", "المغامرة", "العائلة"];
+export const TOPICS = ["صداقة", "فضاء", "مدرسة", "مغامرة", "عائلة"];
 export const VALUES = ["الصدق", "الشجاعة", "الاحترام", "التعاون", "المثابرة"];
 export const AGE_RANGES = ["3-5", "6-8", "9-12"];
 
@@ -9,12 +9,12 @@ export let STORIES = [
         title: "سارة ورفاقها في رحلة البحث عن الكنز",
         author: "فريق حكايـة",
         ageRange: "6-8",
-        topics: ["المغامرة"],
+        topics: ["مغامرة"],
         values: ["التعاون"],
         ratingAvg: 4.7,
         ratingCount: 18,
         createdAt: "2025-01-02",
-        cover: "src/assets/drawing_contest.png",
+        cover: "src/assets/user_library.png",
         body: `
 في صباحٍ مشمسٍ مليءٍ بالحماس، اجتمعت سارة ورفاقها في ساحة المدرسة. 
 كانوا قد وجدوا خريطة قديمة في مكتبة الصف تحمل علامات غريبة تشير إلى "كنزٍ مفقود" في الغابة القريبة.
@@ -42,7 +42,7 @@ export let STORIES = [
         title: "رحلة يوسف وريلان إلى الفضاء",
         author: "فريق حكايـة",
         ageRange: "6-8",
-        topics: ["الفضاء"],
+        topics: ["فضاء"],
         values: ["الشجاعة"],
         ratingAvg: 4.9,
         ratingCount: 9,
@@ -74,12 +74,12 @@ export let STORIES = [
         title: "عبدالله ومسابقة الرسم",
         author: "فريق حكايـة",
         ageRange: "3-5",
-        topics: ["العائلة", "المدرسة"],
+        topics: ["عائلة", "مدرسة"],
         values: ["الاحترام"],
         ratingAvg: 5.0,
         ratingCount: 4,
         createdAt: "2025-01-05",
-        cover: "src/assets/user_library.png",
+        cover: "src/assets/drawing_contest.png",
         body: `
 كان عبدالله يحب الرسم منذ صغره، وكان يملأ دفاتره بالألوان والأشكال الجميلة.
 وذات يومٍ أعلنت المدرسة عن "مسابقة الرسم السنوية"، 
