@@ -1,13 +1,12 @@
-import { STORIES } from "../mocks/mockApi";
+import { USER_STORIES } from "../mocks/mockApi";
 import StoryCard from "../components/StoryCard";
-
-import coverImage from "../assets/ai story cover.jpg";
-
 import { BookOpen, Share2, BookCopy, Star } from "lucide-react";
 
 export default function UserLibrary() {
 
-    const mine = STORIES; // demo: load all stories
+    const mine = USER_STORIES.map(s => ({
+        ...s
+    }));
 
     const stats = {
         total: mine.length,
@@ -18,13 +17,6 @@ export default function UserLibrary() {
         ).toFixed(1),
     };
 
-    // Helper function for story image
-    const getStoryImage = (title) => {
-        if (title === "سارة ورفاقها في رحلة البحث عن الكنز") return coverImage;
-        if (title === "رحلة يوسف وريلان إلى الفضاء") return coverImage;
-        if (title === "عبدالله ومسابقة الرسم") return coverImage;
-        return coverImage;
-    };
 
     return (
         <>
@@ -71,7 +63,7 @@ export default function UserLibrary() {
                     <StoryCard
                         key={s.id}
                         story={s}
-                        image={getStoryImage(s.title)}
+                        image={s.cover}
                     />
                 ))}
             </div>
