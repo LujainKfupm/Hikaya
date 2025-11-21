@@ -1547,7 +1547,6 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; }
 .btn-confirm { padding: 6px 12px; background: #F7C4C4; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
 .btn-cancel { padding: 6px 12px; background: #AEE1D4; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
-/* ===== StoryView: Comments compose & send ===== */
 
 .comment-box {
     background: #fff;
@@ -1557,7 +1556,6 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     box-shadow: var(--lib-shadow-sm);
 }
 
-/* حاوية المدخل + الزر */
 .comment-input-wrap {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -1565,7 +1563,6 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     margin: 12px 0 16px;
 }
 
-/* خانة كتابة التعليق */
 .comment-input {
     font-family: "Baloo Bhaijaan 2", sans-serif !important;
     width: 100%;
@@ -1586,7 +1583,6 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     box-shadow: 0 0 0 1px rgba(167,211,246,.35);
 }
 
-/* زر نشر التعليق — نفس روح btn-primary بالموقع */
 .comment-send-btn {
     font-family: "Baloo Bhaijaan 2", sans-serif !important;
     background-color: var(--lib-blue);
@@ -1612,7 +1608,7 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     box-shadow: none;
 }
 
-/* ميتا التعليق: الاسم والتاريخ */
+
 .comment-meta {
     display: flex;
     justify-content: space-between;
@@ -1622,7 +1618,6 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
 .comment-name { font-weight: 700; color: #111827; }
 .comment-date { color: #777; font-size: .85rem; }
 
-/* بطاقة التعليق (يكمل الموجود عندك) */
 .comment-item {
     background: #fff;
     border: 1px solid #eee;
@@ -1638,7 +1633,7 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
     white-space: pre-wrap;
 }
 
-/* موبايل */
+
 @media (max-width: 640px) {
     .comment-input-wrap {
         grid-template-columns: 1fr;
