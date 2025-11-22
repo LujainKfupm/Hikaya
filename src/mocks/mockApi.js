@@ -1,7 +1,7 @@
 export const TOPICS = ["صداقة", "فضاء", "مدرسة", "مغامرة", "عائلة"];
 export const VALUES = ["الصدق", "الشجاعة", "الاحترام", "التعاون", "المثابرة"];
 export const AGE_RANGES = ["3-5", "6-8", "9-12"];
-
+const cover = "src/assets/ai story cover.jpg";
 
 export let STORIES = [
     {
@@ -14,7 +14,7 @@ export let STORIES = [
         ratingAvg: 4.7,
         ratingCount: 18,
         createdAt: "2025-01-02",
-        cover: "src/assets/user_library.png",
+        cover: cover,
         body: `
 في صباحٍ مشمسٍ مليءٍ بالحماس، اجتمعت سارة ورفاقها في ساحة المدرسة. 
 كانوا قد وجدوا خريطة قديمة في مكتبة الصف تحمل علامات غريبة تشير إلى "كنزٍ مفقود" في الغابة القريبة.
@@ -47,7 +47,7 @@ export let STORIES = [
         ratingAvg: 4.9,
         ratingCount: 9,
         createdAt: "2025-01-01",
-        cover: "src/assets/space_journey.png",
+        cover: cover,
         body: `
 في ليلةٍ هادئة، كان يوسف ينظر إلى السماء من نافذة غرفته، يحلم بأن يصبح رائد فضاء.
 فجأةً، ظهر ضوءٌ لامع في السماء، ومنه خرج روبوت صغير قال: 
@@ -79,7 +79,7 @@ export let STORIES = [
         ratingAvg: 5.0,
         ratingCount: 4,
         createdAt: "2025-01-05",
-        cover: "src/assets/drawing_contest.png",
+        cover: cover,
         body: `
 كان عبدالله يحب الرسم منذ صغره، وكان يملأ دفاتره بالألوان والأشكال الجميلة.
 وذات يومٍ أعلنت المدرسة عن "مسابقة الرسم السنوية"، 

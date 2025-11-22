@@ -4,9 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { getStoryById, deleteCommentById } from "../mocks/mockApi";
 import { Star, Calendar, Baby, User, Lock } from "lucide-react";
 
-import drawingContest from "../assets/drawing_contest.png";
-import spaceJourney from "../assets/space_journey.png";
-import userLibrary from "../assets/user_library.png";
+import cover from "../assets/ai story cover.jpg";
 
 import AuthDialog from "../components/AuthDialog";
 
@@ -15,14 +13,14 @@ function resolveCover(story) {
     const title = String(story?.title || "").toLowerCase();
     const topic = String(story?.topic || "").toLowerCase();
 
-    if (idKey === "102") return spaceJourney;
-    if (idKey === "103") return drawingContest;
+    if (idKey === "102") return cover;
+    if (idKey === "103") return cover;
 
-    if (title.includes("فضاء") || topic.includes("فضاء")) return spaceJourney;
-    if (title.includes("رسم") || title.includes("عبدالله") || title.includes("عبد الله")) return drawingContest;
-    if (title.includes("كنز") || title.includes("سارة")) return userLibrary;
+    if (title.includes("فضاء") || topic.includes("فضاء")) return cover;
+    if (title.includes("رسم") || title.includes("عبدالله") || title.includes("عبد الله")) return cover;
+    if (title.includes("كنز") || title.includes("سارة")) return cover;
 
-    return userLibrary;
+    return cover;
 }
 
 function ConfirmModal({ message, onConfirm, onCancel }) {
