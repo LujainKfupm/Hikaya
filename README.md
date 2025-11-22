@@ -100,6 +100,12 @@ npm run dev
 - **Git & GitHub** — Version control and team collaboration
 
 ---
+##  Figma Design
+We have provided a reference Figma design that includes the key screens and functionalities of our application.
+The design is similar to our final front-end implementation but not an exact replica.
+You can view the Figma file here: [Figma Link](https://www.figma.com/design/55rM4GH3BuQTeEGsF2BZhx/Hikaya?node-id=0-1&t=D99zkhWcxxq5n4eb-1)
+
+---
 ##  Notes
 - The project uses  `mockApi.js` instead of a backend.
 - All stories, categories, and users are stored in `mockApi.js`.
