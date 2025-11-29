@@ -133,7 +133,7 @@ export function addComment(id, name, text) {
     );
 }
 
-export const PLACEHOLDER_COVER = "/assets/placeholder.png";
+export const PLACEHOLDER_COVER = "src/assets/ai story cover.jpg";
 const DELAY = 300;
 
 function normalize(story) {

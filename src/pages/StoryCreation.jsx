@@ -1,6 +1,9 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { generateStoryAPI } from "../api";
+import { addStory, PLACEHOLDER_COVER } from "../mocks/mockApi.js";
+
 
 const TOPICS = [
     "مغامرة",
@@ -102,86 +105,58 @@ export default function StoryCreation() {
         return true;
     }
 
-    function buildGeneratedStory(payload) {
-        const { heroName, age, topics, morals, details, gender } = payload;
 
-        const topicMain = topics[0];
-        const topicList =
-            topics.length > 1 ? topics.join("، ") : topicMain || "المغامرات";
-        const moralsList =
-            morals.length > 1 ? morals.join("، ") : morals[0] || "القيم الجميلة";
-
-        const extraDetails = details.trim()
-            ? `\n\nفي أحد الأيام، حدث موقف مميز: ${details.trim()}، وكان هذا الموقف نقطة تحوّل في حياة ${heroName}.`
-            : "";
-
-        if (gender === "boy") {
-            return (
-                `في صباحٍ لطيف في مدينة صغيرة هادئة، كان هناك طفلٌ اسمه ${heroName}، ` +
-                `يبلغ من العمر ${age} سنة. كان ${heroName} يحب عالم ${topicList}، ` +
-                `ويتخيّل دائمًا أن حياته مليئة بالمفاجآت والاكتشافات.\n\n` +
-
-                `في ذلك اليوم، استيقظ ${heroName} وهو يشعر بحماسٍ غريب. نظر من النافذة ورأى أن الشمس تشرق ` +
-                `بلطف، وكأنها تدعوه إلى مغامرة جديدة. قرر ${heroName} أن يتبع قلبه ويخرج ليستكشف العالم من حوله.\n\n` +
-
-                `وأثناء رحلته، واجه مواقف مختلفة جعلته يتعلّم معاني ${moralsList}. ` +
-                `ففي موقفٍ ما، احتاج صديقٌ له إلى المساعدة، فتقدّم ${heroName} بشجاعة ومدّ يد العون. ` +
-                `وفي موقفٍ آخر، كان عليه أن يختار بين قول الحقيقة أو إخفائها، فتذكّر أن ${morals[0] || "الصدق"} ` +
-                `هو الذي يجعل الناس يثقون به ويحبّونه.\n` +
-
-                extraDetails +
-
-                `\n\nمع نهاية اليوم، كان ${heroName} قد تعلّم أن القيم الجميلة ليست مجرد كلمات، ` +
-                `بل أفعال صغيرة يقوم بها كل يوم. عاد إلى البيت وقلبه ممتلئ بالفخر، ` +
-                `وهو يهمس لنفسه: "سأحافظ دائمًا على ${moralsList}، لأنها تجعلني بطلاً حقيقياً في قصّتي وفي حياة من حولي."`
-            );
-        } else {
-            return (
-                `في مدينةٍ هادئة مليئة بالأشجار والزهور، كانت تعيش طفلة لطيفة اسمها ${heroName}، ` +
-                `تبلغ من العمر ${age} سنة. كانت ${heroName} تحب عالم ${topicList}، ` +
-                `وتقضي وقتها في التخيّل والرسم وطرح الأسئلة عن كل شيء من حولها.\n\n` +
-
-                `في صباحٍ مشمس، استيقظت ${heroName} وهي تشعر بأن هذا اليوم سيكون مختلفًا. ` +
-                `ارتدت ملابسها المفضّلة، وحملت حقيبتها الصغيرة، وقررت أن تنطلق في مغامرة جديدة ` +
-                `تبحث فيها عن معنى ${moralsList}.\n\n` +
-
-                `خلال رحلتها، قابلت ${heroName} أشخاصًا وحيوانات وأصدقاء جدداً. ` +
-                `في أحد المواقف، رأت طفلاً حزيناً يجلس وحده، فاقتربت منه بابتسامة وشاركت معه لعبتها، ` +
-                `وتعلّمت معنى ${morals[0] || "اللطف"} وأن كلمة طيبة يمكن أن تغيّر يوم شخصٍ كامل. ` +
-                `وفي موقفٍ آخر، احتاجت أن تتحلّى بـ${morals[1] || "الصبر"} كي تصل إلى هدفها، ` +
-                `فتعلّمت أن الاستعجال لا يقود دائماً إلى أفضل النتائج.\n` +
-
-                extraDetails +
-
-                `\n\nمع غروب الشمس، عادت ${heroName} إلى بيتها وهي تشعر بالامتنان. ` +
-                `جلست بجانب نافذتها، ونظرت إلى السماء، وقالت بهدوء: "اليوم تعلّمت أن ${moralsList} ` +
-                `تجعل قلبي أكثر نوراً، وتساعدني أن أكون بطلة قصّتي الخاصة."`
-            );
-        }
-    }
-
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
         if (!validate()) return;
 
         setIsSubmitting(true);
         setGeneratedStory("");
 
+        const ageNumber = Number(form.age);
+
         const storyPayload = {
-            ...form,
-            age: Number(form.age),
+            heroName: form.heroName,
+            age: ageNumber,
+            gender: form.gender,
+            topics: form.topics,
+            morals: form.morals,
+            details: form.details,
+            isPublic: form.isPublic,
             createdBy: isLoggedIn ? user.email : "guest",
             createdAt: new Date().toISOString(),
         };
 
-        // api backend added later
-        setTimeout(() => {
-            setIsSubmitting(false);
+        try {
+            // 1) Call backend (OpenAI)
+            const data = await generateStoryAPI(storyPayload);
+            // data = { story, saved, storyId }
+            setGeneratedStory(data.story);
 
-            const storyText = buildGeneratedStory(storyPayload);
-            setGeneratedStory(storyText);
+            // 2) ALSO add to mockApi so existing UI keeps working
+            const ageRange =
+                ageNumber <= 5 ? "3-5" :
+                    ageNumber <= 8 ? "6-8" : "9-12";
 
-            console.log("Story to send to backend:", storyPayload);
+            const newStoryForMock = {
+                id: data.storyId || crypto.randomUUID(), // fallback if no id
+                title: `قصة ${form.heroName}`,
+                author: isLoggedIn ? (user.name || user.email) : "ضيف",
+                ageRange,
+                topics: form.topics,
+                values: form.morals,        // mockApi uses "values" not "morals"
+                ratingAvg: 0,
+                ratingCount: 0,
+                createdAt: new Date().toISOString().slice(0, 10),
+                cover: PLACEHOLDER_COVER,
+                body: data.story,
+                comments: [],
+                visibility:
+                    isLoggedIn && user.role === "admin" && form.isPublic
+                        ? "public"
+                        : "private",            };
+
+            addStory(newStoryForMock);
 
             if (isLoggedIn) {
                 toast.success("تم إنشاء القصة وحفظها في مكتبتي ✨");
@@ -195,8 +170,19 @@ export default function StoryCreation() {
                 age: "",
                 details: "",
             }));
-        }, 600);
+        } catch (err) {
+            console.error(err);
+            toast.error(err.message || "حدث خطأ أثناء إنشاء القصة من الخادم");
+
+            // (اختياري) fallback: استخدمي المولد المحلي
+            // const storyText = buildGeneratedStory(storyPayload);
+            // setGeneratedStory(storyText);
+        } finally {
+            setIsSubmitting(false);
+        }
     }
+
+
 
     return (
         <div className="page">
@@ -358,11 +344,24 @@ export default function StoryCreation() {
                                 onChange={handleChange}
                                 disabled={!isLoggedIn}
                             />
-                            <span>
-                                جعل القصة <strong>عامة</strong> في المكتبة
-                                {!isLoggedIn && " (يتطلب تسجيل الدخول)"}
-                            </span>
+
+                            {isLoggedIn ? (
+                                user.role === "admin" ? (
+                                    <span>
+                نشر القصة في <strong>المكتبة العامة</strong>
+            </span>
+                                ) : (
+                                    <span>
+                حفظ القصة في <strong>مكتبتي</strong>
+            </span>
+                                )
+                            ) : (
+                                <span>
+            سجّلي الدخول لتحديد مكان حفظ القصة
+        </span>
+                            )}
                         </label>
+
                     </div>
                 </div>
 
