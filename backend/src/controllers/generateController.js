@@ -133,6 +133,12 @@ export async function generateStory(req, res, next) {
         let savedStory = null;
         try {
             const userId = req.user ? req.user.id || req.user._id : null;
+            let finalIsPublic = false;
+
+        // Only admins are allowed to publish public stories
+            if (req.user && req.user.role === "admin") {
+                finalIsPublic = isPublic; // whatever the form said
+            }
 
             savedStory = await Story.create({
                 user: userId,
@@ -143,7 +149,7 @@ export async function generateStory(req, res, next) {
                 morals,
                 details,
                 content: storyText,
-                isPublic,
+                isPublic: finalIsPublic,
             });
         } catch (dbErr) {
             // Log but don't block the response

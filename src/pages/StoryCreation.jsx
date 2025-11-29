@@ -151,8 +151,10 @@ export default function StoryCreation() {
                 cover: PLACEHOLDER_COVER,
                 body: data.story,
                 comments: [],
-                visibility: form.isPublic && isLoggedIn ? "public" : "private",
-            };
+                visibility:
+                    isLoggedIn && user.role === "admin" && form.isPublic
+                        ? "public"
+                        : "private",            };
 
             addStory(newStoryForMock);
 
@@ -342,11 +344,24 @@ export default function StoryCreation() {
                                 onChange={handleChange}
                                 disabled={!isLoggedIn}
                             />
-                            <span>
-                                جعل القصة <strong>عامة</strong> في المكتبة
-                                {!isLoggedIn && " (يتطلب تسجيل الدخول)"}
-                            </span>
+
+                            {isLoggedIn ? (
+                                user.role === "admin" ? (
+                                    <span>
+                نشر القصة في <strong>المكتبة العامة</strong>
+            </span>
+                                ) : (
+                                    <span>
+                حفظ القصة في <strong>مكتبتي</strong>
+            </span>
+                                )
+                            ) : (
+                                <span>
+            سجّلي الدخول لتحديد مكان حفظ القصة
+        </span>
+                            )}
                         </label>
+
                     </div>
                 </div>
 
