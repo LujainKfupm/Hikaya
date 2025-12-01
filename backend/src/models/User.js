@@ -18,35 +18,39 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
-const userSchema = new mongoose.Schema(
-    {
-        name: {
-            type: String,
-            required: [true, "Name is required"],
-            trim: true,
-        },
-        email: {
-            type: String,
-            required: [true, "Email is required"],
-            unique: true,
-            lowercase: true,
-            trim: true,
-        },
-        password: {
-            type: String,
-            required: [true, "Password is required"],
-            minlength: 6,
-        },
-        role: {
-            type: String,
-            enum: ["user", "admin", "guest"],
-            default: "user",
-        },
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, "الاسم مطلوب"],
+        minlength: [2, "الاسم يجب أن يكون أطول من حرفين"]
     },
-    { timestamps: true }
-);
 
-// Hash password before saving
+    email: {
+        type: String,
+        required: [true, "البريد الإلكتروني مطلوب"],
+        unique: true,
+        lowercase: true,
+        match: [
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            "صيغة البريد الإلكتروني غير صحيحة"
+        ]
+    },
+
+    password: {
+        type: String,
+        required: [true, "كلمة المرور مطلوبة"],
+        minlength: [6, "كلمة المرور يجب أن تكون ستّة أحرف على الأقل"]
+    },
+
+    role: {
+        type: String,
+        enum: ["user", "admin"],
+        default: "user"
+    }
+}, { timestamps: true });
+
+
+// Hash password
 userSchema.pre("save", async function () {
     if (!this.isModified("password")) return;
 
@@ -55,10 +59,4 @@ userSchema.pre("save", async function () {
 });
 
 
-// compare password during login
-userSchema.methods.matchPassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
-};
-
-const User = mongoose.model("User", userSchema);
-export default User;
+export default mongoose.model("User", userSchema);
