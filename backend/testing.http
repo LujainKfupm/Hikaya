@@ -21,5 +21,5 @@ Content-Type: application/json
 
 ### Get logged-in user info (protected)
 GET http://localhost:3000/api/auth/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MmQzNzExZDQ4ZjM0YThjMTI2OWZjYiIsImlhdCI6MTc2NDU4MjYwMSwiZXhwIjoxNzY3MTc0NjAxfQ.U9ybRv47JdlDb9s8mp96qIdiZjzobypT81B4B6ZaEso
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MmQzNzExZDQ4ZjM0YThjMTI2OWZjYiIsImlhdCI6MTc2NDYxNjk5MywiZXhwIjoxNzY3MjA4OTkzfQ.H5gUdbr5o4dihlQiJeyLP19od8Mzw2oqBYx7mE0o_XQ
 

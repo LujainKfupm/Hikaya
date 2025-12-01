@@ -1,46 +1,94 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
 
-const DEMO_USERS = [
-    { email: 'admin@hikaya.com', password: 'admin123', role: 'admin', name: 'مشرف' },
-    { email: 'demo@example.com', password: 'demo123', role: 'user',  name: 'مستخدم' },
-];
+const API_BASE = "http://localhost:3000/api/auth";
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(() => {
-        const saved = localStorage.getItem('hikaya_user');
-        return saved ? JSON.parse(saved) : null;
-    });
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    function login(email, password) {
-        const found = DEMO_USERS.find(
-            u => u.email === email && u.password === password
-        );
+    // Restore user on page reload
+    useEffect(() => {
+        const token = localStorage.getItem("hikaya_token");
+        if (!token) {
+            setLoading(false);
+            return;
+        }
 
-        if (!found) return { ok:false, msg:'بيانات الدخول غير صحيحة' };
+        fetch(`${API_BASE}/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (data) setUser(data);
+            })
+            .finally(() => setLoading(false));
+    }, []);
 
-        setUser(found);
-        localStorage.setItem('hikaya_user', JSON.stringify(found));
-        return { ok:true };
+
+    // Login
+    async function login(email, password) {
+        try {
+            const res = await fetch(`${API_BASE}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) return { ok: false, msg: data.message || "خطأ" };
+
+            // Save token and user
+            localStorage.setItem("hikaya_token", data.token);
+            setUser(data);
+
+            return { ok: true };
+
+        } catch (err) {
+            return { ok: false, msg: "فشل الاتصال بالخادم" };
+        }
     }
-    function signup(newUser) {
-        localStorage.setItem("hikaya_user", JSON.stringify(newUser));
-        setUser(newUser);
 
-        return { ok: true };
+    // Sign-up
+    async function signup({ name, email, password }) {
+        try {
+            const res = await fetch(`${API_BASE}/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, password })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                // return backend message
+                return { ok: false, msg: data.message || "حدث خطأ" };
+            }
+
+            // Save token and user
+            localStorage.setItem("hikaya_token", data.token);
+            setUser(data);
+
+            return { ok: true };
+
+        } catch (err) {
+            return { ok: false, msg: "فشل الاتصال بالخادم" };
+        }
     }
 
-
+    // Log-out
     function logout() {
+        localStorage.removeItem("hikaya_token");
         setUser(null);
-        localStorage.removeItem('hikaya_user');
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, signup }}>
+        <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );
 }
+

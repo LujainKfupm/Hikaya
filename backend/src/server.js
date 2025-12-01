@@ -23,6 +23,7 @@ import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import storyRoutes from "./routes/storyRoutes.js";
 import generateRoutes from "./routes/generateRoutes.js";
+import {AdminAccount} from "./utils/adminAccount.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(express.json());
 
 // Connect DB
 connectDB(process.env.MONGO_URL);
+await AdminAccount();
 
 // Route Mounting
 app.use("/api/auth", authRoutes);

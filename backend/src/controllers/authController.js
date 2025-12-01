@@ -6,25 +6,20 @@ export const register = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
 
-        // Basic validation
         if (!name || !email || !password) {
             return res.status(400).json({ message: "الرجاء تعبئة جميع الحقول" });
         }
-
         const normalizedEmail = String(email).toLowerCase().trim();
+        const existingUser = await User.findOne({ email: normalizedEmail});
 
-        // Check if user exists
-        const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
-            return res.status(400).json({ message: "المستخدم موجود بالفعل" });
+            return res.status(400).json({ message: "البريد الإلكتروني مستخدم مسبقاً" });
         }
-
-        // Create new user
         const user = await User.create({
             name: name.trim(),
             email: normalizedEmail,
             password,
-            role: role || "user",
+            role: role || "user"
         });
 
         return res.status(201).json({
@@ -34,9 +29,20 @@ export const register = async (req, res) => {
             role: user.role,
             token: generateToken(user._id),
         });
+
     } catch (error) {
         console.error("Register error:", error);
-        return res.status(500).json({ message: error.message });
+
+        if (error.code === 11000) {
+            return res.status(400).json({ message: "البريد الإلكتروني مستخدم مسبقاً" });
+        }
+
+        if (error.name === "ValidationError") {
+            const firstError = Object.values(error.errors)[0].message;
+            return res.status(400).json({ message: firstError });
+        }
+
+        return res.status(500).json({ message: "حدث خطأ غير متوقع" });
     }
 };
 
