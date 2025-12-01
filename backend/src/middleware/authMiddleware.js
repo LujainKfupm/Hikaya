@@ -1,17 +1,33 @@
-/**
- * middleware/authMiddleware.js
- * -------------------------------------
- * Middleware to verify JWT tokens.
- *
- * Steps:
- *   - read Authorization header
- *   - extract token
- *   - verify using jwt.verify()
- *   - attach user info to req.user
- *   - call next() if valid
- *   - return 401 if invalid
- */
+// middleware/authMiddleware.js
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-// TODO: implement auth checks
+export const protect = async (req, res, next) => {
+    let token;
 
-export const protect = () => {};
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith("Bearer")
+    ) {
+        try {
+            token = req.headers.authorization.split(" ")[1];
+            if (!process.env.JWT_SECRET) {
+                return res.status(500).json({ message: "Server misconfiguration" });
+            }
+
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            // attach user (without password) to req.user
+            req.user = await User.findById(decoded.id).select("-password");
+            if (!req.user) {
+                return res.status(401).json({ message: "Not authorized, user not found" });
+            }
+
+            return next();
+        } catch (error) {
+            console.error("Auth middleware error:", error);
+            return res.status(401).json({ message: "Not authorized, token failed" });
+        }
+    }
+
+    return res.status(401).json({ message: "Not authorized, no token" });
+};

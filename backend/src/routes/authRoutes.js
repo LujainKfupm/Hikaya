@@ -1,22 +1,12 @@
-/**
- * routes/authRoutes.js
- * -------------------------------------
- * Defines REST API endpoints for authentication.
- *
- * Should include:
- *   POST /register
- *   POST /login
- *   GET /me
- *
- * Should import:
- *   - express.Router()
- *   - authController
- *   - authMiddleware (for /me)
- */
-
+// routes/authRoutes.js
 import express from "express";
+import { register, login, getMe } from "../controllers/authController.js";
+import { protect } from "../middleware/authMiddleware.js";
+
 const router = express.Router();
 
-// TODO: add routes
+router.post("/register", register);
+router.post("/login", login);
+router.get("/me", protect, getMe);
 
 export default router;
