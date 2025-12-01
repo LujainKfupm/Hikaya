@@ -1,72 +1,90 @@
+// controllers/authController.js
 import User from "../models/User.js";
-import jwt from "jsonwebtoken";
+import generateToken from "../utils/generateToken.js";
 
-// Helper to generate JWT
-const generateToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-    });
-};
-
-// Register a new user
 export const register = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
+
+        // Basic validation
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "الرجاء تعبئة جميع الحقول" });
+        }
+
+        const normalizedEmail = String(email).toLowerCase().trim();
 
         // Check if user exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
-            return res.status(400).json({ message: "User already exists" });
+            return res.status(400).json({ message: "المستخدم موجود بالفعل" });
         }
 
         // Create new user
-        const user = await User.create({ name, email, password });
+        const user = await User.create({
+            name: name.trim(),
+            email: normalizedEmail,
+            password,
+            role: role || "user",
+        });
 
-        res.status(201).json({
+        return res.status(201).json({
             _id: user._id,
             name: user.name,
             email: user.email,
+            role: user.role,
             token: generateToken(user._id),
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Register error:", error);
+        return res.status(500).json({ message: error.message });
     }
 };
 
-// Login for existing user
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        // Find user by email
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: "Invalid credentials" });
+        if (!email || !password) {
+            return res.status(400).json({ message: "الرجاء إدخال البريد و كلمة المرور" });
         }
 
-        // Check password
+        const normalizedEmail = String(email).toLowerCase().trim();
+
+        const user = await User.findOne({ email: normalizedEmail });
+        if (!user) {
+            return res.status(400).json({ message: "بيانات الدخول غير صحيحة" });
+        }
+
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(400).json({ message: "بيانات الدخول غير صحيحة" });
         }
 
-        res.json({
+        return res.json({
             _id: user._id,
             name: user.name,
             email: user.email,
+            role: user.role,
             token: generateToken(user._id),
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Login error:", error);
+        return res.status(500).json({ message: "حدث خطأ في الخادم" });
     }
 };
 
-// Get logged-in user info
 export const getMe = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).select("-password");
-        res.json(user);
+        // protect middleware sets req.user as a user document without password
+        if (!req.user) {
+            return res.status(401).json({ message: "غير مصرح" });
+        }
+        const user = await User.findById(req.user._id).select("-password");
+        if (!user) return res.status(404).json({ message: "المستخدم غير موجود" });
+
+        return res.json(user);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("GetMe error:", error);
+        return res.status(500).json({ message: "حدث خطأ في الخادم" });
     }
 };
+
