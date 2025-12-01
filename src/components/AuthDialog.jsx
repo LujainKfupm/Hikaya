@@ -14,44 +14,77 @@ export default function AuthDialog({ open, onClose }) {
 
 
     if (!open) return null;
+    async function handleLogin() {
+        setError("");
+        if (!email || !pass) {
+            setError("الرجاء إدخال البريد و كلمة المرور");
+            return;
+        }
 
-    function handleLogin() {
-        const res = login(email, pass);
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError("صيغة البريد الإلكتروني غير صحيحة");
+            return;
+        }
+
+        if (pass.length < 6) {
+            setError("كلمة المرور يجب أن تكون ستّة أحرف على الأقل");
+            return;
+        }
+
+        const res = await login(email, pass);
         if (!res.ok) {
             setError(res.msg);
             return;
         }
+
         setShowWelcome(true);
         setTimeout(() => {
             setShowWelcome(false);
             onClose();
         }, 1000);
-
     }
-    function handleSignup() {
 
+
+    async function handleSignup() {
+        // Reset previous error
+        setError("");
+
+        //Check all fields filled
         if (!name || !email || !pass || !confirmPass) {
             setError("يرجى تعبئة جميع الحقول");
             return;
         }
 
+        //Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError("صيغة البريد الإلكتروني غير صحيحة");
+            return;
+        }
+
+        //Check password length
+        if (pass.length < 6) {
+            setError("كلمة المرور يجب أن تكون ستّة أحرف على الأقل");
+            return;
+        }
+
+        //Confirm password matches
         if (pass !== confirmPass) {
             setError("كلمات المرور غير متطابقة");
             return;
         }
-
-        const res = signup({
+        //Call backend
+        const res = await signup({
             name,
             email,
-            password: pass,
-            role: 'user',
+            password: pass
         });
 
         if (!res.ok) {
             setError(res.msg);
             return;
         }
-
         onClose();
     }
 
@@ -79,9 +112,8 @@ export default function AuthDialog({ open, onClose }) {
                 </p>
 
                 <div className="auth-demo-box">
-                    <strong>حسابات تجريبية:</strong><br/>
-                    <span>👨‍💼 مشرف: admin@hikaya.com — admin123</span><br/>
-                    <span>👤 مستخدم: demo@example.com — demo123</span>
+                    <strong>حساب المشرف:</strong><br/>
+                    <span> admin@hikaya.com — admin123</span><br/>
                 </div>
 
                 <div className="auth-tabs">
