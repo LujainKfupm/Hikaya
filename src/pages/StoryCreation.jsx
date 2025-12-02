@@ -91,15 +91,15 @@ export default function StoryCreation() {
             return false;
         }
         if (!form.gender) {
-            toast.error("اختاري جنس البطل");
+            toast.error("اختر جنس البطل");
             return false;
         }
         if (form.topics.length === 0) {
-            toast.error("اختاري موضوعاً واحداً على الأقل للقصة");
+            toast.error("اختر موضوعاً واحداً على الأقل للقصة");
             return false;
         }
         if (form.morals.length === 0) {
-            toast.error("اختاري درساً أخلاقياً واحداً على الأقل");
+            toast.error("اختر درساً أخلاقياً واحداً على الأقل");
             return false;
         }
         return true;
@@ -128,23 +128,20 @@ export default function StoryCreation() {
         };
 
         try {
-            // 1) Call backend (OpenAI)
             const data = await generateStoryAPI(storyPayload);
-            // data = { story, saved, storyId }
             setGeneratedStory(data.story);
 
-            // 2) ALSO add to mockApi so existing UI keeps working
             const ageRange =
                 ageNumber <= 5 ? "3-5" :
                     ageNumber <= 8 ? "6-8" : "9-12";
 
             const newStoryForMock = {
-                id: data.storyId || crypto.randomUUID(), // fallback if no id
+                id: data.storyId || crypto.randomUUID(),
                 title: `قصة ${form.heroName}`,
                 author: isLoggedIn ? (user.name || user.email) : "ضيف",
                 ageRange,
                 topics: form.topics,
-                values: form.morals,        // mockApi uses "values" not "morals"
+                values: form.morals,
                 ratingAvg: 0,
                 ratingCount: 0,
                 createdAt: new Date().toISOString().slice(0, 10),
@@ -161,7 +158,7 @@ export default function StoryCreation() {
             if (isLoggedIn) {
                 toast.success("تم إنشاء القصة وحفظها في مكتبتي ✨");
             } else {
-                toast.success("تم إنشاء القصة مؤقتاً، سجّلي الدخول لحفظها 💾");
+                toast.success("تم إنشاء القصة مؤقتاً، سجّل الدخول لحفظها 💾");
             }
 
             setForm((prev) => ({
@@ -173,10 +170,6 @@ export default function StoryCreation() {
         } catch (err) {
             console.error(err);
             toast.error(err.message || "حدث خطأ أثناء إنشاء القصة من الخادم");
-
-            // (اختياري) fallback: استخدمي المولد المحلي
-            // const storyText = buildGeneratedStory(storyPayload);
-            // setGeneratedStory(storyText);
         } finally {
             setIsSubmitting(false);
         }
@@ -195,7 +188,7 @@ export default function StoryCreation() {
                 {!isLoggedIn && (
                     <div className="alert alert-warning">
                         <strong>ملاحظة للضيوف:</strong> يمكنك إنشاء القصة، لكن لن يتم حفظها
-                        في "مكتبتي". سجّلي الدخول لحفظ قصصك والوصول إليها لاحقاً.
+                        في "مكتبتي". سجّل الدخول لحفظ قصصك والوصول إليها لاحقاً.
                     </div>
                 )}
             </header>
@@ -302,7 +295,7 @@ export default function StoryCreation() {
                             <span className="required">الدروس الأخلاقية</span>
                         </label>
                         <p className="form-hint">
-                            اختر القيم التي ترغبين أن يتعلمها الطفل من هذه القصة.
+                            اختر القيم التي ترغب أن يتعلمها الطفل من هذه القصة.
                         </p>
                         <div className="chip-group">
                             {MORALS.map((moral) => {
@@ -329,7 +322,7 @@ export default function StoryCreation() {
                             name="details"
                             className="form-input form-textarea"
                             rows={4}
-                            placeholder="اكتب أي تفاصيل تحبين إضافتها للقصة (مكان، شخصية، موقف...)"
+                            placeholder="اكتب أي تفاصيل تحب إضافتها للقصة (مكان، شخصية، موقف...)"
                             value={form.details}
                             onChange={handleChange}
                         />
@@ -357,7 +350,7 @@ export default function StoryCreation() {
                                 )
                             ) : (
                                 <span>
-            سجّلي الدخول لتحديد مكان حفظ القصة
+            سجّل الدخول لتحديد مكان حفظ القصة
         </span>
                             )}
                         </label>
