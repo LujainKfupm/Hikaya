@@ -28,4 +28,8 @@ import {
 } from "../controllers/storyController.js";
 const router = express.Router();
 
+router.post("/", protect, createStory);
+router.get("/mine", protect, getMyStories);
+router.get("/:id", protect, getStory);
+router.delete("/:id", protect, deleteStory);
 export default router;
