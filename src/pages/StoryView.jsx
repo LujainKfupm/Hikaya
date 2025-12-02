@@ -1,25 +1,14 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getStoryById, deleteCommentById } from "../mocks/mockApi";
+import { fetchStoryById } from "../api"; // 🔥 backend, not mocks
 import { Star, Calendar, Baby, User, Lock } from "lucide-react";
 
 import cover from "../assets/ai story cover.jpg";
-
 import AuthDialog from "../components/AuthDialog";
 
 function resolveCover(story) {
-    const idKey = String(story?.id || "");
-    const title = String(story?.title || "").toLowerCase();
-    const topic = String(story?.topic || "").toLowerCase();
-
-    if (idKey === "102") return cover;
-    if (idKey === "103") return cover;
-
-    if (title.includes("فضاء") || topic.includes("فضاء")) return cover;
-    if (title.includes("رسم") || title.includes("عبدالله") || title.includes("عبد الله")) return cover;
-    if (title.includes("كنز") || title.includes("سارة")) return cover;
-
+    // For now one cover for all, you can customize later
     return cover;
 }
 
@@ -29,8 +18,12 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
             <div className="modal-box">
                 <p>{message}</p>
                 <div className="modal-actions">
-                    <button className="btn-cancel" onClick={onCancel}>إلغاء</button>
-                    <button className="btn-confirm" onClick={onConfirm}>حذف</button>
+                    <button className="btn-cancel" onClick={onCancel}>
+                        إلغاء
+                    </button>
+                    <button className="btn-confirm" onClick={onConfirm}>
+                        حذف
+                    </button>
                 </div>
             </div>
         </div>
@@ -41,44 +34,73 @@ export default function StoryView() {
     const { id } = useParams();
     const { user } = useAuth();
 
-    const [story, setStory] = useState(null);
+    const [story, setStory] = useState(null); // ← normalized view model
     const [modal, setModal] = useState({ show: false, commentId: null });
-
 
     const [hoverRating, setHoverRating] = useState(0);
     const [selectedRating, setSelectedRating] = useState(0);
 
-
     const [authOpen, setAuthOpen] = useState(false);
-
 
     const [newComment, setNewComment] = useState("");
     const canComment = !!user && user.role !== "guest";
 
+    // ------- Load story from backend & normalize shape -------
     useEffect(() => {
         let alive = true;
-        getStoryById(id)
-            .then((data) => {
+        (async () => {
+            try {
+                const data = await fetchStoryById(id); // Mongo doc
+
                 if (!alive) return;
-                setStory(data || { notFound: true });
-            })
-            .catch(() => {
+
+                // normalize Mongo Story -> view model used by UI
+                const ageRange =
+                    typeof data.age === "number"
+                        ? data.age <= 5
+                            ? "3-5"
+                            : data.age <= 8
+                                ? "6-8"
+                                : "9-12"
+                        : "—";
+
+                const view = {
+                    id: data._id,
+                    title: `قصة ${data.heroName || "بدون عنوان"}`,
+                    author: data.user?.name ?? "—", // once you populate user, this will work
+                    date: data.createdAt,
+                    ageRange,
+                    moral: data.morals?.join("، ") || "—",
+                    topic: data.topics?.[0] || "—",
+                    body: data.content,
+                    rating: 0,
+                    ratingAvg: 0,
+                    ratingsCount: 0,
+                    comments: [], // no comments in DB yet, so local only
+                };
+
+                setStory(view);
+            } catch (err) {
+                console.error(err);
                 if (alive) setStory({ notFound: true });
-            });
-        return () => { alive = false; };
+            }
+        })();
+
+        return () => {
+            alive = false;
+        };
     }, [id]);
 
     const showConfirm = (commentId) => setModal({ show: true, commentId });
 
     const handleConfirm = () => {
+        // comments are front-end only for now
         if (!modal.commentId) return;
-        deleteCommentById(modal.commentId).then(() => {
-            setStory((prev) => ({
-                ...prev,
-                comments: (prev.comments || []).filter((c) => c.id !== modal.commentId),
-            }));
-            setModal({ show: false, commentId: null });
-        });
+        setStory((prev) => ({
+            ...prev,
+            comments: (prev.comments || []).filter((c) => c.id !== modal.commentId),
+        }));
+        setModal({ show: false, commentId: null });
     };
 
     const handleCancel = () => setModal({ show: false, commentId: null });
@@ -94,6 +116,7 @@ export default function StoryView() {
     }
 
     const canRate = !!user;
+
     const handleRate = (value) => {
         if (!canRate) return;
         setSelectedRating(value);
@@ -142,42 +165,68 @@ export default function StoryView() {
 
     return (
         <>
-
             <div className="back-row">
-                <Link to="/library" className="back-link">→العودة إلى المكتبة </Link>
+                <Link to="/library" className="back-link">
+                    → العودة إلى المكتبة
+                </Link>
             </div>
-
 
             <div className="cover-wrap">
                 <img src={resolveCover(story)} alt={story.title} className="cover-img" />
             </div>
 
-
             <h1 className="story-title">{story.title}</h1>
 
             <div className="info-row">
-                <span className="info-item"><User size={16} /> {story.author ?? "—"}</span>
-                <span className="info-item"><Calendar size={16} /> {formatDate(story.date)}</span>
-                <span className="info-item"><Baby size={16} /> {story.ageRange ?? "—"} سنوات</span>
+        <span className="info-item">
+          <User size={16} /> {story.author ?? "—"}
+        </span>
+                <span className="info-item">
+          <Calendar size={16} /> {formatDate(story.date)}
+        </span>
+                <span className="info-item">
+          <Baby size={16} /> {story.ageRange ?? "—"} سنوات
+        </span>
             </div>
 
             <div className="rating-box">
                 <Star size={18} color="#000" />
-                <span className="rating-value">{Number(story.rating ?? story.ratingAvg ?? 0).toFixed(1)}</span>
-                <span className="rating-count">({story.ratingsCount ?? story.ratingCount ?? 0} تقييم)</span>
+                <span className="rating-value">
+          {Number(story.rating ?? story.ratingAvg ?? 0).toFixed(1)}
+        </span>
+                <span className="rating-count">
+          ({story.ratingsCount ?? story.ratingCount ?? 0} تقييم)
+        </span>
             </div>
 
             <div className="moral-box">
-                <strong>العِبرة:</strong> {story.moral ?? story.values?.[0] ?? "—"}
+                <strong>العِبرة:</strong> {story.moral ?? "—"}
             </div>
 
-            <div className="body-text">{story.body ?? story.content}</div>
+            <div className="body-text">
+                {String(story.body || "")
+                    .split("\n")
+                    .map((p, i) => (
+                        <p key={i}>{p}</p>
+                    ))}
+            </div>
 
-
-            <div className="rate-strip" style={{ margin: "14px 0 18px", display: "flex", alignItems: "center", gap: "10px" }}>
+            <div
+                className="rate-strip"
+                style={{
+                    margin: "14px 0 18px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                }}
+            >
                 <span style={{ fontWeight: 700, color: "#111" }}>قيّم هذه القصة:</span>
                 {[1, 2, 3, 4, 5].map((n) => {
-                    const active = canRate ? (hoverRating ? n <= hoverRating : n <= selectedRating) : false;
+                    const active = canRate
+                        ? hoverRating
+                            ? n <= hoverRating
+                            : n <= selectedRating
+                        : false;
                     return (
                         <button
                             key={n}
@@ -193,7 +242,7 @@ export default function StoryView() {
                                 padding: 0,
                                 cursor: canRate ? "pointer" : "not-allowed",
                                 opacity: canRate ? 1 : 0.5,
-                                lineHeight: 0
+                                lineHeight: 0,
                             }}
                         >
                             <Star
@@ -209,7 +258,12 @@ export default function StoryView() {
                         type="button"
                         className="btn"
                         onClick={() => setAuthOpen(true)}
-                        style={{ marginInlineStart: 8, display: "inline-flex", alignItems: "center", gap: 6 }}
+                        style={{
+                            marginInlineStart: 8,
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 6,
+                        }}
                     >
                         <Lock size={16} /> سجّل دخولك للتقييم
                     </button>
@@ -221,10 +275,8 @@ export default function StoryView() {
                 )}
             </div>
 
-
             <div className="comment-box">
                 <h3>التعليقات</h3>
-
 
                 {canComment ? (
                     <div className="comment-input-wrap">
@@ -258,7 +310,6 @@ export default function StoryView() {
                     </p>
                 )}
 
-
                 {story.comments && story.comments.length > 0 ? (
                     story.comments.map((c) => (
                         <div key={c.id} className="comment-item">
@@ -290,16 +341,7 @@ export default function StoryView() {
                 />
             )}
 
-
             <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
         </>
     );
 }
-
-
-
-
-
-
-
-

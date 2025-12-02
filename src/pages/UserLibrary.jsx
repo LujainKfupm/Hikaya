@@ -1,30 +1,83 @@
-import { STORIES } from "../mocks/mockApi";
+import { useEffect, useMemo, useState } from "react";
 import StoryCard from "../components/StoryCard";
-
 import coverImage from "../assets/ai story cover.jpg";
-
-import { BookOpen, Share2, BookCopy, Star } from "lucide-react";
+import { BookOpen, Star } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { fetchMyStories } from "../api";
 
 export default function UserLibrary() {
+    const { user } = useAuth();
+    const [stories, setStories] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const mine = STORIES; // demo: load all stories
+    const isLoggedIn = !!user;
 
-    const stats = {
-        total: mine.length,
-        public: mine.filter(s => s.visibility === "public").length,
-        private: mine.filter(s => s.visibility === "private").length,
-        avg: (
-            mine.reduce((a, s) => a + s.ratingAvg, 0) / Math.max(1, mine.length)
-        ).toFixed(1),
-    };
+    useEffect(() => {
+        if (!isLoggedIn) {
+            setStories([]);
+            setLoading(false);
+            return;
+        }
 
-    // Helper function for story image
-    const getStoryImage = (title) => {
-        if (title === "سارة ورفاقها في رحلة البحث عن الكنز") return coverImage;
-        if (title === "رحلة يوسف وريلان إلى الفضاء") return coverImage;
-        if (title === "عبدالله ومسابقة الرسم") return coverImage;
-        return coverImage;
-    };
+        let alive = true;
+        (async () => {
+            try {
+                setLoading(true);
+                const token = user?.token;
+                const data = await fetchMyStories(token);
+                if (!alive) return;
+                setStories(data || []);
+            } catch (err) {
+                console.error(err);
+                if (alive) setStories([]);
+            } finally {
+                if (alive) setLoading(false);
+            }
+        })();
+
+        return () => {
+            alive = false;
+        };
+    }, [isLoggedIn, user]);
+
+    const stats = useMemo(() => {
+        if (!stories.length) {
+            return { total: 0, public: 0, private: 0, avg: "0.0" };
+        }
+
+        const total = stories.length;
+        const publicCount = stories.filter((s) => s.isPublic === true).length;
+        const privateCount = total - publicCount;
+
+        const avgRating = (
+            stories.reduce(
+                (sum, s) => sum + Number(s.ratingAvg ?? s.rating ?? 0),
+                0
+            ) / total
+        ).toFixed(1);
+
+        return {
+            total,
+            public: publicCount,
+            private: privateCount,
+            avg: avgRating,
+        };
+    }, [stories]);
+
+
+    if (!isLoggedIn) {
+        return (
+            <>
+                <h1>مكتبتي</h1>
+                <p>يجب تسجيل الدخول لعرض مكتبتي.</p>
+            </>
+        );
+    }
+
+    const normalizedStories = stories.map((s) => ({
+        ...s,
+        id: s._id || s.id,
+    }));
 
     return (
         <>
@@ -44,7 +97,6 @@ export default function UserLibrary() {
                     <p className="stat-label">القصص الخاصة</p>
                     <h2>{stats.private}</h2>
                 </div>
-
 
                 <div className="stat-card">
                     <BookOpen size={24} color="#27AE60" />
@@ -66,16 +118,21 @@ export default function UserLibrary() {
             </div>
 
             {/* ------- Story Cards Grid ------- */}
-            <div className="grid">
-                {mine.map((s) => (
-                    <StoryCard
-                        key={s.id}
-                        story={s}
-                        image={getStoryImage(s.title)}
-                    />
-                ))}
-            </div>
+            {loading ? (
+                <p>جارٍ تحميل القصص...</p>
+            ) : normalizedStories.length === 0 ? (
+                <p>لا توجد قصص في مكتبتي حتى الآن.</p>
+            ) : (
+                <div className="grid">
+                    {normalizedStories.map((s) => (
+                        <StoryCard
+                            key={s.id}
+                            story={s}
+                            image={coverImage}
+                        />
+                    ))}
+                </div>
+            )}
         </>
     );
 }
-

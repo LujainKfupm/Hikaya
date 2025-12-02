@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { getStories, deleteStoryById } from "../mocks/mockApi";
 import {
     Star,
     Calendar,
@@ -13,6 +12,8 @@ import {
     RefreshCw,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { fetchPublicStories } from "../api";
+import coverImage from "../assets/ai story cover.jpg";
 
 
 const TOPIC_OPTIONS = [
@@ -58,11 +59,9 @@ export default function StoryLibrary() {
     const { user } = useAuth();
     const isAdmin = user?.role === "admin";
 
-
     const [stories, setStories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modal, setModal] = useState({ show: false, storyId: null });
-
 
     const [query, setQuery] = useState("");
     const [showFilters, setShowFilters] = useState(true);
@@ -70,15 +69,17 @@ export default function StoryLibrary() {
     const [selectedTopics, setSelectedTopics] = useState([]);
     const [sortBy, setSortBy] = useState("date_desc");
 
-
     useEffect(() => {
         let alive = true;
         (async () => {
             try {
                 setLoading(true);
-                const data = await getStories({ publicOnly: false, sortBy: "date_desc" });
+                const data = await fetchPublicStories();
                 if (!alive) return;
+                console.log("PUBLIC STORIES RAW:", data);
                 setStories(data || []);
+            } catch (err) {
+                console.error(err);
             } finally {
                 if (alive) setLoading(false);
             }
@@ -88,29 +89,37 @@ export default function StoryLibrary() {
         };
     }, []);
 
-
     const normalized = useMemo(
         () =>
             stories.map((s) => {
-                const topicRaw = s.topic ?? s.topics?.[0] ?? "—";
+                const topicRaw = s.topics?.[0] ?? "—";
                 const topicKey = normalizeTopicKey(topicRaw);
+
+                const ageRange =
+                    typeof s.age === "number"
+                        ? s.age <= 5
+                            ? "3-5"
+                            : s.age <= 8
+                                ? "6-8"
+                                : "9-12"
+                        : "—";
+
                 return {
-                    id: s.id,
-                    title: s.title,
-                    author: s.author ?? "—",
-                    rating: Number(s.rating ?? s.ratingAvg ?? 0),
-                    moral: s.moral ?? s.values?.[0] ?? "—",
+                    id: s._id,
+                    title: `قصة ${s.heroName || "بدون عنوان"}`,
+                    author: "—",
+                    rating: 0,
+                    moral: s.morals?.[0] ?? "—",
                     topicRaw,
                     topicKey,
-                    cover: s.cover,
-                    ageRange: s.ageRange ?? "—",
-                    date: s.createdAt ?? s.date,
-                    commentsCount: s.commentsCount ?? s.comments?.length ?? 0,
+                    cover: coverImage,
+                    ageRange,
+                    date: s.createdAt,
+                    commentsCount: 0,
                 };
             }),
         [stories]
     );
-
 
     const filtered = useMemo(() => {
         const q = (query || "").toLowerCase().trim();
@@ -122,32 +131,42 @@ export default function StoryLibrary() {
             const moral = String(s.moral || "").toLowerCase();
 
             const matchesQuery =
-                !q || title.includes(q) || author.includes(q) || topic.includes(q) || moral.includes(q);
+                !q ||
+                title.includes(q) ||
+                author.includes(q) ||
+                topic.includes(q) ||
+                moral.includes(q);
             const matchesAge = age === "الكل" || String(s.ageRange) === age;
             const matchesTopics =
-                selectedTopics.length === 0 || (s.topicKey && selectedTopics.includes(s.topicKey));
+                selectedTopics.length === 0 ||
+                (s.topicKey && selectedTopics.includes(s.topicKey));
 
             return matchesQuery && matchesAge && matchesTopics;
         });
-
 
         if (sortBy === "rating_desc") {
             out = out.slice().sort((a, b) => b.rating - a.rating);
         } else {
             out = out
                 .slice()
-                .sort((a, b) => (b.date ? new Date(b.date).getTime() : 0) - (a.date ? new Date(a.date).getTime() : 0));
+                .sort(
+                    (a, b) =>
+                        (b.date ? new Date(b.date).getTime() : 0) -
+                        (a.date ? new Date(a.date).getTime() : 0)
+                );
         }
 
         return out;
     }, [normalized, query, age, selectedTopics, sortBy]);
 
-
     const toggleTopic = (topicKey) => {
         setSelectedTopics((prev) =>
-            prev.includes(topicKey) ? prev.filter((t) => t !== topicKey) : [...prev, topicKey]
+            prev.includes(topicKey)
+                ? prev.filter((t) => t !== topicKey)
+                : [...prev, topicKey]
         );
     };
+
     const resetFilters = () => {
         setAge("الكل");
         setSelectedTopics([]);
@@ -174,7 +193,10 @@ export default function StoryLibrary() {
                         {showFilters ? "إخفاء الفلاتر" : "إظهار الفلاتر"}
                     </button>
 
-                    <div className="search-wrapper" style={{ flex: 1, maxWidth: 720, position: "relative" }}>
+                    <div
+                        className="search-wrapper"
+                        style={{ flex: 1, maxWidth: 720, position: "relative" }}
+                    >
                         <input
                             type="text"
                             className="form-input"
@@ -190,14 +212,17 @@ export default function StoryLibrary() {
                     </div>
                 </div>
 
-
                 {showFilters && (
                     <div className="filter-card" style={{ marginTop: 12 }}>
-
                         <div className="filter-row">
                             <div
                                 className="section-title"
-                                style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                    marginBottom: 8,
+                                }}
                             >
                                 <Baby size={16} />
                                 <strong>تصفية حسب العمر</strong>
@@ -216,11 +241,15 @@ export default function StoryLibrary() {
                             </div>
                         </div>
 
-
                         <div className="filter-row" style={{ marginTop: 16 }}>
                             <div
                                 className="section-title"
-                                style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                    marginBottom: 8,
+                                }}
                             >
                                 <Tag size={16} />
                                 <strong>تصفية حسب الموضوع</strong>
@@ -230,7 +259,9 @@ export default function StoryLibrary() {
                                     <button
                                         key={t.key}
                                         type="button"
-                                        className={"chip" + (selectedTopics.includes(t.key) ? " chip--selected" : "")}
+                                        className={
+                                            "chip" + (selectedTopics.includes(t.key) ? " chip--selected" : "")
+                                        }
                                         onClick={() => toggleTopic(t.key)}
                                     >
                                         {t.label}
@@ -242,7 +273,12 @@ export default function StoryLibrary() {
                         <div className="filter-row" style={{ marginTop: 16 }}>
                             <div
                                 className="section-title"
-                                style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                    marginBottom: 8,
+                                }}
                             >
                                 <Clock size={16} />
                                 <strong>ترتيب حسب</strong>
@@ -279,7 +315,9 @@ export default function StoryLibrary() {
                 <div className="story-grid">
                     {Array.from({ length: 3 }).map((_, i) => (
                         <div key={i} className="story-card" style={{ padding: 12 }}>
-                            <div style={{ width: "100%", height: 170, borderRadius: 12, background: "#eee" }} />
+                            <div
+                                style={{ width: "100%", height: 170, borderRadius: 12, background: "#eee" }}
+                            />
                             <div
                                 style={{
                                     height: 16,
@@ -343,7 +381,10 @@ export default function StoryLibrary() {
                                     </Link>
 
                                     {isAdmin && (
-                                        <button onClick={() => setModal({ show: true, storyId: s.id })} className="story-card-btn-delete">
+                                        <button
+                                            onClick={() => setModal({ show: true, storyId: s.id })}
+                                            className="story-card-btn-delete"
+                                        >
                                             حذف
                                         </button>
                                     )}
@@ -358,15 +399,25 @@ export default function StoryLibrary() {
                 <div className="modal-overlay">
                     <div className="modal-box">
                         <p>هل أنت متأكد من حذف هذه القصة؟</p>
-                        <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", marginTop: 16 }}>
-                            <button className="story-card-btn-cancel" onClick={() => setModal({ show: false, storyId: null })}>
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: 12,
+                                justifyContent: "flex-end",
+                                marginTop: 16,
+                            }}
+                        >
+                            <button
+                                className="story-card-btn-cancel"
+                                onClick={() => setModal({ show: false, storyId: null })}
+                            >
                                 لا
                             </button>
                             <button
                                 className="story-card-btn-confirm"
                                 onClick={async () => {
-                                    await deleteStoryById(modal.storyId);
-                                    setStories((prev) => prev.filter((x) => x.id !== modal.storyId));
+                                    // TODO: اربطي هنا delete من الباك إند لما تجهزينه
+                                    setStories((prev) => prev.filter((x) => x._id !== modal.storyId));
                                     setModal({ show: false, storyId: null });
                                 }}
                             >
