@@ -32,4 +32,7 @@ router.post("/", protect, createStory);
 router.get("/mine", protect, getMyStories);
 router.get("/:id", protect, getStory);
 router.delete("/:id", protect, deleteStory);
+
+router.get("/public", getPublicStories);
+
 export default router;
