@@ -17,8 +17,15 @@
  */
 
 import express from "express";
-const router = express.Router();
+import { protect } from "../middleware/authMiddleware.js";
 
-// TODO: define routes
+import {
+    createStory,
+    getMyStories,
+    getPublicStories,
+    getStory,
+    deleteStory
+} from "../controllers/storyController.js";
+const router = express.Router();
 
 export default router;
