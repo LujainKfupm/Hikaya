@@ -1,9 +1,11 @@
 
 import express from "express";
 import { generateStory } from "../controllers/generateController.js";
+import { protect } from "../middleware/authMiddleware.js";
+
 
 const router = express.Router();
 
-router.post("/story", generateStory);
+router.post("/story", protect, generateStory);
 
 export default router;
