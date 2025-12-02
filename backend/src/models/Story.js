@@ -16,7 +16,56 @@
 import mongoose from "mongoose";
 
 const storySchema = new mongoose.Schema({
-    // TODO: define schema fields
-}, { timestamps: true });
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: false,
+    },
 
+    heroName: {
+        type: String,
+            required: [true, "اسم البطل مطلوب"],
+            trim: true,
+    },
+
+    age: {
+        type: Number,
+            required: [true, "العمر مطلوب"],
+            min: 0,
+    },
+
+    gender: {
+        type: String,
+        enum: ["boy", "girl", "other"],
+            required: [true, "الجنس مطلوب"]
+    },
+
+    topics: {
+        type: [String],
+    default: [],
+    },
+
+    morals: {
+        type: [String],
+    default: [],
+    },
+
+    details: {
+        type: String,
+    default: "",
+            trim: true,
+    },
+
+    content: {
+        type: String,
+            required: [true, "القصة لا يمكن أن تكون فارغة"]
+    },
+
+    isPublic: {
+        type: Boolean,
+    default: false,
+    },
+},
+{ timestamps: true }
+);
 export default mongoose.model("Story", storySchema);
