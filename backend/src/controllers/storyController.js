@@ -69,5 +69,15 @@ export const getMyStories = async (req, res, next) => {
         next(error);
     }
 };
+export const getPublicStories = async (req, res, next) => {
+    try {
+        const stories = await Story.find({ isPublic: true }).sort({ createdAt: -1 });
+
+        return res.status(200).json(stories);
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 
