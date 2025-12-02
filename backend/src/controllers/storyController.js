@@ -14,8 +14,44 @@
 
 // TODO: implement CRUD functions
 
-export const createStory = () => {};
-export const getMyStories = () => {};
-export const getPublicStories = () => {};
-export const getStory = () => {};
-export const deleteStory = () => {};
+import Story from "../models/Story.js";
+
+export const createStory = async (req, res, next) => {
+    try {
+        const userId = req.user?._id?.toString();
+
+        const {
+            heroName,
+            age,
+            gender,
+            topics,
+            morals,
+            details,
+            content,
+            isPublic
+        } = req.body;
+
+        if (!heroName || !age || !gender || !content) {
+            return res.status(400).json({
+                message: "heroName, age, gender و content مطلوبة",
+            });
+        }
+
+        const story = await Story.create({
+            heroName,
+            age,
+            gender,
+            topics: topics || [],
+            morals: morals || [],
+            details: details || "",
+            content,
+            isPublic: isPublic || false,
+            user: userId || null
+        });
+
+        return res.status(201).json(story);
+    } catch (error) {
+        next(error);
+    }
+};
+
