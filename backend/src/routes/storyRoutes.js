@@ -17,8 +17,22 @@
  */
 
 import express from "express";
+import { protect } from "../middleware/authMiddleware.js";
+
+import {
+    createStory,
+    getMyStories,
+    getPublicStories,
+    getStory,
+    deleteStory
+} from "../controllers/storyController.js";
 const router = express.Router();
 
-// TODO: define routes
+router.post("/", protect, createStory);
+router.get("/mine", protect, getMyStories);
+router.get("/:id", protect, getStory);
+router.delete("/:id", protect, deleteStory);
+
+router.get("/public", getPublicStories);
 
 export default router;
