@@ -31,8 +31,17 @@ app.use(cors());
 app.use(express.json());
 
 // Connect DB
-connectDB(process.env.MONGO_URL);
-await AdminAccount();
+
+async function startServer() {
+    await connectDB(process.env.MONGO_URL);
+    await AdminAccount();
+
+    app.listen(process.env.PORT || 3000, () => {
+        console.log("Server running");
+    });
+}
+
+startServer();
 
 // Route Mounting
 app.use("/api/auth", authRoutes);
@@ -43,6 +52,3 @@ app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
 });
 
-app.listen(process.env.PORT || 3000, () => {
-    console.log("Server running");
-});
