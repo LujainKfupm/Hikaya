@@ -78,6 +78,29 @@ export const getPublicStories = async (req, res, next) => {
         next(error);
     }
 };
+export const getStory = async (req, res, next) => {
+    try {
+        const storyId = req.params.id;
+        const currentUserId = req.user?._id?.toString();
+
+        const story = await Story.findById(storyId);
+
+        if (!story) {
+            return res.status(404).json({ message: "القصة غير موجودة" });
+        }
+
+        if (!story.isPublic) {
+            if (!currentUserId || story.user?.toString() !== currentUserId) {
+                return res.status(403).json({ message: "ليس لديك صلاحية لعرض هذه القصة" });
+            }
+        }
+
+        return res.status(200).json(story);
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 
 
