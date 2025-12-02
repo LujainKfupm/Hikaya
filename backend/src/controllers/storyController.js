@@ -54,4 +54,20 @@ export const createStory = async (req, res, next) => {
         next(error);
     }
 };
+export const getMyStories = async (req, res, next) => {
+    try {
+        const userId = req.user?._id?.toString();
+
+        if (!userId) {
+            return res.status(401).json({ message: "يجب تسجيل الدخول لعرض قصصك" });
+        }
+
+        const stories = await Story.find({ user: userId }).sort({ createdAt: -1 });
+
+        return res.status(200).json(stories);
+    } catch (error) {
+        next(error);
+    }
+};
+
 
