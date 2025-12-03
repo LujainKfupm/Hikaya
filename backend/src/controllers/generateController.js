@@ -1,39 +1,11 @@
-/**
- * controllers/generateController.js
- * -------------------------------------
- * Uses OpenAI API to generate a kids story based on user input.
- * Optionally saves the story to MongoDB (Story model).
- *
- * Expects body:
- * {
- *   heroName: string,
- *   age: number,
- *   gender: "boy" | "girl",
- *   topics: string[],
- *   morals: string[],
- *   details: string,
- *   isPublic: boolean
- * }
- *
- * Returns:
- * {
- *   story: string,
- *   saved: boolean,
- *   storyId?: string
- * }
- */
-
-import dotenv from "dotenv";
 import OpenAI from "openai";
 import Story from "../models/Story.js";
-
+import dotenv from "dotenv";
 dotenv.config();
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
-
-
 
 function buildStoryPrompt({ heroName, age, gender, topics, morals, details }) {
     const genderText =
@@ -82,10 +54,10 @@ export async function generateStory(req, res, next) {
             topics = [],
             morals = [],
             details = "",
+            saveToLibrary = false,
             isPublic = false,
         } = req.body;
 
-        // Basic validation
         if (!heroName || !age || !gender) {
             return res.status(400).json({
                 message: "الحقول heroName و age و gender مطلوبة.",
@@ -98,6 +70,29 @@ export async function generateStory(req, res, next) {
             });
         }
 
+        const titlePrompt = `
+أريد عنوانًا جميلًا وقصيرًا جدًا لقصة عربية للأطفال.
+البطل: ${heroName}
+العمر: ${age} سنوات
+الموضوعات: ${topics.join("، ")}
+القيم الأخلاقية: ${morals.join("، ")}
+
+الشروط:
+- عنوان قصير جدًا (3 إلى 6 كلمات)
+- جذاب للأطفال
+- باللغة العربية الفصحى
+- بدون رموز أو تنسيق
+`;
+
+        const titleResponse = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: titlePrompt }],
+            max_tokens: 20,
+        });
+
+        const generatedTitle = titleResponse.choices[0].message.content.trim();
+        console.log("AI GENERATED TITLE:", generatedTitle);
+
         const prompt = buildStoryPrompt({
             heroName,
             age,
@@ -107,7 +102,6 @@ export async function generateStory(req, res, next) {
             details,
         });
 
-        // Call OpenAI
         const completion = await openai.chat.completions.create({
             model: "gpt-4.1-mini",
             messages: [
@@ -122,45 +116,46 @@ export async function generateStory(req, res, next) {
         });
 
         const storyText = completion.choices[0]?.message?.content?.trim();
-
         if (!storyText) {
             return res.status(500).json({
                 message: "حدث خطأ أثناء إنشاء القصة.",
             });
         }
 
-        // Try to save to DB (not fatal if this fails)
+        const userId = req.user ? (req.user.id || req.user._id) : null;
+
         let savedStory = null;
-        try {
-            const userId = req.user ? req.user.id || req.user._id : null;
-            let finalIsPublic = false;
 
-        // Only admins are allowed to publish public stories
-            if (req.user && req.user.role === "admin") {
-                finalIsPublic = isPublic; // whatever the form said
+        if (req.user && saveToLibrary) {
+            try {
+                savedStory = await Story.create({
+                    user: userId,
+                    title: generatedTitle,
+                    heroName,
+                    age,
+                    gender,
+                    topics,
+                    morals,
+                    details,
+                    content: storyText,
+                    isPublic: !!isPublic,
+                });
+                if (savedStory) {
+                    console.log("SAVED STORY:", savedStory._id, savedStory.isPublic);
+                }
+            } catch (dbErr) {
+                console.error("Failed to save story to DB:", dbErr);
             }
-
-            savedStory = await Story.create({
-                user: userId,
-                heroName,
-                age,
-                gender,
-                topics,
-                morals,
-                details,
-                content: storyText,
-                isPublic: finalIsPublic,
-            });
-        } catch (dbErr) {
-            // Log but don't block the response
-            console.error("Failed to save story to DB:", dbErr);
         }
 
+
         return res.status(201).json({
+            title: generatedTitle,
             story: storyText,
             saved: !!savedStory,
             storyId: savedStory?._id,
         });
+
     } catch (err) {
         console.error("Error in generateStory controller:", err);
         return next(err);

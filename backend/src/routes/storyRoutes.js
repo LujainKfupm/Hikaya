@@ -1,38 +1,28 @@
-/**
- * routes/storyRoutes.js
- * -------------------------------------
- * Defines REST API endpoints for story CRUD.
- *
- * Routes to include:
- *   POST /
- *   GET /mine
- *   GET /public
- *   GET /:id
- *   DELETE /:id
- *
- * Should import:
- *   - express.Router()
- *   - storyController
- *   - authMiddleware
- */
-
 import express from "express";
-import { protect } from "../middleware/authMiddleware.js";
-
+import { protect, adminOnly } from "../middleware/authMiddleware.js";
 import {
-    createStory,
-    getMyStories,
     getPublicStories,
-    getStory,
-    deleteStory
+    deleteStory,
+    getMyStories,
+    getStoryById,
+    rateStory,
+    addComment, deleteComment,
 } from "../controllers/storyController.js";
-const router = express.Router();
 
-router.post("/", protect, createStory);
-router.get("/mine", protect, getMyStories);
-router.get("/:id", protect, getStory);
-router.delete("/:id", protect, deleteStory);
+const router = express.Router();
 
 router.get("/public", getPublicStories);
 
+router.delete("/:id", protect, adminOnly, deleteStory);
+
+router.get("/mine", protect, getMyStories);
+
+router.get("/:id", getStoryById);
+
+router.post("/:id/rate", protect, rateStory);
+router.post("/:id/comments", protect, addComment);
+router.delete("/:storyId/comments/:commentId", protect, adminOnly, deleteComment);
+
+
 export default router;
+

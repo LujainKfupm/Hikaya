@@ -31,3 +31,11 @@ export const protect = async (req, res, next) => {
 
     return res.status(401).json({ message: "Not authorized, no token" });
 };
+
+export const adminOnly = (req, res, next) => {
+    if (!req.user || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Admins only" });
+    }
+    next();
+};
+
