@@ -8,7 +8,6 @@ import cover from "../assets/ai story cover.jpg";
 import AuthDialog from "../components/AuthDialog";
 
 function resolveCover(story) {
-    // For now one cover for all, you can customize later
     return cover;
 }
 
@@ -66,8 +65,8 @@ export default function StoryView() {
 
                 const view = {
                     id: data._id,
-                    title: `قصة ${data.heroName || "بدون عنوان"}`,
-                    author: data.user?.name ?? "—", // once you populate user, this will work
+                    title: data.title || `قصة ${data.heroName}`,
+                    author: data.user?.name ?? "—",
                     date: data.createdAt,
                     ageRange,
                     moral: data.morals?.join("، ") || "—",
@@ -76,7 +75,7 @@ export default function StoryView() {
                     rating: 0,
                     ratingAvg: 0,
                     ratingsCount: 0,
-                    comments: [], // no comments in DB yet, so local only
+                    comments: [],
                 };
 
                 setStory(view);
@@ -94,7 +93,6 @@ export default function StoryView() {
     const showConfirm = (commentId) => setModal({ show: true, commentId });
 
     const handleConfirm = () => {
-        // comments are front-end only for now
         if (!modal.commentId) return;
         setStory((prev) => ({
             ...prev,

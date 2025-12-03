@@ -106,7 +106,7 @@ export default function StoryLibrary() {
 
                 return {
                     id: s._id,
-                    title: `قصة ${s.heroName || "بدون عنوان"}`,
+                    title: s.title || `قصة ${s.heroName}`,
                     author: "—",
                     rating: 0,
                     moral: s.morals?.[0] ?? "—",

@@ -22,7 +22,14 @@ const storySchema = new mongoose.Schema({
             required: false,
     },
 
-    heroName: {
+        title: {
+            type: String,
+            required: [true, "عنوان القصة مطلوب"],
+            trim: true,
+        },
+
+
+        heroName: {
         type: String,
             required: [true, "اسم البطل مطلوب"],
             trim: true,

@@ -70,6 +70,29 @@ export async function generateStory(req, res, next) {
             });
         }
 
+        const titlePrompt = `
+أريد عنوانًا جميلًا وقصيرًا جدًا لقصة عربية للأطفال.
+البطل: ${heroName}
+العمر: ${age} سنوات
+الموضوعات: ${topics.join("، ")}
+القيم الأخلاقية: ${morals.join("، ")}
+
+الشروط:
+- عنوان قصير جدًا (3 إلى 6 كلمات)
+- جذاب للأطفال
+- باللغة العربية الفصحى
+- بدون رموز أو تنسيق
+`;
+
+        const titleResponse = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: titlePrompt }],
+            max_tokens: 20,
+        });
+
+        const generatedTitle = titleResponse.choices[0].message.content.trim();
+        console.log("AI GENERATED TITLE:", generatedTitle);
+
         const prompt = buildStoryPrompt({
             heroName,
             age,
@@ -101,20 +124,13 @@ export async function generateStory(req, res, next) {
 
         const userId = req.user ? (req.user.id || req.user._id) : null;
 
-
-        console.log("DEBUG generateStory:", {
-            saveToLibrary,
-            isPublic,
-            hasUser: !!req.user,
-            role: req.user?.role,
-        });
-
         let savedStory = null;
 
         if (req.user && saveToLibrary) {
             try {
                 savedStory = await Story.create({
                     user: userId,
+                    title: generatedTitle,
                     heroName,
                     age,
                     gender,
@@ -133,8 +149,8 @@ export async function generateStory(req, res, next) {
         }
 
 
-// Response stays the same
         return res.status(201).json({
+            title: generatedTitle,
             story: storyText,
             saved: !!savedStory,
             storyId: savedStory?._id,
