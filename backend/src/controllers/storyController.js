@@ -12,8 +12,15 @@ export async function getPublicStories(req, res, next) {
 
 export async function deleteStory(req, res, next) {
     try {
-        await Story.findByIdAndDelete(req.params.id);
-        res.json({ message: "Deleted" });
+        const { id } = req.params;
+
+        const story = await Story.findById(id);
+        if (!story) return res.status(404).json({ message: "القصة غير موجودة" });
+
+        await Story.findByIdAndDelete(id);
+
+        return res.json({ message: "تم حذف القصة بنجاح" });
+
     } catch (err) {
         next(err);
     }
