@@ -42,27 +42,24 @@ export default function UserLibrary() {
 
     const stats = useMemo(() => {
         if (!stories.length) {
-            return { total: 0, public: 0, private: 0, avg: "0.0" };
+            return { mine: 0, avg: "0.0" };
         }
 
-        const total = stories.length;
-        const publicCount = stories.filter((s) => s.isPublic === true).length;
-        const privateCount = total - publicCount;
+        const mine = stories.length;
 
         const avgRating = (
             stories.reduce(
                 (sum, s) => sum + Number(s.ratingAvg ?? s.rating ?? 0),
                 0
-            ) / total
+            ) / mine
         ).toFixed(1);
 
         return {
-            total,
-            public: publicCount,
-            private: privateCount,
+            mine,
             avg: avgRating,
         };
     }, [stories]);
+
 
 
     if (!isLoggedIn) {
@@ -74,9 +71,21 @@ export default function UserLibrary() {
         );
     }
 
+    function formatDate(iso) {
+        if (!iso) return "—";
+        try {
+            const d = new Date(iso);
+            return d.toLocaleDateString("ar-SA");
+        } catch {
+            return iso;
+        }
+    }
+
     const normalizedStories = stories.map((s) => ({
         ...s,
         id: s._id || s.id,
+        ageRange: s.age,
+        date: formatDate(s.createdAt),
     }));
 
     return (
@@ -93,21 +102,9 @@ export default function UserLibrary() {
                 }}
             >
                 <div className="stat-card">
-                    <BookOpen size={24} color="#4A90E2" />
-                    <p className="stat-label">القصص الخاصة</p>
-                    <h2>{stats.private}</h2>
-                </div>
-
-                <div className="stat-card">
-                    <BookOpen size={24} color="#27AE60" />
-                    <p className="stat-label">القصص العامة</p>
-                    <h2>{stats.public}</h2>
-                </div>
-
-                <div className="stat-card">
                     <BookOpen size={24} color="#333" />
                     <p className="stat-label">إجمالي القصص</p>
-                    <h2>{stats.total}</h2>
+                    <h2>{stats.mine}</h2>
                 </div>
 
                 <div className="stat-card">

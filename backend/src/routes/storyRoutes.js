@@ -18,7 +18,7 @@ router.delete("/:id", protect, adminOnly, deleteStory);
 router.get("/mine", protect, getMyStories);
 
 router.get("/:id", getStoryById);
-
+router.delete("/:id", protect, adminOnly, deleteStory);
 router.post("/:id/rate", protect, rateStory);
 router.post("/:id/comments", protect, addComment);
 router.delete("/:storyId/comments/:commentId", protect, adminOnly, deleteComment);

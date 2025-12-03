@@ -42,18 +42,16 @@ export async function fetchPublicStories() {
     return res.json();
 }
 
-export async function deleteStory(id, authToken) {
+
+export async function deleteStory(id, token) {
     const res = await fetch(`${API_BASE}/api/stories/${id}`, {
         method: "DELETE",
         headers: {
-            "Content-Type": "application/json",
-            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+            Authorization: `Bearer ${token}`,
         },
     });
 
-    if (!res.ok) {
-        throw new Error("فشل في حذف القصة من الخادم");
-    }
+    if (!res.ok) throw new Error("Delete failed");
 
     return res.json();
 }
