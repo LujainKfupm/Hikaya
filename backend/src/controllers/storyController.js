@@ -63,4 +63,85 @@ export const getStory = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-};
+}
+
+export async function addComment(req, res, next) {
+    try {
+        const { id } = req.params;
+        const { text } = req.body;
+
+        if (!text || !text.trim())
+            return res.status(400).json({ message: "التعليق فارغ" });
+
+        const story = await Story.findById(id);
+        if (!story) return res.status(404).json({ message: "القصة غير موجودة" });
+
+        const comment = {
+            user: req.user._id,
+            name: req.user.name,
+            text,
+            date: new Date(),
+        };
+
+        story.comments.push(comment);
+        await story.save();
+
+        res.json({ message: "تم إضافة التعليق", comment });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function rateStory(req, res, next) {
+    try {
+        const { id } = req.params;
+        const { value } = req.body;
+        const userId = req.user._id;
+
+        if (!value || value < 1 || value > 5)
+            return res.status(400).json({ message: "قيمة التقييم غير صحيحة" });
+
+        const story = await Story.findById(id);
+        if (!story) return res.status(404).json({ message: "القصة غير موجودة" });
+
+        const existing = story.ratings.find((r) => r.user.toString() === userId.toString());
+        if (existing) {
+            existing.value = value;
+        } else {
+            story.ratings.push({ user: userId, value });
+        }
+
+        await story.save();
+
+        const avg =
+            story.ratings.reduce((a, r) => a + r.value, 0) / story.ratings.length;
+
+        res.json({
+            message: "تم التقييم بنجاح",
+            ratingAvg: avg,
+            ratingCount: story.ratings.length,
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function deleteComment(req, res, next) {
+    try {
+        const { storyId, commentId } = req.params;
+
+        const story = await Story.findById(storyId);
+        if (!story) return res.status(404).json({ message: "القصة غير موجودة" });
+
+        story.comments = story.comments.filter(
+            (c) => c._id.toString() !== commentId
+        );
+
+        await story.save();
+
+        res.json({ message: "تم حذف التعليق" });
+    } catch (err) {
+        next(err);
+    }
+}
+

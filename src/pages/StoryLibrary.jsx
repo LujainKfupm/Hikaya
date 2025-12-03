@@ -95,6 +95,12 @@ export default function StoryLibrary() {
                 const topicRaw = s.topics?.[0] ?? "—";
                 const topicKey = normalizeTopicKey(topicRaw);
 
+                const ratingCount = Array.isArray(s.ratings) ? s.ratings.length : 0;
+                const ratingSum = ratingCount
+                    ? s.ratings.reduce((sum, r) => sum + (r.value ?? 0), 0)
+                    : 0;
+                const ratingAvg = ratingCount ? ratingSum / ratingCount : 0;
+
                 const ageRange =
                     typeof s.age === "number"
                         ? s.age <= 5
@@ -108,14 +114,14 @@ export default function StoryLibrary() {
                     id: s._id,
                     title: s.title || `قصة ${s.heroName}`,
                     author: "—",
-                    rating: 0,
+                    rating: ratingAvg,
                     moral: s.morals?.[0] ?? "—",
                     topicRaw,
                     topicKey,
                     cover: coverImage,
                     ageRange,
                     date: s.createdAt,
-                    commentsCount: 0,
+                    commentsCount: Array.isArray(s.comments) ? s.comments.length : 0,
                 };
             }),
         [stories]
@@ -416,7 +422,6 @@ export default function StoryLibrary() {
                             <button
                                 className="story-card-btn-confirm"
                                 onClick={async () => {
-                                    // TODO: اربطي هنا delete من الباك إند لما تجهزينه
                                     setStories((prev) => prev.filter((x) => x._id !== modal.storyId));
                                     setModal({ show: false, storyId: null });
                                 }}

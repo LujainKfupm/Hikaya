@@ -1,18 +1,3 @@
-/**
- * models/Story.js
- * -----------------------
- * Mongoose schema for Stories saved by users.
- *
- * Should include fields like:
- *   - user: ObjectId (ref: "User")
- *   - heroName, age, gender
- *   - topics: Array
- *   - morals: Array
- *   - details: String
- *   - content: String   (the generated story)
- *   - isPublic: Boolean
- */
-
 import mongoose from "mongoose";
 
 const storySchema = new mongoose.Schema({
@@ -72,7 +57,23 @@ const storySchema = new mongoose.Schema({
         type: Boolean,
     default: false,
     },
-},
-{ timestamps: true }
+
+        ratings: [
+            {
+                user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+                value: { type: Number, min: 1, max: 5 }
+            }
+        ],
+
+        comments: [
+            {
+                user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+                name: String,
+                text: String,
+                date: { type: Date, default: Date.now }
+            }
+        ],
+
+    }, { timestamps: true }
 );
 export default mongoose.model("Story", storySchema);

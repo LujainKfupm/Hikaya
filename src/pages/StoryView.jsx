@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { fetchStoryById } from "../api"; // 🔥 backend, not mocks
+import { fetchStoryById, rateStory, addComment, deleteComment} from "../api"; // 🔥 backend, not mocks
 import { Star, Calendar, Baby, User, Lock } from "lucide-react";
 
 import cover from "../assets/ai story cover.jpg";
@@ -10,6 +10,7 @@ import AuthDialog from "../components/AuthDialog";
 function resolveCover(story) {
     return cover;
 }
+
 
 function ConfirmModal({ message, onConfirm, onCancel }) {
     return (
@@ -44,16 +45,27 @@ export default function StoryView() {
     const [newComment, setNewComment] = useState("");
     const canComment = !!user && user.role !== "guest";
 
-    // ------- Load story from backend & normalize shape -------
     useEffect(() => {
         let alive = true;
         (async () => {
             try {
-                const data = await fetchStoryById(id); // Mongo doc
+                const data = await fetchStoryById(id);
 
-                if (!alive) return;
+                const ratingCount = Array.isArray(data.ratings) ? data.ratings.length : 0;
+                const ratingSum = ratingCount
+                    ? data.ratings.reduce((sum, r) => sum + (r.value ?? 0), 0)
+                    : 0;
+                const ratingAvg = ratingCount ? ratingSum / ratingCount : 0;
 
-                // normalize Mongo Story -> view model used by UI
+                const comments = Array.isArray(data.comments)
+                    ? data.comments.map((c) => ({
+                        id: c._id?.toString() || c.id,
+                        name: c.name || "مستخدم",
+                        text: c.text || "",
+                        date: c.date || c.createdAt,
+                    }))
+                    : [];
+
                 const ageRange =
                     typeof data.age === "number"
                         ? data.age <= 5
@@ -65,20 +77,22 @@ export default function StoryView() {
 
                 const view = {
                     id: data._id,
-                    title: data.title || `قصة ${data.heroName}`,
+                    title: data.title || `قصة ${data.heroName || "بدون عنوان"}`,
                     author: data.user?.name ?? "—",
                     date: data.createdAt,
                     ageRange,
                     moral: data.morals?.join("، ") || "—",
                     topic: data.topics?.[0] || "—",
                     body: data.content,
-                    rating: 0,
-                    ratingAvg: 0,
-                    ratingsCount: 0,
-                    comments: [],
+                    rating: ratingAvg,
+                    ratingAvg,
+                    ratingsCount: ratingCount,
+                    ratingCount: ratingCount,
+                    comments,
                 };
 
                 setStory(view);
+
             } catch (err) {
                 console.error(err);
                 if (alive) setStory({ notFound: true });
@@ -92,14 +106,19 @@ export default function StoryView() {
 
     const showConfirm = (commentId) => setModal({ show: true, commentId });
 
-    const handleConfirm = () => {
-        if (!modal.commentId) return;
+    const handleConfirm = async () => {
+        const token = user.token;
+
+        await deleteComment(id, modal.commentId, token);
+
         setStory((prev) => ({
             ...prev,
-            comments: (prev.comments || []).filter((c) => c.id !== modal.commentId),
+            comments: prev.comments.filter((c) => c._id !== modal.commentId),
         }));
+
         setModal({ show: false, commentId: null });
     };
+
 
     const handleCancel = () => setModal({ show: false, commentId: null });
 
@@ -115,46 +134,44 @@ export default function StoryView() {
 
     const canRate = !!user;
 
-    const handleRate = (value) => {
-        if (!canRate) return;
+    const token = user?.token;
+
+    const handleRate = async (value) => {
+        if (!user) return setAuthOpen(true);
+
+        const data = await rateStory(id, value, token);
+
         setSelectedRating(value);
-        setStory((prev) => {
-            if (!prev) return prev;
-            const currentAvg = Number(prev.rating ?? prev.ratingAvg ?? 0);
-            const currentCount = Number(prev.ratingsCount ?? prev.ratingCount ?? 0);
-            const nextCount = currentCount + 1;
-            const nextAvg = (currentAvg * currentCount + value) / (nextCount || 1);
-            return {
-                ...prev,
-                rating: nextAvg,
-                ratingAvg: nextAvg,
-                ratingsCount: nextCount,
-                ratingCount: nextCount,
-            };
-        });
+        setStory((prev) => ({
+            ...prev,
+            ratingAvg: data.ratingAvg,
+            ratingsCount: data.ratingCount,
+        }));
     };
 
-    const handlePostComment = () => {
-        const txt = (newComment || "").trim();
+
+    const handlePostComment = async () => {
+        if (!user) return setAuthOpen(true);
+
+        const token = user.token;
+        const txt = newComment.trim();
         if (!txt) return;
 
-        const nameFromUser =
-            user?.name ||
-            user?.displayName ||
-            (user?.email ? user.email.split("@")[0] : null) ||
-            "مستخدم";
+        const res = await addComment(id, txt, token);
 
-        const comment = {
-            id: Date.now(),
-            name: nameFromUser,
-            date: new Date().toISOString(),
-            text: txt,
+        const normalizedComment = {
+            id: res.comment._id,
+            name: res.comment.name,
+            text: res.comment.text,
+            date: res.comment.date,
         };
 
         setStory((prev) => ({
             ...prev,
-            comments: [...(prev.comments || []), comment],
+            comments: [...(prev.comments || []), normalizedComment],
         }));
+
+
         setNewComment("");
     };
 
