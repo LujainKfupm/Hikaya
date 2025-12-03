@@ -116,3 +116,38 @@ export async function deleteComment(storyId, commentId, token) {
     });
     return res.json();
 }
+export async function sendContactMessage(data) {
+    const res = await fetch(`${API_BASE}/api/contact`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+        let msg = "فشل في إرسال الرسالة";
+        try {
+            const body = await res.json();
+            if (body.message) msg = body.message;
+        } catch {}
+        throw new Error(msg);
+    }
+
+    return res.json();
+}
+export async function getAdminMessages(token) {
+    const res = await fetch(`${API_BASE}/api/contact`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error("فشل في جلب رسائل التواصل");
+    }
+
+    return res.json();
+}
