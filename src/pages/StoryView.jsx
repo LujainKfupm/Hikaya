@@ -33,6 +33,7 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
 export default function StoryView() {
     const { id } = useParams();
     const { user } = useAuth();
+    const isAdmin = user?.role === "admin";
 
     const [story, setStory] = useState(null);
     const [modal, setModal] = useState({ show: false, commentId: null });
@@ -43,7 +44,10 @@ export default function StoryView() {
     const [authOpen, setAuthOpen] = useState(false);
 
     const [newComment, setNewComment] = useState("");
-    const canComment = !!user && user.role !== "guest";
+
+    const canComment = !!user && user.role !== "guest" && !isAdmin;
+    const canRate = !!user && !isAdmin;
+
 
     useEffect(() => {
         let alive = true;
@@ -127,7 +131,7 @@ export default function StoryView() {
 
     const handleCancel = () => setModal({ show: false, commentId: null });
 
-    function formatDate(iso) {
+     function formatDate(iso) {
         if (!iso) return "—";
         try {
             const d = new Date(iso);
@@ -137,7 +141,6 @@ export default function StoryView() {
         }
     }
 
-    const canRate = !!user;
 
     const token = user?.token;
 
@@ -198,9 +201,6 @@ export default function StoryView() {
             <h1 className="story-title">{story.title}</h1>
 
             <div className="info-row">
-        <span className="info-item">
-          <User size={16} /> {story.author ?? "—"}
-        </span>
                 <span className="info-item">
           <Calendar size={16} /> {formatDate(story.date)}
         </span>
@@ -231,82 +231,75 @@ export default function StoryView() {
                     ))}
             </div>
 
-            <div
-                className="rate-strip"
-                style={{
-                    margin: "14px 0 18px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                }}
-            >
-                <span style={{ fontWeight: 700, color: "#111" }}>قيّم هذه القصة:</span>
-                {[1, 2, 3, 4, 5].map((n) => {
-                    const active = canRate
-                        ? hoverRating
-                            ? n <= hoverRating
-                            : n <= selectedRating
-                        : false;
-                    return (
+            {!isAdmin && (
+                <div
+                    className="rate-strip"
+                    style={{ margin: "14px 0 18px", display: "flex", alignItems: "center", gap: "10px" }}
+                >
+                    <span style={{ fontWeight: 700, color: "#111" }}>قيّم هذه القصة:</span>
+                    {[1, 2, 3, 4, 5].map((n) => {
+                        const active = canRate
+                            ? hoverRating
+                                ? n <= hoverRating
+                                : n <= selectedRating
+                            : false;
+                        return (
+                            <button
+                                key={n}
+                                type="button"
+                                aria-label={"rate-" + n}
+                                onMouseEnter={() => canRate && setHoverRating(n)}
+                                onMouseLeave={() => canRate && setHoverRating(0)}
+                                onClick={() => handleRate(n)}
+                                disabled={!canRate}
+                                style={{
+                                    background: "transparent",
+                                    border: "none",
+                                    padding: 0,
+                                    cursor: canRate ? "pointer" : "not-allowed",
+                                    opacity: canRate ? 1 : 0.5,
+                                    lineHeight: 0,
+                                }}
+                            >
+                                <Star
+                                    size={22}
+                                    color={active ? "#A7D3F6" : "#999"}
+                                    fill={active ? "#A7D3F6" : "transparent"}
+                                />
+                            </button>
+                        );
+                    })}
+                    {!canRate && !isAdmin && (
                         <button
-                            key={n}
                             type="button"
-                            aria-label={"rate-" + n}
-                            onMouseEnter={() => canRate && setHoverRating(n)}
-                            onMouseLeave={() => canRate && setHoverRating(0)}
-                            onClick={() => handleRate(n)}
-                            disabled={!canRate}
-                            style={{
-                                background: "transparent",
-                                border: "none",
-                                padding: 0,
-                                cursor: canRate ? "pointer" : "not-allowed",
-                                opacity: canRate ? 1 : 0.5,
-                                lineHeight: 0,
-                            }}
+                            className="btn"
+                            onClick={() => setAuthOpen(true)}
+                            style={{ marginInlineStart: 8, display: "inline-flex", alignItems: "center", gap: 6 }}
                         >
-                            <Star
-                                size={22}
-                                color={active ? "#A7D3F6" : "#999"}
-                                fill={active ? "#A7D3F6" : "transparent"}
-                            />
+                            <Lock size={16} /> سجّل دخولك للتقييم
                         </button>
-                    );
-                })}
-                {!canRate && (
-                    <button
-                        type="button"
-                        className="btn"
-                        onClick={() => setAuthOpen(true)}
-                        style={{
-                            marginInlineStart: 8,
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 6,
-                        }}
-                    >
-                        <Lock size={16} /> سجّل دخولك للتقييم
-                    </button>
-                )}
-                {canRate && selectedRating > 0 && (
-                    <span style={{ color: "#555", fontSize: ".9rem" }}>
-            شكراً! ({selectedRating} / 5)
-          </span>
-                )}
-            </div>
+                    )}
+                    {canRate && selectedRating > 0 && (
+                        <span style={{ color: "#555", fontSize: ".9rem" }}>
+        شكراً! ({selectedRating} / 5)
+      </span>
+                    )}
+                </div>
+            )}
+
 
             <div className="comment-box">
                 <h3>التعليقات</h3>
 
-                {canComment ? (
+                {isAdmin ? null : canComment ? (
                     <div className="comment-input-wrap">
-            <textarea
-                className="comment-input"
-                placeholder="اكتب تعليقك هنا..."
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                rows={3}
-            />
+      <textarea
+          className="comment-input"
+          placeholder="اكتب تعليقك هنا..."
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          rows={3}
+      />
                         <button
                             className="comment-send-btn"
                             onClick={handlePostComment}
@@ -338,7 +331,8 @@ export default function StoryView() {
                                 <span className="comment-date">{formatDate(c.date)}</span>
                             </p>
                             <p>{c.text}</p>
-                            {user?.role === "admin" && (
+
+                            {isAdmin && (
                                 <button
                                     className="btn-delete"
                                     onClick={() => showConfirm(c.id)}
@@ -352,6 +346,7 @@ export default function StoryView() {
                     <p className="no-comments">لا توجد تعليقات بعد.</p>
                 )}
             </div>
+
 
             {modal.show && (
                 <ConfirmModal
