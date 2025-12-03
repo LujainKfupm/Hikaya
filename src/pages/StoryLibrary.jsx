@@ -365,7 +365,6 @@ export default function StoryLibrary() {
 
                             <div className="story-card-body">
                                 <h3 className="story-card-title">{s.title}</h3>
-                                <p className="story-card-meta">المؤلف: {s.author}</p>
 
                                 <div className="story-card-info-row">
                   <span className="story-card-info-item">
@@ -426,7 +425,7 @@ export default function StoryLibrary() {
                                         await deleteStory(modal.storyId, user.token);
 
                                         setStories((prev) =>
-                                            prev.filter((x) => x._id !== modal.storyId) // 🔥 use _id, not id
+                                            prev.filter((x) => x._id !== modal.storyId)
                                         );
 
                                         setModal({ show: false, storyId: null });
