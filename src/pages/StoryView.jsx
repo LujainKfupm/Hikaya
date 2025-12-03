@@ -34,7 +34,7 @@ export default function StoryView() {
     const { id } = useParams();
     const { user } = useAuth();
 
-    const [story, setStory] = useState(null); // ← normalized view model
+    const [story, setStory] = useState(null);
     const [modal, setModal] = useState({ show: false, commentId: null });
 
     const [hoverRating, setHoverRating] = useState(0);
@@ -107,17 +107,22 @@ export default function StoryView() {
     const showConfirm = (commentId) => setModal({ show: true, commentId });
 
     const handleConfirm = async () => {
-        const token = user.token;
+        try {
+            await deleteComment(id, modal.commentId, user.token);
 
-        await deleteComment(id, modal.commentId, token);
+            setStory((prev) => ({
+                ...prev,
+                comments: prev.comments.filter(
+                    (c) => c.id !== modal.commentId
+                ),
+            }));
 
-        setStory((prev) => ({
-            ...prev,
-            comments: prev.comments.filter((c) => c._id !== modal.commentId),
-        }));
-
-        setModal({ show: false, commentId: null });
+            setModal({ show: false, commentId: null });
+        } catch (err) {
+            console.error("Delete failed", err);
+        }
     };
+
 
 
     const handleCancel = () => setModal({ show: false, commentId: null });
