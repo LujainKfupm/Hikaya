@@ -1,52 +1,35 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
+import { sendContactMessage } from "../api";
 
 export default function ContactPage() {
     const formRef = useRef();
     const [successMsg, setSuccessMsg] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const form = formRef.current;
-        const name = form.name;
-        const email = form.email;
-        const message = form.message;
 
-        // Clear previous custom validity
-        name.setCustomValidity("");
-        email.setCustomValidity("");
-        message.setCustomValidity("");
+        const data = {
+            name: form.name.value.trim(),
+            email: form.email.value.trim(),
+            message: form.message.value.trim(),
+        };
 
-        let valid = true;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // Validation
+        if (!data.name || !data.email || !data.message)
+            return alert("الرجاء تعبئة جميع الحقول");
 
-        if (!name.value.trim()) {
-            name.setCustomValidity("الرجاء إدخال اسمك");
-            valid = false;
+        const res = await sendContactMessage(data);
+
+        if (res._id) {
+            setSuccessMsg("تم إرسال الرسالة بنجاح");
+            setTimeout(() => setSuccessMsg(""), 3000);
+            form.reset();
+        } else {
+            alert("حدث خطأ أثناء إرسال الرسالة");
         }
-        if (!email.value.trim()) {
-            email.setCustomValidity("الرجاء إدخال البريد الإلكتروني");
-            valid = false;
-        } else if (!emailRegex.test(email.value)) {
-            email.setCustomValidity("البريد الإلكتروني غير صالح");
-            valid = false;
-        }
-        if (!message.value.trim()) {
-            message.setCustomValidity("الرجاء إدخال رسالتك");
-            valid = false;
-        }
-
-        if (!valid) {
-            form.reportValidity();
-            return;
-        }
-
-        // Show confirmation message
-        setSuccessMsg("تم إرسال الرسالة بنجاح");
-        setTimeout(() => setSuccessMsg(""), 3000);
-
-        form.reset();
     };
 
     return (
@@ -65,19 +48,20 @@ export default function ContactPage() {
                 </div>
             )}
 
-            <form className="contact-form" ref={formRef} onSubmit={handleSubmit} noValidate>
-                <label htmlFor="name">الاسم</label>
-                <input type="text" id="name" name="name" placeholder="أدخل اسمك" />
+            <form className="contact-form" ref={formRef} onSubmit={handleSubmit}>
+                <label>الاسم</label>
+                <input name="name" placeholder="أدخل اسمك" />
 
-                <label htmlFor="email">البريد الإلكتروني</label>
-                <input type="text" id="email" name="email" placeholder="أدخل بريدك الإلكتروني" />
+                <label>البريد الإلكتروني</label>
+                <input name="email" placeholder="أدخل بريدك الإلكتروني" />
 
-                <label htmlFor="message">الرسالة</label>
-                <textarea id="message" name="message" placeholder="اكتب رسالتك هنا"></textarea>
+                <label>الرسالة</label>
+                <textarea name="message" placeholder="اكتب رسالتك هنا"></textarea>
 
-                <button className="contact-button" type="submit">إرسال</button>
+                <button className="contact-button" type="submit">
+                    إرسال
+                </button>
             </form>
         </div>
     );
 }
-

@@ -1,20 +1,4 @@
-/**
- * models/User.js
- * -----------------------
- * Mongoose schema for Users.
- *
- * Should include:
- *   - name: String
- *   - email: String (unique)
- *   - passwordHash: String
- *
- * You MAY add:
- *   - createdAt / updatedAt (timestamps)
- *
- * This file ONLY defines the schema & exports the model.
- */
 
-// necessary for authentication
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 

@@ -1,17 +1,3 @@
-/**
- * server.js
- * -----------------------
- * This file starts the Express server.
- * It should ONLY:
- *   - load environment variables
- *   - create the app
- *   - use middleware (express.json, cors)
- *   - connect to MongoDB
- *   - mount route files
- *   - start listening
- *
- * DO NOT WRITE CONTROLLERS OR DATABASE LOGIC HERE.
- */
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -23,7 +9,9 @@ import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import storyRoutes from "./routes/storyRoutes.js";
 import generateRoutes from "./routes/generateRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import {AdminAccount} from "./utils/adminAccount.js";
+
 
 const app = express();
 
@@ -47,7 +35,7 @@ startServer();
 app.use("/api/auth", authRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/generate", generateRoutes);
-
+app.use("/api/contact", contactRoutes);
 app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
 });

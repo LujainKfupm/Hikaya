@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
-import {
-    getUsers,
-    deleteUserById,
-    getComments,
-    deleteCommentById,
-    getCategories,
-    addCategory,
-    deleteCategory,
-    getAgeGroups,
-    addAgeGroup,
-    deleteAgeGroup,
-    getContactMessages
-} from "../mocks/mockApi";
+import {getUsers, deleteUserById, getComments,
+    deleteCommentById, getCategories, addCategory,
+    deleteCategory, getAgeGroups, addAgeGroup, deleteAgeGroup,
+}
+from "../mocks/mockApi";
+import { getAdminMessages } from "../api.js";
+
+const API_BASE = "http://localhost:3000/api";
+
 function ConfirmModal({ message, onConfirm, onCancel }) {
     return (
         <div className="admin-modal-overlay">
@@ -31,17 +27,16 @@ export default function AdminDashboard() {
     const [comments, setComments] = useState([]);
     const [categories, setCategories] = useState([]);
     const [ageGroups, setAgeGroups] = useState([]);
-    const [messages, setMessages] = useState([]);
     const [newCategory, setNewCategory] = useState("");
     const [newAgeGroup, setNewAgeGroup] = useState("");
     const [modal, setModal] = useState({ show: false, action: null, message: "" });
+    const [messages, setMessages] = useState([]);
 
     useEffect(() => {
         getUsers().then(setUsers);
         getComments().then(setComments);
         getCategories().then(setCategories);
         getAgeGroups().then(setAgeGroups);
-        getContactMessages().then(setMessages);
     }, []);
 
     const showConfirm = (message, action) => {
@@ -85,6 +80,49 @@ export default function AdminDashboard() {
             setNewAgeGroup("");
         });
     };
+
+    // inside useEffect
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const token = localStorage.getItem("hikaya_token"); // or however you store admin token
+                const data = await getAdminMessages(token);
+                setMessages(data);
+            } catch (err) {
+                console.error("Error fetching messages:", err);
+            }
+        };
+
+        fetchMessages();
+    }, []);
+
+    const handleDeleteMessage = async (id) => {
+        if (!window.confirm("هل أنت متأكد من حذف هذه الرسالة؟")) return;
+
+        try {
+            const token = localStorage.getItem("hikaya_token");
+
+            const res = await fetch(`${API_BASE}/contact/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.message || "فشل في حذف الرسالة");
+
+            // Update state to remove deleted message
+            setMessages(prev => prev.filter(m => m._id !== id));
+        } catch (err) {
+            console.error(err);
+            alert(err.message);
+        }
+    };
+
+
 
     return (
         <div className="admin-container">
@@ -157,17 +195,21 @@ export default function AdminDashboard() {
                 <h2 className="admin-section-title">رسائل التواصل</h2>
                 <div className="admin-card-grid">
                     {messages.map((m) => (
-                        <div key={m.id} className="admin-card">
+                        <div key={m._id} className="admin-card">
                             <p><strong>{m.name}</strong></p>
-                            <p>
-                                <a href={`mailto:${m.email}`} className="admin-email">{m.email}</a>
-                            </p>
+                            <p><a href={`mailto:${m.email}`} className="admin-email">{m.email}</a></p>
                             <p>{m.message}</p>
-                            {m.responded && <p className="admin-reply">تم الرد: {m.reply}</p>}
+                            <button
+                                className="admin-btn-delete"
+                                onClick={() => handleDeleteMessage(m._id)}
+                            >
+                                حذف الرسالة
+                            </button>
                         </div>
                     ))}
                 </div>
             </section>
+
 
             {modal.show && <ConfirmModal message={modal.message} onConfirm={handleConfirm} onCancel={handleCancel} />}
         </div>
