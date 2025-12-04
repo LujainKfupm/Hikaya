@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { X } from "lucide-react";
 
@@ -12,6 +12,12 @@ export default function AuthDialog({ open, onClose }) {
     const [error, setError] = useState("");
     const [showWelcome, setShowWelcome] = useState(false);
 
+    useEffect(() => {
+        if (open) {
+            resetForm();
+            setTab("login");
+        }
+    }, [open]);
     function resetForm() {
         setEmail("");
         setPass("");
