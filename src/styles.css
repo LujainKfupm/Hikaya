@@ -1168,6 +1168,7 @@ body {
 
 .hero-secondary-btn {
     border: 1px solid #A7D3F6;
+    color: #82B7E0FF !important;
     padding: 10px 20px;
     border-radius: 8px;
 }
