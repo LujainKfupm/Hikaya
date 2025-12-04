@@ -155,6 +155,7 @@ export default function AuthDialog({ open, onClose }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="example@email.com"
+                    autoComplete="off"
                 />
 
                 <label className="auth-label">كلمة المرور</label>
@@ -164,6 +165,7 @@ export default function AuthDialog({ open, onClose }) {
                     value={pass}
                     onChange={(e) => setPass(e.target.value)}
                     placeholder="•••••••"
+                    autoComplete="new-password"
                 />
 
                 {error &&
