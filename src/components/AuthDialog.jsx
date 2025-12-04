@@ -142,7 +142,9 @@ export default function AuthDialog({ open, onClose }) {
 
                     <button
                         className={tab === "signup" ? "auth-tab active" : "auth-tab"}
-                        onClick={() => {setTab("signup"); setError("");
+                        onClick={() => {
+                            setTab("signup");
+                            resetForm();
                         }}
                     >
                         إنشاء حساب
