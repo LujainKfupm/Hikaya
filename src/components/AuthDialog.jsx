@@ -190,7 +190,8 @@ export default function AuthDialog({ open, onClose }) {
                 )}
                 {/* sign up */}
                 {tab === "signup" && (
-                    <>
+                    <div key="signup">
+
                         <label className="auth-label">الاسم الكامل</label>
                         <input
                             className="auth-input"
@@ -232,7 +233,7 @@ export default function AuthDialog({ open, onClose }) {
                         <button className="auth-login-btn" onClick={handleSignup}>
                             إنشاء الحساب →
                         </button>
-                    </>
+                    </div>
                 )}
             </div>
         </div>
