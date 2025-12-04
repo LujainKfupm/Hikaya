@@ -108,6 +108,7 @@ export default function AuthDialog({ open, onClose }) {
 
                 <button className="auth-close-btn" onClick={() => {
                     resetForm();
+                    setTab("login");
                     onClose();
                 }}>
                     <X size={22}/>
