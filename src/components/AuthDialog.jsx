@@ -12,6 +12,13 @@ export default function AuthDialog({ open, onClose }) {
     const [error, setError] = useState("");
     const [showWelcome, setShowWelcome] = useState(false);
 
+    function resetForm() {
+        setEmail("");
+        setPass("");
+        setName("");
+        setConfirmPass("");
+        setError("");
+    }
 
     if (!open) return null;
     async function handleLogin() {
