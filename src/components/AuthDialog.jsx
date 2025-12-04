@@ -48,6 +48,7 @@ export default function AuthDialog({ open, onClose }) {
         setShowWelcome(true);
         setTimeout(() => {
             setShowWelcome(false);
+            resetForm();
             onClose();
         }, 1000);
     }
