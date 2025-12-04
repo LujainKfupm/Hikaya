@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BookOpen, Tag, Baby } from "lucide-react";
+import { BookOpen, Tag, Baby, Star } from "lucide-react";
 
 const API_BASE = "http://localhost:3000/api";
 
@@ -93,13 +93,32 @@ export default function AdminDashboard() {
     }, []);
 
     let publicCount = 0;
-    let privateCount = 0;
+    let publicAvgRating = "0.0";
     let topTopic = "—";
     let topAgeGroup = "—";
 
     if (stories.length > 0) {
-        publicCount = stories.filter((s) => s.isPublic === true).length;
-        privateCount = stories.length - publicCount;
+        const publicStories = stories.filter((s) => s.isPublic === true);
+        publicCount = publicStories.length;
+
+        if (publicStories.length > 0) {
+            const publicAverages = publicStories.map((s) => {
+                if (Array.isArray(s.ratings) && s.ratings.length > 0) {
+                    const sum = s.ratings.reduce(
+                        (acc, r) => acc + Number(r.value || 0),
+                        0
+                    );
+                    return sum / s.ratings.length;
+                }
+                return Number(s.ratingAvg ?? s.rating ?? 0);
+            });
+
+            const avg =
+                publicAverages.reduce((sum, v) => sum + v, 0) /
+                publicAverages.length;
+
+            publicAvgRating = avg.toFixed(1);
+        }
 
         const topicCounts = {};
         for (const s of stories) {
@@ -201,9 +220,9 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="stat-card">
-                    <BookOpen size={24} />
-                    <p className="stat-label">القصص الخاصة</p>
-                    <h2>{privateCount}</h2>
+                    <Star size={24} />
+                    <p className="stat-label">متوسط تقييم المكتبة العامة</p>
+                    <h2>{publicAvgRating}</h2>
                 </div>
 
                 <div className="stat-card">
