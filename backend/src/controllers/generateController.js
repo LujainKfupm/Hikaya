@@ -148,7 +148,6 @@ export async function generateStory(req, res, next) {
             }
         }
 
-
         return res.status(201).json({
             title: generatedTitle,
             story: storyText,

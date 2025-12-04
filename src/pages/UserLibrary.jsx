@@ -23,8 +23,7 @@ export default function UserLibrary() {
         (async () => {
             try {
                 setLoading(true);
-                const token = user?.token;
-                const data = await fetchMyStories(token);
+                const data = await fetchMyStories();
                 if (!alive) return;
                 setStories(data || []);
             } catch (err) {

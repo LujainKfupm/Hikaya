@@ -112,7 +112,7 @@ export default function StoryView() {
 
     const handleConfirm = async () => {
         try {
-            await deleteComment(id, modal.commentId, user.token);
+            await deleteComment(id, modal.commentId);
 
             setStory((prev) => ({
                 ...prev,
@@ -142,12 +142,10 @@ export default function StoryView() {
     }
 
 
-    const token = user?.token;
-
     const handleRate = async (value) => {
         if (!user) return setAuthOpen(true);
 
-        const data = await rateStory(id, value, token);
+        const data = await rateStory(id, value);
 
         setSelectedRating(value);
         setStory((prev) => ({
@@ -161,11 +159,10 @@ export default function StoryView() {
     const handlePostComment = async () => {
         if (!user) return setAuthOpen(true);
 
-        const token = user.token;
         const txt = newComment.trim();
         if (!txt) return;
 
-        const res = await addComment(id, txt, token);
+        const res = await addComment(id, txt);
 
         const normalizedComment = {
             id: res.comment._id,

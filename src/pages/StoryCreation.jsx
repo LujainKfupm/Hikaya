@@ -127,13 +127,11 @@ export default function StoryCreation() {
         };
 
         try {
-            const token = user?.token;
-
-            const data = await generateStoryAPI(storyPayload, token);
+            const data = await generateStoryAPI(storyPayload);
             setGeneratedStory(data.story);
 
             if (!isLoggedIn) {
-                toast.success("تم إنشاء القصة مؤقتاً، سجّلي الدخول لحفظها 💾");
+                toast.success("تم إنشاء القصة مؤقتاً، سجّل الدخول لحفظها 💾");
             } else if (user.role === "admin") {
                 if (data.saved) {
                     toast.success("تم إنشاء القصة ونشرها في المكتبة العامة ✨");

@@ -422,7 +422,7 @@ export default function StoryLibrary() {
                                 className="story-card-btn-confirm"
                                 onClick={async () => {
                                     try {
-                                        await deleteStory(modal.storyId, user.token);
+                                        await deleteStory(modal.storyId);
 
                                         setStories((prev) =>
                                             prev.filter((x) => x._id !== modal.storyId)
