@@ -11,6 +11,7 @@ import storyRoutes from "./routes/storyRoutes.js";
 import generateRoutes from "./routes/generateRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import {AdminAccount} from "./utils/adminAccount.js";
+import userRoutes from "./routes/userRoutes.js";
 
 
 const app = express();
@@ -36,6 +37,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/generate", generateRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/users", userRoutes);
 app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
 });

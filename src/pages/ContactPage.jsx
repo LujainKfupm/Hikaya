@@ -6,6 +6,7 @@ import { sendContactMessage } from "../api";
 export default function ContactPage() {
     const formRef = useRef();
     const [successMsg, setSuccessMsg] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,9 +18,16 @@ export default function ContactPage() {
             message: form.message.value.trim(),
         };
 
-        // Validation
-        if (!data.name || !data.email || !data.message)
-            return alert("الرجاء تعبئة جميع الحقول");
+        if (!data.name || !data.email || !data.message) {
+            return setErrorMsg("الرجاء تعبئة جميع الحقول");
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+            return setErrorMsg("الرجاء إدخال بريد إلكتروني صحيح");
+        }
+
+        setErrorMsg("");
 
         const res = await sendContactMessage(data);
 
@@ -28,7 +36,7 @@ export default function ContactPage() {
             setTimeout(() => setSuccessMsg(""), 3000);
             form.reset();
         } else {
-            alert("حدث خطأ أثناء إرسال الرسالة");
+            setErrorMsg("حدث خطأ أثناء إرسال الرسالة");
         }
     };
 
@@ -41,12 +49,6 @@ export default function ContactPage() {
                 <Link to="/faq">تحقق من الأسئلة الشائعة أولاً</Link>
             </div>
 
-            {successMsg && (
-                <div className="success-box">
-                    <Check size={18} color="#155724" />
-                    <span>{successMsg}</span>
-                </div>
-            )}
 
             <form className="contact-form" ref={formRef} onSubmit={handleSubmit}>
                 <label>الاسم</label>
@@ -61,6 +63,18 @@ export default function ContactPage() {
                 <button className="contact-button" type="submit">
                     إرسال
                 </button>
+
+                {successMsg && (
+                    <div className="success-box">
+                        <Check size={18} color="#155724" />
+                        <span>{successMsg}</span>
+                    </div>
+                )}
+                {errorMsg && (
+                    <div className="error-box">
+                        <span>{errorMsg}</span>
+                    </div>
+                )}
             </form>
         </div>
     );
