@@ -132,8 +132,10 @@ export default function AuthDialog({ open, onClose }) {
                 <div className="auth-tabs">
                     <button
                         className={tab === "login" ? "auth-tab active" : "auth-tab"}
-                        onClick={() =>{ setTab("login");
-                            setError("");}}
+                        onClick={() => {
+                            setTab("login");
+                            resetForm();
+                        }}
                     >
                         تسجيل الدخول
                     </button>
