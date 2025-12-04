@@ -152,7 +152,8 @@ export default function AuthDialog({ open, onClose }) {
                 </div>
                 {/* login */}
                 {tab === "login" && (
-                    <>
+                    <div key="login">
+
                 <label className="auth-label">البريد الإلكتروني</label>
                 <input
                     className="auth-input"
@@ -184,7 +185,7 @@ export default function AuthDialog({ open, onClose }) {
                 >
                     تسجيل الدخول →
                 </button>
-           </>
+           </div>
 
                 )}
                 {/* sign up */}
