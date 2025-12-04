@@ -41,24 +41,30 @@ export default function UserLibrary() {
     }, [isLoggedIn, user]);
 
     const stats = useMemo(() => {
-        if (!stories.length) {
-            return { mine: 0, avg: "0.0" };
-        }
+        if (!stories.length) return { mine: 0, avg: "0.0" };
 
         const mine = stories.length;
 
-        const avgRating = (
-            stories.reduce(
-                (sum, s) => sum + Number(s.ratingAvg ?? s.rating ?? 0),
-                0
-            ) / mine
-        ).toFixed(1);
+        const storyAverages = stories.map((s) => {
+            if (Array.isArray(s.ratings) && s.ratings.length > 0) {
+                const sum = s.ratings.reduce(
+                    (acc, r) => acc + Number(r.value || 0),
+                    0
+                );
+                return sum / s.ratings.length;
+            }
+            return Number(s.ratingAvg ?? s.rating ?? 0);
+        });
+
+        const avg =
+            storyAverages.reduce((sum, v) => sum + v, 0) / storyAverages.length;
 
         return {
             mine,
-            avg: avgRating,
+            avg: avg.toFixed(1),
         };
     }, [stories]);
+
 
 
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BookOpen, Tag, Baby } from "lucide-react";
 
 const API_BASE = "http://localhost:3000/api";
 
@@ -19,6 +20,7 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
 export default function AdminDashboard() {
     const [users, setUsers] = useState([]);
     const [messages, setMessages] = useState([]);
+    const [stories, setStories] = useState([]);
 
     const [modal, setModal] = useState({
         show: false,
@@ -69,10 +71,68 @@ export default function AdminDashboard() {
         }
     };
 
+    const fetchStories = async () => {
+        try {
+            const token = localStorage.getItem("hikaya_token");
+            const res = await fetch(`${API_BASE}/stories`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "فشل في تحميل القصص");
+            setStories(data);
+        } catch (error) {
+            console.error("Failed to load stories", error);
+        }
+    };
+
     useEffect(() => {
         fetchUsers();
         fetchMessages();
+        fetchStories();
     }, []);
+
+    let publicCount = 0;
+    let privateCount = 0;
+    let topTopic = "—";
+    let topAgeGroup = "—";
+
+    if (stories.length > 0) {
+        publicCount = stories.filter((s) => s.isPublic === true).length;
+        privateCount = stories.length - publicCount;
+
+        const topicCounts = {};
+        for (const s of stories) {
+            const topics = Array.isArray(s.topics) ? s.topics : [];
+            for (const t of topics) {
+                if (!t) continue;
+                topicCounts[t] = (topicCounts[t] || 0) + 1;
+            }
+        }
+        if (Object.keys(topicCounts).length > 0) {
+            topTopic = Object.entries(topicCounts).reduce(
+                (best, current) => (current[1] > best[1] ? current : best)
+            )[0];
+        }
+
+        const ageCounts = { "3-5": 0, "6-8": 0, "9-12": 0 };
+
+        for (const s of stories) {
+            const age = Number(s.age);
+            if (!Number.isFinite(age)) continue;
+
+            if (age >= 3 && age <= 5) ageCounts["3-5"]++;
+            else if (age >= 6 && age <= 8) ageCounts["6-8"]++;
+            else if (age >= 9 && age <= 12) ageCounts["9-12"]++;
+        }
+
+        const ageEntries = Object.entries(ageCounts).filter(([, count]) => count > 0);
+        if (ageEntries.length > 0) {
+            topAgeGroup = ageEntries.reduce(
+                (best, current) => (current[1] > best[1] ? current : best)
+            )[0];
+        }
+    }
 
     // Delete user with confirmation modal
     const handleDeleteUser = (id) => {
@@ -125,6 +185,39 @@ export default function AdminDashboard() {
     return (
         <div className="admin-container">
             <h1 className="admin-title">لوحة التحكم</h1>
+
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+                    gap: "16px",
+                    marginBottom: "24px",
+                }}
+            >
+                <div className="stat-card">
+                    <BookOpen size={24} />
+                    <p className="stat-label">القصص العامة</p>
+                    <h2>{publicCount}</h2>
+                </div>
+
+                <div className="stat-card">
+                    <BookOpen size={24} />
+                    <p className="stat-label">القصص الخاصة</p>
+                    <h2>{privateCount}</h2>
+                </div>
+
+                <div className="stat-card">
+                    <Tag size={24} />
+                    <p className="stat-label">أكثر موضوع استخداماً</p>
+                    <h2>{topTopic}</h2>
+                </div>
+
+                <div className="stat-card">
+                    <Baby size={24} />
+                    <p className="stat-label">أكثر فئة عمرية</p>
+                    <h2>{topAgeGroup === "—" ? "—" : `${topAgeGroup} سنوات`}</h2>
+                </div>
+            </div>
 
             {/* Users Section */}
             <section className="admin-section">

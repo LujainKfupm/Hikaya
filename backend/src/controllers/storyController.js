@@ -152,3 +152,11 @@ export async function deleteComment(req, res, next) {
     }
 }
 
+export async function getAllStories(req, res, next) {
+    try {
+        const stories = await Story.find({}).sort({ createdAt: -1 });
+        res.json(stories);
+    } catch (err) {
+        next(err);
+    }
+}

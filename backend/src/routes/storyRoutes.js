@@ -6,7 +6,7 @@ import {
     getMyStories,
     getStoryById,
     rateStory,
-    addComment, deleteComment,
+    addComment, deleteComment, getAllStories,
 } from "../controllers/storyController.js";
 
 const router = express.Router();
@@ -22,7 +22,7 @@ router.delete("/:id", protect, adminOnly, deleteStory);
 router.post("/:id/rate", protect, rateStory);
 router.post("/:id/comments", protect, addComment);
 router.delete("/:storyId/comments/:commentId", protect, adminOnly, deleteComment);
-
+router.get("/", protect, adminOnly, getAllStories);
 
 export default router;
 
