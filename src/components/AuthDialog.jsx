@@ -93,6 +93,7 @@ export default function AuthDialog({ open, onClose }) {
             setError(res.msg);
             return;
         }
+        resetForm();
         onClose();
     }
 
