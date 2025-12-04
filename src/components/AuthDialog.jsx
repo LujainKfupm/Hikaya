@@ -167,7 +167,7 @@ export default function AuthDialog({ open, onClose }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="example@email.com"
-                    autoComplete="off"
+                    autoComplete="username"
                 />
 
                 <label className="auth-label">كلمة المرور</label>
@@ -177,7 +177,7 @@ export default function AuthDialog({ open, onClose }) {
                     value={pass}
                     onChange={(e) => setPass(e.target.value)}
                     placeholder="•••••••"
-                    autoComplete="new-password"
+                    autoComplete="current-password"
                 />
 
                 {error &&
@@ -205,6 +205,7 @@ export default function AuthDialog({ open, onClose }) {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="أدخل اسمك"
+                            autoComplete="name"
                         />
 
                         <label className="auth-label">البريد الإلكتروني</label>
@@ -214,6 +215,7 @@ export default function AuthDialog({ open, onClose }) {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="example@email.com"
+                            autoComplete="email"
                         />
 
                         <label className="auth-label">كلمة المرور</label>
@@ -223,6 +225,7 @@ export default function AuthDialog({ open, onClose }) {
                             value={pass}
                             onChange={(e) => setPass(e.target.value)}
                             placeholder="•••••••"
+                            autoComplete="new-password"
                         />
 
                         <label className="auth-label">تأكيد كلمة المرور</label>
@@ -232,6 +235,7 @@ export default function AuthDialog({ open, onClose }) {
                             value={confirmPass}
                             onChange={(e) => setConfirmPass(e.target.value)}
                             placeholder="•••••••"
+                            autoComplete="new-password"
                         />
 
                         {error && <div className="auth-error">{error}</div>}
