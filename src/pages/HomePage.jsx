@@ -95,8 +95,8 @@ export default function HomePage() {
 
                     <div className="step-card">
                         <div className="step-number">3</div>
-                        <h3>اقرأ وشارك</h3>
-                        <p>استمتع بالقصة معًا، احفظها في مكتبتك، وشاركها مع الآخرين.</p>
+                        <h3>اقرأ</h3>
+                        <p>استمتع بالقصة معًا، واحفظها في مكتبتك</p>
                     </div>
                 </div>
             </section>

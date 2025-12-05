@@ -130,11 +130,6 @@ export default function AuthDialog({ open, onClose }) {
                         : "أنشئ حسابك للبدء في إنشاء قصص شخصية لطفلك"}
                 </p>
 
-                <div className="auth-demo-box">
-                    <strong>حساب المشرف:</strong><br/>
-                    <span> admin@hikaya.com — admin123</span><br/>
-                </div>
-
                 <div className="auth-tabs">
                     <button
                         className={tab === "login" ? "auth-tab active" : "auth-tab"}
