@@ -121,9 +121,10 @@ The backend now handles real authentication, story storage, and AI story generat
 1) Go to the backend folder using the command `cd backend`
 2) Install dependencies using the command `npm install`
 3) Create a `.env` file 
-4) Write to the file :`MONGO_URL=your-real-mongo-url-here
-                       JWT_SECRET=your-secret-key-here
-                       PORT=3000`
+4) Write to the file :```MONGO_URL=your-real-mongo-url-here
+                         JWT_SECRET=your-secret-key-here
+                         OPENAI_API_KEY=the-real-key
+                         PORT=3000```
 5) Start the server using the command `npm start`
 6) The server will run at `http://localhost:3000`
 ---
@@ -134,13 +135,13 @@ The backend now handles real authentication, story storage, and AI story generat
 - “My Stories” for logged-in users 
 - Public stories library 
 - View a single story 
-- Delete story (owner only)
+- Delete story (admin only)
 - AI story generation endpoint 
 - MongoDB integration for users + stories
 ---
 
 ## Backend Structure
-`
+```
 backend/
   src/
     config/
@@ -164,8 +165,7 @@ backend/
       generateToken.js
   .env
   server.js
-`
-
+```
 ---
 ## API Documentation
 - Authentication – Register:
