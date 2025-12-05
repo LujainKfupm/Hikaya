@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { BookOpen, Tag, Baby, Star } from "lucide-react";
 
-const API_BASE = "http://localhost:3000/api";
+const API_ROOT = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_BASE = `${API_ROOT}/api`;
 
 function ConfirmModal({ message, onConfirm, onCancel }) {
     return (
