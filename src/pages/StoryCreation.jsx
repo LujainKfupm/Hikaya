@@ -2,7 +2,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { generateStoryAPI } from "../api";
-import { addStory, PLACEHOLDER_COVER } from "../mocks/mockApi.js";
 
 
 const TOPICS = [
@@ -113,54 +112,39 @@ export default function StoryCreation() {
         setIsSubmitting(true);
         setGeneratedStory("");
 
-        const ageNumber = Number(form.age);
+        const isLoggedIn = !!user;
+        const isAdmin = isLoggedIn && user.role === "admin";
 
         const storyPayload = {
             heroName: form.heroName,
-            age: ageNumber,
+            age: Number(form.age),
             gender: form.gender,
             topics: form.topics,
             morals: form.morals,
             details: form.details,
-            isPublic: form.isPublic,
-            createdBy: isLoggedIn ? user.email : "guest",
-            createdAt: new Date().toISOString(),
+            saveToLibrary: form.isPublic,
+            isPublic: isAdmin && form.isPublic,
         };
 
         try {
             const data = await generateStoryAPI(storyPayload);
             setGeneratedStory(data.story);
 
-            const ageRange =
-                ageNumber <= 5 ? "3-5" :
-                    ageNumber <= 8 ? "6-8" : "9-12";
-
-            const newStoryForMock = {
-                id: data.storyId || crypto.randomUUID(),
-                title: `قصة ${form.heroName}`,
-                author: isLoggedIn ? (user.name || user.email) : "ضيف",
-                ageRange,
-                topics: form.topics,
-                values: form.morals,
-                ratingAvg: 0,
-                ratingCount: 0,
-                createdAt: new Date().toISOString().slice(0, 10),
-                cover: PLACEHOLDER_COVER,
-                body: data.story,
-                comments: [],
-                visibility:
-                    isLoggedIn && user.role === "admin" && form.isPublic
-                        ? "public"
-                        : "private",            };
-
-            addStory(newStoryForMock);
-
-            if (isLoggedIn) {
-                toast.success("تم إنشاء القصة وحفظها في مكتبتي ✨");
-            } else {
+            if (!isLoggedIn) {
                 toast.success("تم إنشاء القصة مؤقتاً، سجّل الدخول لحفظها 💾");
+            } else if (user.role === "admin") {
+                if (data.saved) {
+                    toast.success("تم إنشاء القصة ونشرها في المكتبة العامة ✨");
+                } else {
+                    toast.success("تم إنشاء القصة بدون حفظ في المكتبة العامة.");
+                }
+            } else {
+                if (data.saved) {
+                    toast.success("تم إنشاء القصة وحفظها في مكتبتي ✨");
+                } else {
+                    toast.success("تم إنشاء القصة بدون حفظ في مكتبتي.");
+                }
             }
-
             setForm((prev) => ({
                 ...prev,
                 heroName: "",

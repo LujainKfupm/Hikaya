@@ -1,11 +1,9 @@
 import User from "../models/User.js";
-import bcrypt from "bcryptjs";
-
 
 export async function AdminAccount() {
     try {
         const email = "admin@hikaya.com";
-        const existingAdmin = await User.findOne({ email });
+        const existingAdmin = await User.findOne({email});
         if (existingAdmin) return;
 
         const admin = new User({

@@ -1,25 +1,17 @@
 import { useEffect, useState } from "react";
-import {
-    getUsers,
-    deleteUserById,
-    getComments,
-    deleteCommentById,
-    getCategories,
-    addCategory,
-    deleteCategory,
-    getAgeGroups,
-    addAgeGroup,
-    deleteAgeGroup,
-    getContactMessages
-} from "../mocks/mockApi";
+import { BookOpen, Tag, Baby, Star } from "lucide-react";
+
+const API_ROOT = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_BASE = `${API_ROOT}/api`;
+
 function ConfirmModal({ message, onConfirm, onCancel }) {
     return (
         <div className="admin-modal-overlay">
             <div className="admin-modal-box">
                 <p>{message}</p>
                 <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", marginTop: "16px" }}>
-                    <button className="admin-btn-cancel" onClick={onCancel}>إلغاء</button>
-                    <button className="admin-btn-confirm" onClick={onConfirm}>حذف</button>
+                    <button type="button" className="admin-btn-cancel" onClick={onCancel}>إلغاء</button>
+                    <button type="button" className="admin-btn-confirm" onClick={onConfirm}>حذف</button>
                 </div>
             </div>
         </div>
@@ -28,61 +20,185 @@ function ConfirmModal({ message, onConfirm, onCancel }) {
 
 export default function AdminDashboard() {
     const [users, setUsers] = useState([]);
-    const [comments, setComments] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [ageGroups, setAgeGroups] = useState([]);
     const [messages, setMessages] = useState([]);
-    const [newCategory, setNewCategory] = useState("");
-    const [newAgeGroup, setNewAgeGroup] = useState("");
-    const [modal, setModal] = useState({ show: false, action: null, message: "" });
+    const [stories, setStories] = useState([]);
 
-    useEffect(() => {
-        getUsers().then(setUsers);
-        getComments().then(setComments);
-        getCategories().then(setCategories);
-        getAgeGroups().then(setAgeGroups);
-        getContactMessages().then(setMessages);
-    }, []);
+    const [modal, setModal] = useState({
+        show: false,
+        message: "",
+        action: null,
+    });
 
     const showConfirm = (message, action) => {
         setModal({ show: true, message, action });
     };
-    const handleConfirm = () => { if (modal.action) modal.action(); setModal({ show: false, action: null, message: "" }); };
-    const handleCancel = () => setModal({ show: false, action: null, message: "" });
 
-    const handleDeleteUser = (id) =>
-        showConfirm("هل أنت متأكد من حذف هذا المستخدم؟", () =>
-            deleteUserById(id).then(() => setUsers(users.filter(u => u.id !== id)))
-        );
+    const closeModal = () => {
+        setModal({ show: false, message: "", action: null });
+    };
 
-    const handleDeleteComment = (id) =>
-        showConfirm("هل أنت متأكد من حذف هذا التعليق؟", () =>
-            deleteCommentById(id).then(() => setComments(comments.filter(c => c.id !== id)))
-        );
+    const handleConfirm = () => {
+        if (modal.action) modal.action();
+        closeModal();
+    };
 
-    const handleDeleteCategory = (cat) =>
-        showConfirm("هل أنت متأكد من حذف هذه الفئة؟", () =>
-            deleteCategory(cat).then(() => setCategories(categories.filter(c => c !== cat)))
-        );
+    // Fetch users (non-admin)
+    const fetchUsers = async () => {
+        try {
+            const token = localStorage.getItem("hikaya_token");
+            const res = await fetch(`${API_BASE}/users`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
-    const handleDeleteAgeGroup = (age) =>
-        showConfirm("هل أنت متأكد من حذف هذه الفئة العمرية؟", () =>
-            deleteAgeGroup(age).then(() => setAgeGroups(ageGroups.filter(a => a !== age)))
-        );
+            const data = await res.json();
+            setUsers(data);
+        } catch (error) {
+            console.error("Failed to load users", error);
+        }
+    };
 
-    const handleAddCategory = () => {
-        if (!newCategory) return;
-        addCategory(newCategory).then(() => {
-            setCategories([...categories, newCategory]);
-            setNewCategory("");
+    // Fetch contact messages
+    const fetchMessages = async () => {
+        try {
+            const token = localStorage.getItem("hikaya_token");
+            const res = await fetch(`${API_BASE}/contact`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const data = await res.json();
+            setMessages(data);
+        } catch (error) {
+            console.error("Failed to load messages", error);
+        }
+    };
+
+    const fetchStories = async () => {
+        try {
+            const token = localStorage.getItem("hikaya_token");
+            const res = await fetch(`${API_BASE}/stories`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "فشل في تحميل القصص");
+            setStories(data);
+        } catch (error) {
+            console.error("Failed to load stories", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchUsers();
+        fetchMessages();
+        fetchStories();
+    }, []);
+
+    let publicCount = 0;
+    let publicAvgRating = "0.0";
+    let topTopic = "—";
+    let topAgeGroup = "—";
+
+    if (stories.length > 0) {
+        const publicStories = stories.filter((s) => s.isPublic === true);
+        publicCount = publicStories.length;
+
+        if (publicStories.length > 0) {
+            const publicAverages = publicStories.map((s) => {
+                if (Array.isArray(s.ratings) && s.ratings.length > 0) {
+                    const sum = s.ratings.reduce(
+                        (acc, r) => acc + Number(r.value || 0),
+                        0
+                    );
+                    return sum / s.ratings.length;
+                }
+                return Number(s.ratingAvg ?? s.rating ?? 0);
+            });
+
+            const avg =
+                publicAverages.reduce((sum, v) => sum + v, 0) /
+                publicAverages.length;
+
+            publicAvgRating = avg.toFixed(1);
+        }
+
+        const topicCounts = {};
+        for (const s of stories) {
+            const topics = Array.isArray(s.topics) ? s.topics : [];
+            for (const t of topics) {
+                if (!t) continue;
+                topicCounts[t] = (topicCounts[t] || 0) + 1;
+            }
+        }
+        if (Object.keys(topicCounts).length > 0) {
+            topTopic = Object.entries(topicCounts).reduce(
+                (best, current) => (current[1] > best[1] ? current : best)
+            )[0];
+        }
+
+        const ageCounts = { "3-5": 0, "6-8": 0, "9-12": 0 };
+
+        for (const s of stories) {
+            const age = Number(s.age);
+            if (!Number.isFinite(age)) continue;
+
+            if (age >= 3 && age <= 5) ageCounts["3-5"]++;
+            else if (age >= 6 && age <= 8) ageCounts["6-8"]++;
+            else if (age >= 9 && age <= 12) ageCounts["9-12"]++;
+        }
+
+        const ageEntries = Object.entries(ageCounts).filter(([, count]) => count > 0);
+        if (ageEntries.length > 0) {
+            topAgeGroup = ageEntries.reduce(
+                (best, current) => (current[1] > best[1] ? current : best)
+            )[0];
+        }
+    }
+
+    // Delete user with confirmation modal
+    const handleDeleteUser = (id) => {
+        showConfirm("هل أنت متأكد من حذف هذا المستخدم؟", async () => {
+            try {
+                const token = localStorage.getItem("hikaya_token");
+
+                const res = await fetch(`${API_BASE}/users/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || "فشل الحذف");
+
+                setUsers(prev => prev.filter(u => u._id !== id));
+            } catch (error) {
+                alert(error.message);
+            }
         });
     };
 
-    const handleAddAgeGroup = () => {
-        if (!newAgeGroup) return;
-        addAgeGroup(newAgeGroup).then(() => {
-            setAgeGroups([...ageGroups, newAgeGroup]);
-            setNewAgeGroup("");
+    // Delete contact message
+    const handleDeleteMessage = (id) => {
+        showConfirm("هل أنت متأكد من حذف هذه الرسالة؟", async () => {
+            try {
+                const token = localStorage.getItem("hikaya_token");
+
+                const res = await fetch(`${API_BASE}/contact/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || "فشل الحذف");
+
+                setMessages(prev => prev.filter(m => m._id !== id));
+            } catch (error) {
+                alert(error.message);
+            }
         });
     };
 
@@ -90,63 +206,54 @@ export default function AdminDashboard() {
         <div className="admin-container">
             <h1 className="admin-title">لوحة التحكم</h1>
 
-            {/* Users */}
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
+                    gap: "16px",
+                    marginBottom: "24px",
+                }}
+            >
+                <div className="stat-card">
+                    <BookOpen size={24} />
+                    <p className="stat-label">القصص العامة</p>
+                    <h2>{publicCount}</h2>
+                </div>
+
+                <div className="stat-card">
+                    <Star size={24} />
+                    <p className="stat-label">متوسط تقييم المكتبة العامة</p>
+                    <h2>{publicAvgRating}</h2>
+                </div>
+
+                <div className="stat-card">
+                    <Tag size={24} />
+                    <p className="stat-label">أكثر موضوع استخداماً</p>
+                    <h2>{topTopic}</h2>
+                </div>
+
+                <div className="stat-card">
+                    <Baby size={24} />
+                    <p className="stat-label">أكثر فئة عمرية</p>
+                    <h2>{topAgeGroup === "—" ? "—" : `${topAgeGroup} سنوات`}</h2>
+                </div>
+            </div>
+
+            {/* Users Section */}
             <section className="admin-section">
                 <h2 className="admin-section-title">المستخدمون</h2>
                 <div className="admin-card-grid">
                     {users.map(u => (
-                        <div key={u.id} className="admin-card">
+                        <div key={u._id} className="admin-card">
                             <p>{u.name}</p>
                             <p className="admin-email">{u.email}</p>
-                            <button className="admin-btn-delete" onClick={() => handleDeleteUser(u.id)}>حذف</button>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Comments */}
-            <section className="admin-section">
-                <h2 className="admin-section-title">التعليقات</h2>
-                <div className="admin-card-grid">
-                    {comments.map(c => (
-                        <div key={c.id} className="admin-card">
-                            <p>{c.text}</p>
-                            <p className="admin-meta">— {c.user}</p>
-                            <button className="admin-btn-delete" onClick={() => handleDeleteComment(c.id)}>حذف</button>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Categories */}
-            <section className="admin-section">
-                <h2 className="admin-section-title">الفئات</h2>
-                <div className="admin-input-row">
-                    <input value={newCategory} onChange={e => setNewCategory(e.target.value)} placeholder="فئة جديدة" className="admin-input" />
-                    <button className="admin-btn-add" onClick={handleAddCategory}>إضافة</button>
-                </div>
-                <div className="admin-card-grid">
-                    {categories.map(c => (
-                        <div key={c} className="admin-card">
-                            <p>{c}</p>
-                            <button className="admin-btn-delete" onClick={() => handleDeleteCategory(c)}>حذف</button>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Age Groups */}
-            <section className="admin-section">
-                <h2 className="admin-section-title">الفئات العمرية</h2>
-                <div className="admin-input-row">
-                    <input value={newAgeGroup} onChange={e => setNewAgeGroup(e.target.value)} placeholder="فئة عمرية جديدة" className="admin-input" />
-                    <button className="admin-btn-add" onClick={handleAddAgeGroup}>إضافة</button>
-                </div>
-                <div className="admin-card-grid">
-                    {ageGroups.map(a => (
-                        <div key={a} className="admin-card">
-                            <p>{a}</p>
-                            <button className="admin-btn-delete" onClick={() => handleDeleteAgeGroup(a)}>حذف</button>
+                            <button
+                                type="button"
+                                className="admin-btn-delete"
+                                onClick={() => handleDeleteUser(u._id)}
+                            >
+                                حذف المستخدم
+                            </button>
                         </div>
                     ))}
                 </div>
@@ -157,19 +264,31 @@ export default function AdminDashboard() {
                 <h2 className="admin-section-title">رسائل التواصل</h2>
                 <div className="admin-card-grid">
                     {messages.map((m) => (
-                        <div key={m.id} className="admin-card">
+                        <div key={m._id} className="admin-card">
                             <p><strong>{m.name}</strong></p>
-                            <p>
-                                <a href={`mailto:${m.email}`} className="admin-email">{m.email}</a>
-                            </p>
+                            <p><a href={`mailto:${m.email}`} className="admin-email">{m.email}</a></p>
                             <p>{m.message}</p>
-                            {m.responded && <p className="admin-reply">تم الرد: {m.reply}</p>}
+
+                            <button
+                                type="button"
+                                className="admin-btn-delete"
+                                onClick={() => handleDeleteMessage(m._id)}
+                            >
+                                حذف الرسالة
+                            </button>
                         </div>
                     ))}
                 </div>
             </section>
 
-            {modal.show && <ConfirmModal message={modal.message} onConfirm={handleConfirm} onCancel={handleCancel} />}
+            {/* Confirm Modal */}
+            {modal.show && (
+                <ConfirmModal
+                    message={modal.message}
+                    onConfirm={handleConfirm}
+                    onCancel={closeModal}
+                />
+            )}
         </div>
     );
 }

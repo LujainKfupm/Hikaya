@@ -29,7 +29,7 @@ export default function StoryCard({ story, image }) {
                     </span>
 
                     <span className="story-card-meta-item">
-                        <Calendar size={16} /> 01/10/2025
+                        <Calendar size={16} /> {story.date}
                     </span>
                 </div>
 

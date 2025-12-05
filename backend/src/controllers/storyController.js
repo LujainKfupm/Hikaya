@@ -1,83 +1,54 @@
-/**
- * controllers/storyController.js
- * -------------------------------------
- * Handles CRUD for stories:
- *
- *   POST /     → create new story in DB
- *   GET /mine  → get stories for logged-in user
- *   GET /public → get public stories
- *   GET /:id   → get single story by ID
- *   DELETE /:id → delete story (owner only)
- *
- * Logic ONLY. Do not define routes here.
- */
-
-// TODO: implement CRUD functions
-
 import Story from "../models/Story.js";
 
-export const createStory = async (req, res, next) => {
+export async function getPublicStories(req, res, next) {
     try {
-        const userId = req.user?._id?.toString();
+        const stories = await Story.find({ isPublic: true })
+            .sort({ createdAt: -1 });
+        res.json(stories);
+    } catch (err) {
+        next(err);
+    }
+}
 
-        const {
-            heroName,
-            age,
-            gender,
-            topics,
-            morals,
-            details,
-            content,
-            isPublic
-        } = req.body;
+export async function deleteStory(req, res, next) {
+    try {
+        const { id } = req.params;
 
-        if (!heroName || !age || !gender || !content) {
-            return res.status(400).json({
-                message: "heroName, age, gender و content مطلوبة",
-            });
+        const story = await Story.findById(id);
+        if (!story) return res.status(404).json({ message: "القصة غير موجودة" });
+
+        await Story.findByIdAndDelete(id);
+
+        return res.json({ message: "تم حذف القصة بنجاح" });
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function getMyStories(req, res, next) {
+    try {
+        const stories = await Story.find({ user: req.user._id })
+            .sort({ createdAt: -1 });
+        res.json(stories);
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function getStoryById(req, res, next) {
+    try {
+        const story = await Story.findById(req.params.id);
+        if (!story) {
+            return res.status(404).json({ message: "القصة غير موجودة" });
         }
-
-        const story = await Story.create({
-            heroName,
-            age,
-            gender,
-            topics: topics || [],
-            morals: morals || [],
-            details: details || "",
-            content,
-            isPublic: isPublic || false,
-            user: userId || null
-        });
-
-        return res.status(201).json(story);
-    } catch (error) {
-        next(error);
+        res.json(story);
+    } catch (err) {
+        next(err);
     }
-};
-export const getMyStories = async (req, res, next) => {
-    try {
-        const userId = req.user?._id?.toString();
+}
 
-        if (!userId) {
-            return res.status(401).json({ message: "يجب تسجيل الدخول لعرض قصصك" });
-        }
 
-        const stories = await Story.find({ user: userId }).sort({ createdAt: -1 });
-
-        return res.status(200).json(stories);
-    } catch (error) {
-        next(error);
-    }
-};
-export const getPublicStories = async (req, res, next) => {
-    try {
-        const stories = await Story.find({ isPublic: true }).sort({ createdAt: -1 });
-
-        return res.status(200).json(stories);
-    } catch (error) {
-        next(error);
-    }
-};
 export const getStory = async (req, res, next) => {
     try {
         const storyId = req.params.id;
@@ -99,30 +70,93 @@ export const getStory = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-};
-export const deleteStory = async (req, res, next) => {
+}
+
+export async function addComment(req, res, next) {
     try {
-        const storyId = req.params.id;
-        const currentUserId = req.user?._id?.toString();
+        const { id } = req.params;
+        const { text } = req.body;
+
+        if (!text || !text.trim())
+            return res.status(400).json({ message: "التعليق فارغ" });
+
+        const story = await Story.findById(id);
+        if (!story) return res.status(404).json({ message: "القصة غير موجودة" });
+
+        const comment = {
+            user: req.user._id,
+            name: req.user.name,
+            text,
+            date: new Date(),
+        };
+
+        story.comments.push(comment);
+        await story.save();
+
+        res.json({ message: "تم إضافة التعليق", comment });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function rateStory(req, res, next) {
+    try {
+        const { id } = req.params;
+        const { value } = req.body;
+        const userId = req.user._id;
+
+        if (!value || value < 1 || value > 5)
+            return res.status(400).json({ message: "قيمة التقييم غير صحيحة" });
+
+        const story = await Story.findById(id);
+        if (!story) return res.status(404).json({ message: "القصة غير موجودة" });
+
+        const existing = story.ratings.find((r) => r.user.toString() === userId.toString());
+        if (existing) {
+            existing.value = value;
+        } else {
+            story.ratings.push({ user: userId, value });
+        }
+
+        await story.save();
+
+        const avg =
+            story.ratings.reduce((a, r) => a + r.value, 0) / story.ratings.length;
+
+        res.json({
+            message: "تم التقييم بنجاح",
+            ratingAvg: avg,
+            ratingCount: story.ratings.length,
+        });
+    } catch (err) {
+        next(err);
+    }
+}
+
+export async function deleteComment(req, res, next) {
+    try {
+        const { storyId, commentId } = req.params;
 
         const story = await Story.findById(storyId);
+        if (!story) return res.status(404).json({ message: "القصة غير موجودة" });
 
-        if (!story) {
-            return res.status(404).json({ message: "القصة غير موجودة" });
-        }
+        story.comments = story.comments.filter(
+            (c) => c._id.toString() !== commentId
+        );
 
-        if (!currentUserId || story.user?.toString() !== currentUserId) {
-            return res.status(403).json({ message: "ليس لديك صلاحية لحذف هذه القصة" });
-        }
+        await story.save();
 
-        await story.deleteOne();
-
-        return res.status(200).json({ message: "تم حذف القصة بنجاح" });
-    } catch (error) {
-        next(error);
+        res.json({ message: "تم حذف التعليق" });
+    } catch (err) {
+        next(err);
     }
-};
+}
 
-
-
-
+export async function getAllStories(req, res, next) {
+    try {
+        const stories = await Story.find({}).sort({ createdAt: -1 });
+        res.json(stories);
+    } catch (err) {
+        next(err);
+    }
+}

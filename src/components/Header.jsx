@@ -16,7 +16,7 @@ export default function Header() {
                 {/* Logo (Right side) */}
                 <div className="logo">
                     <img
-                        src="/src/assets/Hikaya logo horizontal.png"
+                        src="/Hikaya-logo-horizontal.png"
                         alt="Hikaya Logo"
                         className="logo-img"
                     />

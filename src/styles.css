@@ -689,6 +689,9 @@ body {
     content: " *";
     color: #dc2626;
 }
+.error-box {
+    color: #dc2626;
+}
 
 .form-input {
     font-family: "Baloo Bhaijaan 2", sans-serif !important;
@@ -1165,6 +1168,7 @@ body {
 
 .hero-secondary-btn {
     border: 1px solid #A7D3F6;
+    color: #82B7E0FF !important;
     padding: 10px 20px;
     border-radius: 8px;
 }
@@ -1299,6 +1303,7 @@ body {
     background: #A7D3F6;
     align-self: flex-start;
     text-decoration: none;
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
 }
 
 .story-card-btn:hover {
@@ -1313,15 +1318,18 @@ body {
     padding: 4px 8px;
     color: #fff;
     background: #F7C4C4;
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
 }
 
 .story-card-btn-confirm {
     background: #F7C4C4;
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
 }
 
 .story-card-btn-cancel {
     background: #AEE1D4;
     color: #fff;
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
 }
 
 .modal-overlay {
@@ -1349,16 +1357,19 @@ body {
     padding: 6px 12px;
     font-size: 0.9rem;
     cursor: pointer;
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
 }
 
 .story-card-btn-confirm {
     background: #F7C4C4; /* pastel red */
     color: #fff;
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
 }
 
 .story-card-btn-cancel {
     background: #AEE1D4;
     color: #fff;
+    font-family: "Baloo Bhaijaan 2", sans-serif !important;
 }
 
 :root {
@@ -1523,7 +1534,7 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
 .comment-box { margin-top: 24px; padding: 16px; border: 1px solid #eee; border-radius: 10px; }
 .comment-item { border-top: 1px solid #eee; padding-top: 8px; margin-top: 8px; }
 .no-comments { color: #777; }
-.btn-delete { background: #F7C4C4; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; margin-top: 6px; }
+.btn-delete { background: #F7C4C4; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; margin-top: 6px; font-family: "Baloo Bhaijaan 2", sans-serif !important;}
 
 .modal-overlay {
     position: fixed;
@@ -1545,8 +1556,8 @@ html[dir="rtl"] .filter-panel { direction: rtl; }
 }
 
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; }
-.btn-confirm { padding: 6px 12px; background: #F7C4C4; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
-.btn-cancel { padding: 6px 12px; background: #AEE1D4; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+.btn-confirm { font-family: "Baloo Bhaijaan 2", sans-serif !important; padding: 6px 12px; background: #F7C4C4; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+.btn-cancel { font-family: "Baloo Bhaijaan 2", sans-serif !important; padding: 6px 12px; background: #AEE1D4; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
 
 .comment-box {
     background: #fff;

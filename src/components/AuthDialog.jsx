@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { X } from "lucide-react";
 
@@ -12,6 +12,19 @@ export default function AuthDialog({ open, onClose }) {
     const [error, setError] = useState("");
     const [showWelcome, setShowWelcome] = useState(false);
 
+    useEffect(() => {
+        if (open) {
+            resetForm();
+            setTab("login");
+        }
+    }, [open]);
+    function resetForm() {
+        setEmail("");
+        setPass("");
+        setName("");
+        setConfirmPass("");
+        setError("");
+    }
 
     if (!open) return null;
     async function handleLogin() {
@@ -41,6 +54,7 @@ export default function AuthDialog({ open, onClose }) {
         setShowWelcome(true);
         setTimeout(() => {
             setShowWelcome(false);
+            resetForm();
             onClose();
         }, 1000);
     }
@@ -85,6 +99,7 @@ export default function AuthDialog({ open, onClose }) {
             setError(res.msg);
             return;
         }
+        resetForm();
         onClose();
     }
 
@@ -97,7 +112,11 @@ export default function AuthDialog({ open, onClose }) {
             )}
             <div className="auth-dialog-box">
 
-                <button className="auth-close-btn" onClick={onClose}>
+                <button className="auth-close-btn" onClick={() => {
+                    resetForm();
+                    setTab("login");
+                    onClose();
+                }}>
                     <X size={22}/>
                 </button>
 
@@ -111,23 +130,22 @@ export default function AuthDialog({ open, onClose }) {
                         : "أنشئ حسابك للبدء في إنشاء قصص شخصية لطفلك"}
                 </p>
 
-                <div className="auth-demo-box">
-                    <strong>حساب المشرف:</strong><br/>
-                    <span> admin@hikaya.com — admin123</span><br/>
-                </div>
-
                 <div className="auth-tabs">
                     <button
                         className={tab === "login" ? "auth-tab active" : "auth-tab"}
-                        onClick={() =>{ setTab("login");
-                            setError("");}}
+                        onClick={() => {
+                            setTab("login");
+                            resetForm();
+                        }}
                     >
                         تسجيل الدخول
                     </button>
 
                     <button
                         className={tab === "signup" ? "auth-tab active" : "auth-tab"}
-                        onClick={() => {setTab("signup"); setError("");
+                        onClick={() => {
+                            setTab("signup");
+                            resetForm();
                         }}
                     >
                         إنشاء حساب
@@ -135,7 +153,8 @@ export default function AuthDialog({ open, onClose }) {
                 </div>
                 {/* login */}
                 {tab === "login" && (
-                    <>
+                    <div key="login">
+
                 <label className="auth-label">البريد الإلكتروني</label>
                 <input
                     className="auth-input"
@@ -143,6 +162,7 @@ export default function AuthDialog({ open, onClose }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="example@email.com"
+                    autoComplete="username"
                 />
 
                 <label className="auth-label">كلمة المرور</label>
@@ -152,6 +172,7 @@ export default function AuthDialog({ open, onClose }) {
                     value={pass}
                     onChange={(e) => setPass(e.target.value)}
                     placeholder="•••••••"
+                    autoComplete="current-password"
                 />
 
                 {error &&
@@ -165,12 +186,13 @@ export default function AuthDialog({ open, onClose }) {
                 >
                     تسجيل الدخول →
                 </button>
-           </>
+           </div>
 
                 )}
                 {/* sign up */}
                 {tab === "signup" && (
-                    <>
+                    <div key="signup">
+
                         <label className="auth-label">الاسم الكامل</label>
                         <input
                             className="auth-input"
@@ -178,6 +200,7 @@ export default function AuthDialog({ open, onClose }) {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="أدخل اسمك"
+                            autoComplete="name"
                         />
 
                         <label className="auth-label">البريد الإلكتروني</label>
@@ -187,6 +210,7 @@ export default function AuthDialog({ open, onClose }) {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="example@email.com"
+                            autoComplete="email"
                         />
 
                         <label className="auth-label">كلمة المرور</label>
@@ -196,6 +220,7 @@ export default function AuthDialog({ open, onClose }) {
                             value={pass}
                             onChange={(e) => setPass(e.target.value)}
                             placeholder="•••••••"
+                            autoComplete="new-password"
                         />
 
                         <label className="auth-label">تأكيد كلمة المرور</label>
@@ -205,6 +230,7 @@ export default function AuthDialog({ open, onClose }) {
                             value={confirmPass}
                             onChange={(e) => setConfirmPass(e.target.value)}
                             placeholder="•••••••"
+                            autoComplete="new-password"
                         />
 
                         {error && <div className="auth-error">{error}</div>}
@@ -212,7 +238,7 @@ export default function AuthDialog({ open, onClose }) {
                         <button className="auth-login-btn" onClick={handleSignup}>
                             إنشاء الحساب →
                         </button>
-                    </>
+                    </div>
                 )}
             </div>
         </div>
