@@ -115,6 +115,7 @@ You can view the Figma file here: [Figma Link](https://www.figma.com/design/55rM
 ##  Back-End Implementation 
 In this phase, we implemented the full backend for Hikaya using `Node.js`, `Express.js`, and `MongoDB`.
 The backend now handles real authentication, story storage, and AI story generation, replacing the old mock API.
+
 ---
 
 ## Setup & Running the Backend(Using Terminal)
